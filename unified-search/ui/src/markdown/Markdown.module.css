@@ -1,0 +1,159 @@
+/*
+ * Generated answers are Markdown, but they sit inside a card rather than being a page, so
+ * the default heading and margin scale is far too loud. This tightens it without losing
+ * the structure that makes an answer scannable.
+ */
+
+.markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown p {
+  margin: 0 0 0.6rem;
+  line-height: 1.6;
+}
+
+.markdown h4,
+.markdown h5 {
+  margin: 1rem 0 0.4rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.markdown ul,
+.markdown ol {
+  margin: 0 0 0.6rem;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.markdown li {
+  line-height: 1.55;
+}
+
+.markdown code {
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.88em;
+}
+
+.markdown pre {
+  margin: 0 0 0.6rem;
+  padding: 0.7rem;
+  overflow-x: auto;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.markdown pre code {
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.markdown blockquote {
+  margin: 0 0 0.6rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--border);
+  color: var(--muted);
+}
+
+.markdown table {
+  border-collapse: collapse;
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+}
+
+.markdown th,
+.markdown td {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+}
+
+.markdown hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.8rem 0;
+}
+
+/*
+ * Citation marker: a small raised [n] that links to the cited document.
+ *
+ * Kept visually quiet on purpose. It has to be findable and clickable without competing
+ * with the sentence it sits inside, which is the failure mode of rendering citations at
+ * body-text size.
+ */
+.citation {
+  font-size: 0.72em;
+  vertical-align: super;
+  line-height: 0;
+  padding: 0 0.1em;
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.citation:hover,
+.citation:focus-visible {
+  text-decoration: underline;
+}
+
+/* Tables come from remark-gfm and are common in answers about quarterly figures. */
+.markdown table {
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.9em;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.markdown th,
+.markdown td {
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.6rem;
+  text-align: left;
+}
+
+.markdown th {
+  background: var(--surface);
+  font-weight: 600;
+}
+
+/*
+ * A paragraph of only citation markers, which is what a citation covering a table or a code
+ * block becomes: there is nowhere inside those to put a marker without corrupting them.
+ *
+ * The label comes from CSS rather than from injected text, so the answer the model wrote is
+ * not edited to add words we invented. Bare markers under a table read as debris; "Sources"
+ * in front of them reads as attribution.
+ */
+.citationLine {
+  margin-top: -0.35rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.citationLine::before {
+  content: 'Sources';
+  margin-right: 0.3rem;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+
+/* Spaced apart here, unlike the tight run used inline in a sentence. */
+.citationLine .citation {
+  vertical-align: baseline;
+  font-size: 0.8rem;
+  margin-right: 0.2rem;
+}

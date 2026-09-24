@@ -1,0 +1,59 @@
+.caption {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.result {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.resultTitle {
+  margin: 0 0 0.35rem;
+  font-size: 0.98rem;
+}
+
+.snippet {
+  margin: 0 0 0.5rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.sourceType,
+.department {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.department {
+  padding: 0 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+/* Not currently rendered by ResultList. See the note above `ResultListProps` for why
+   scores aren't displayed. */
+.score {
+  font-variant-numeric: tabular-nums;
+}

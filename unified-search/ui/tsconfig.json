@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    // Type-only access to the backend's domain model, so the wire contract has one
+    // definition rather than being hand-mirrored here, because duplicated wire shapes
+    // drift out of step with the API.
+    //
+    // Safe because `src/domain/` is provably free of Nest and AWS imports -- a backend
+    // test reads the files to assert it -- so nothing server-side can be dragged into
+    // the browser bundle. Every import from it is `import type`, so no runtime code is
+    // emitted at all.
+    "paths": {
+      "@domain": ["../backend/src/domain/index.ts"]
+    },
+    "jsx": "react-jsx",
+
+    "useDefineForClassFields": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["vite/client", "node"],
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": ["src", "vite.config.ts", "vitest.config.ts"]
+}

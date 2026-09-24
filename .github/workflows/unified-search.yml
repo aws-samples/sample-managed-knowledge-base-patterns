@@ -1,0 +1,111 @@
+name: unified-search
+
+# Scoped to one pattern. Patterns share no build system, so each gets its own
+# workflow filtered to its own directory: a change to another pattern must not
+# run this, and a change here must not run theirs. Repository-wide checks that
+# do not care about language live in repo.yml.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'unified-search/**'
+      - '.github/workflows/unified-search.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'unified-search/**'
+      - '.github/workflows/unified-search.yml'
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+defaults:
+  run:
+    working-directory: unified-search
+
+jobs:
+  verify:
+    name: Format, lint, build, test, synth
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # `cache-dependency-path` is required because the lockfile is not at the
+      # repository root. Without it the cache key cannot be computed and the
+      # dependency cache silently does nothing.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: unified-search/package-lock.json
+
+      # `npm ci` rather than `npm install`: it installs exactly the committed
+      # lockfile and fails if package.json and the lockfile disagree, so builds are
+      # reproducible.
+      - name: Install
+        run: npm ci
+
+      - name: Format check
+        run: npm run format:check
+
+      # Blocking, not advisory. Every workspace runs with --max-warnings 0.
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      # cdk-nag v3 runs inside CDK's policy validation framework, so a rule
+      # violation fails synth. This step is therefore the infrastructure
+      # security gate, not just a compile check.
+      - name: Synthesize infrastructure
+        run: npm run synth
+
+      # Two import boundaries are enforced by ESLint: Bedrock SDKs only under
+      # src/providers/, and test doubles only from specs. Both live in a config
+      # file and can be weakened by editing it, so this probes the full matrix of
+      # (location, import kind) and fails if any cell differs from expectation.
+      # See the script for why it parses JSON rather than grepping output.
+      - name: Verify import boundaries are enforced
+        run: ./scripts/check-import-boundaries.sh
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: unified-search/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+  # Advisory: a newly published advisory against a transitive dependency should
+  # be visible without blocking an unrelated change. Review when this goes red.
+  audit-moderate:
+    name: Dependency audit (moderate and above, advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: unified-search/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=moderate

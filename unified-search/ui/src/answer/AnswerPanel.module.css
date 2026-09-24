@@ -1,0 +1,100 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.answer {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.placeholder {
+  color: var(--muted);
+}
+
+.traces {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.traces summary {
+  cursor: pointer;
+}
+
+.traces summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.traces ol {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.incomplete {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--warning-border);
+  border-radius: 6px;
+  background: var(--warning-surface);
+  color: var(--warning-text);
+  font-size: 0.9rem;
+}
+
+.citations {
+  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
+}
+
+.citationsHeading {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+/*
+ * A numbered list whose numbers match the [n] markers in the answer.
+ *
+ * `decimal` rather than `none`, deliberately: the number is the whole point of the list,
+ * because it is the key back to the marker in the text.
+ */
+.sources {
+  margin: 0;
+  padding-left: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.source::marker {
+  color: var(--muted);
+}
+
+.ungrounded {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}

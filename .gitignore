@@ -1,0 +1,14 @@
+# Repository-wide ignores. Each pattern carries its own .gitignore for anything
+# specific to its build system, and a nested .gitignore still applies, so rules
+# for a single pattern belong there rather than here.
+
+# macOS
+.DS_Store
+
+# Editor and IDE state
+.idea/
+*.swp
+
+# Local environment overrides
+.env
+.env.local

@@ -1,0 +1,33 @@
+{
+  "name": "unified-search",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Unified enterprise search and RAG chat on Amazon Bedrock Managed Knowledge Base",
+  "license": "MIT-0",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "backend",
+    "ui",
+    "infra"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "synth": "npm run synth --workspace @unified-search/infra",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,css,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json,md,css,yml}\"",
+    "verify": "npm run format:check && npm run lint && npm run build && npm test && npm run synth"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  },
+  "overridesRationale": {
+    "multer": "multer <=2.2.0 carries four DoS / limit-bypass advisories. @nestjs/platform-express pins 2.2.0; 2.3.0 is API-compatible and out of the affected range. `npm audit fix --force` would instead downgrade @nestjs/core to 7.x, a major-version regression. Remove this override once platform-express depends on 2.3+."
+  },
+  "overrides": {
+    "multer": "2.3.0"
+  }
+}

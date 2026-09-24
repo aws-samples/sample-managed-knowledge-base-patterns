@@ -1,0 +1,168 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.memory {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.turns,
+.turns ol,
+.citations ol,
+.references {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.turns {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.exchange {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.question {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.answer {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.traces {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.traces summary {
+  cursor: pointer;
+}
+
+.traces ol {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.incomplete {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--warning-border);
+  border-radius: 6px;
+  background: var(--warning-surface);
+  color: var(--warning-text);
+  font-size: 0.9rem;
+}
+
+.error {
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--danger-border);
+  border-radius: 6px;
+  background: var(--danger-surface);
+  color: var(--danger-text);
+}
+
+.citations {
+  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
+}
+
+.citationsHeading {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.citations > ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.claim {
+  margin: 0 0 0.25rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.references {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+}
+
+.ungrounded {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: inherit;
+}
+
+.input:focus-visible,
+.submit:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.submit {
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-text);
+  cursor: pointer;
+}
+
+.submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

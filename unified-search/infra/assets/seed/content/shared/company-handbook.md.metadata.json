@@ -1,0 +1,35 @@
+{
+  "metadataAttributes": {
+    "department": {
+      "value": { "type": "STRING", "stringValue": "shared" },
+      "includeForEmbedding": false
+    },
+    "docType": {
+      "value": { "type": "STRING", "stringValue": "Handbook" },
+      "includeForEmbedding": false
+    },
+    "project": {
+      "value": { "type": "STRING", "stringValue": "Employee Handbook" },
+      "includeForEmbedding": false
+    },
+    "fiscalQuarter": {
+      "value": { "type": "STRING", "stringValue": "Q1" },
+      "includeForEmbedding": false
+    },
+    "fiscalYear": {
+      "value": { "type": "NUMBER", "numberValue": 2026 },
+      "includeForEmbedding": false
+    },
+    "effectiveDate": {
+      "value": { "type": "STRING", "stringValue": "2026-01-01T00:00:00Z" },
+      "includeForEmbedding": false
+    },
+    "topics": {
+      "value": {
+        "type": "STRING_LIST",
+        "stringListValue": ["working hours", "expense policy", "time off"]
+      },
+      "includeForEmbedding": false
+    }
+  }
+}

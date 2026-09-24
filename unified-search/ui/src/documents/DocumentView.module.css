@@ -1,0 +1,50 @@
+.document {
+  max-width: 46rem;
+}
+
+.back {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+}
+
+.title {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+/*
+ * The full `s3://` identifier, shown small.
+ *
+ * Kept visible because it is what `make acl-check --document` takes, and the most
+ * common question about this sample is "why can this person not see that document?".
+ * `overflow-wrap` rather than truncation: a partial identifier cannot be pasted.
+ */
+.identifier {
+  margin: 0 0 1.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.body {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  line-height: 1.6;
+}
+
+.notice {
+  margin: 0;
+  color: var(--muted);
+}
+
+.error {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--danger-border);
+  border-radius: 6px;
+  background: var(--danger-surface);
+  color: var(--danger-text);
+}

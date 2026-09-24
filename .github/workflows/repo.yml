@@ -1,0 +1,114 @@
+name: Repository
+
+# Checks that apply to the whole repository regardless of what any pattern is
+# written in. Everything language-specific belongs in that pattern's own
+# path-filtered workflow, so adding a pattern in another language does not
+# require touching this file.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0 # gitleaks needs full history for the history scan
+
+      # Blocking. Account IDs, tenant and application IDs, user pool IDs, and
+      # certificate ARNs are all easy to commit by accident and hard to remove.
+      - name: Install gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.0
+        run: |
+          curl -sSfL -o /tmp/gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks
+          /tmp/gitleaks version
+
+      # Both scans must pass, and both run from the repository root so the root
+      # .gitleaks.toml is the configuration in effect. A missing config is not an
+      # error: gitleaks falls back to the default ruleset, the allowlist stops
+      # applying, and the scan appears to pass while checking something else.
+      # Confirm the config was actually loaded rather than assuming it.
+      - name: Confirm the gitleaks config is the one at the repository root
+        run: |
+          test -f .gitleaks.toml || {
+            echo "No .gitleaks.toml at the repository root. Without it the"
+            echo "allowlist does not apply and these scans check the wrong thing."
+            exit 1
+          }
+
+      - name: Secret scan, working tree
+        run: /tmp/gitleaks detect --no-git --redact -v
+
+      - name: Secret scan, full history
+        run: /tmp/gitleaks detect --redact -v
+
+  structure:
+    name: Repository structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # Deliberately language-agnostic. Patterns share no build system, so the
+      # only things CI can assert across all of them are that the repository is
+      # licensed and that each pattern is navigable on its own: it documents
+      # itself, it says how to check out just itself, and it is reachable from
+      # the root README.
+      - name: Repository-level files are present
+        run: |
+          status=0
+          for f in LICENSE README.md CONTRIBUTING.md SECURITY.md .gitleaks.toml; do
+            if [ ! -f "$f" ]; then
+              echo "FAIL  missing required repository file: $f"
+              status=1
+            fi
+          done
+          exit $status
+
+      - name: Every pattern is self-contained and indexed
+        run: |
+          status=0
+          found=0
+          for dir in */; do
+            pattern="${dir%/}"
+            case "$pattern" in .*) continue ;; esac
+            found=$((found + 1))
+            echo "checking $pattern"
+
+            if [ ! -f "$pattern/README.md" ]; then
+              echo "FAIL  $pattern has no README.md. Every pattern must stand alone."
+              status=1
+              continue
+            fi
+
+            # CONTRIBUTING.md requires each pattern to explain how to check out
+            # just itself, because that is how most readers will arrive.
+            if ! grep -q 'sparse-checkout' "$pattern/README.md"; then
+              echo "FAIL  $pattern/README.md has no sparse-checkout instructions."
+              status=1
+            fi
+
+            # A pattern absent from the root index is effectively undiscoverable.
+            if ! grep -q "]($pattern/)" README.md; then
+              echo "FAIL  $pattern is not linked from the root README index."
+              status=1
+            fi
+          done
+
+          if [ "$found" -eq 0 ]; then
+            echo "FAIL  no pattern directories found. This check would pass vacuously."
+            exit 1
+          fi
+
+          echo "checked $found pattern(s)"
+          exit $status

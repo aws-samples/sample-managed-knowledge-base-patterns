@@ -1,0 +1,35 @@
+{
+  "metadataAttributes": {
+    "department": {
+      "value": { "type": "STRING", "stringValue": "finance" },
+      "includeForEmbedding": false
+    },
+    "docType": {
+      "value": { "type": "STRING", "stringValue": "Forecast" },
+      "includeForEmbedding": false
+    },
+    "project": {
+      "value": { "type": "STRING", "stringValue": "Revenue Forecast" },
+      "includeForEmbedding": false
+    },
+    "fiscalQuarter": {
+      "value": { "type": "STRING", "stringValue": "Q3" },
+      "includeForEmbedding": false
+    },
+    "fiscalYear": {
+      "value": { "type": "NUMBER", "numberValue": 2026 },
+      "includeForEmbedding": false
+    },
+    "effectiveDate": {
+      "value": { "type": "STRING", "stringValue": "2026-07-01T00:00:00Z" },
+      "includeForEmbedding": false
+    },
+    "topics": {
+      "value": {
+        "type": "STRING_LIST",
+        "stringListValue": ["revenue forecasting", "subscription revenue"]
+      },
+      "includeForEmbedding": false
+    }
+  }
+}

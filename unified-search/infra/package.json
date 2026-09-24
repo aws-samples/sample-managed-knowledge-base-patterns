@@ -1,0 +1,45 @@
+{
+  "name": "@unified-search/infra",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT-0",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint \"{bin,lib,test,scripts}/**/*.ts\" --max-warnings 0",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "synth": "npm run synth:byo && npm run synth:sample && npm run synth:sample-memory && npm run synth:identity",
+    "cdk": "cdk",
+    "seed:sample": "tsx scripts/seed-sample-content.ts",
+    "synth:byo": "cdk synth -c kbMode=byo -c knowledgeBaseId=AAAAAAAAAA --quiet",
+    "synth:sample": "cdk synth -c kbMode=sample --quiet",
+    "deploy:sample": "cdk deploy -c kbMode=sample --all",
+    "destroy:sample": "cdk destroy -c kbMode=sample --all",
+    "bootstrap": "cdk bootstrap -c kbMode=byo -c knowledgeBaseId=AAAAAAAAAA",
+    "synth:sample-memory": "cdk synth -c kbMode=sample -c memory=true --quiet",
+    "deploy:sample-memory": "cdk deploy -c kbMode=sample -c memory=true --all",
+    "destroy:sample-memory": "cdk destroy -c kbMode=sample -c memory=true --all",
+    "ingest:sample": "tsx scripts/ingest-sample-content.ts",
+    "seed:users": "tsx scripts/seed-users.ts",
+    "synth:identity": "cdk synth -c kbMode=sample -c identity=true --quiet"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-agent": "^3.1131.0",
+    "@aws-sdk/client-cloudformation": "^3.1131.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1131.0",
+    "aws-cdk-lib": "^2.269.0",
+    "constructs": "^10.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.2",
+    "aws-cdk": "^2.1141.0",
+    "cdk-nag": "^3.0.2",
+    "eslint": "^10.10.0",
+    "globals": "^17.12.0",
+    "tsx": "^4.23.13",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^5.0.0"
+  }
+}

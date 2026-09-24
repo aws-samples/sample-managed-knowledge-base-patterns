@@ -1,59 +1,75 @@
 # Contributing Guidelines
 
-Thank you for your interest in contributing to our project. Whether it's a bug report, new feature, correction, or additional
-documentation, we greatly value feedback and contributions from our community.
+Thank you for your interest in contributing. Whether it is a bug report, a new
+pattern, a correction, or additional documentation, we value the contribution.
 
-Please read through this document before submitting any issues or pull requests to ensure we have all the necessary
-information to effectively respond to your bug report or contribution.
+Please read this before opening an issue or a pull request. Individual patterns
+add their own standards, so also read the `CONTRIBUTING.md` in the pattern
+directory you are changing if it has one.
 
+## Reporting bugs and requesting features
 
-## Reporting Bugs/Feature Requests
+Use the issue tracker. Check existing open and recently closed issues first.
 
-We welcome you to use the GitHub issue tracker to report bugs or suggest features.
+Always name the pattern directory the issue applies to. A report that does not
+say which pattern it concerns cannot be acted on, because the patterns share no
+code.
 
-When filing an issue, please check existing open, or recently closed, issues to make sure somebody else hasn't already
-reported the issue. Please try to include as much information as you can. Details like these are incredibly useful:
+Useful details:
 
-* A reproducible test case or series of steps
-* The version of our code being used
-* Any modifications you've made relevant to the bug
-* Anything unusual about your environment or deployment
+- A reproducible test case or series of steps
+- Which pattern, and which part of it
+- Anything unusual about your environment, region, or account configuration
 
+**Scrub identifiers before pasting.** AWS account IDs, knowledge base IDs,
+tenant IDs, ARNs, and document excerpts routinely appear in the error output and
+diagnostics these patterns produce.
 
-## Contributing via Pull Requests
-Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
+## Contributing changes to an existing pattern
 
-1. You are working against the latest source on the *main* branch.
-2. You check existing open, and recently merged, pull requests to make sure someone else hasn't addressed the problem already.
-3. You open an issue to discuss any significant work - we would hate for your time to be wasted.
+1. Work against the latest source on the `main` branch.
+2. Check existing open and recently merged pull requests.
+3. Open an issue to discuss significant work first, so your time is not wasted.
+4. Keep the change scoped to one pattern where possible. A change spanning
+   several patterns is harder to review and usually means something belongs in
+   one of them rather than all of them.
+5. Run the pattern's own checks. Each pattern's README states the commands, and
+   CI runs them per pattern.
+6. Add tests for new behavior.
+7. Do not reformat code you are not changing. It buries the actual change.
 
-To send us a pull request, please:
+## Contributing a new pattern
 
-1. Fork the repository.
-2. Modify the source; please focus on the specific change you are contributing. If you also reformat all the code, it will be hard for us to focus on your change.
-3. Ensure local tests pass.
-4. Commit to your fork using clear commit messages.
-5. Send us a pull request, answering any default questions in the pull request interface.
-6. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
+A new pattern is a new top-level directory. It must:
 
-GitHub provides additional document on [forking a repository](https://help.github.com/articles/fork-a-repo/) and
-[creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
+- Be deployable and testable on its own, with no dependency on another pattern
+- Contain a `README.md` that stands alone: what it demonstrates, prerequisites,
+  what gets deployed, the standing cost, and how to tear it down
+- Include the sparse-checkout instructions for its own directory, so a reader who
+  arrives at the pattern directly can get just that pattern
+- Use only fictitious names drawn from the AWS approved fictitious content
+  library, and example bucket names carrying the `amzn-s3-demo-` prefix
+- Commit no account IDs, pool IDs, ARNs, hostnames, or stand-in user identities.
+  Those are configuration, not code
+- Add its own path-filtered CI workflow, because patterns do not share a build
+  system or a language
 
+Add the pattern to the table in the root `README.md` in the same change.
 
-## Finding contributions to work on
-Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any 'help wanted' issues is a great place to start.
+## Code of conduct
 
-
-## Code of Conduct
-This project has adopted the [Amazon Open Source Code of Conduct](https://aws.github.io/code-of-conduct).
-For more information see the [Code of Conduct FAQ](https://aws.github.io/code-of-conduct-faq) or contact
+This project has adopted the
+[Amazon Open Source Code of Conduct](https://aws.github.io/code-of-conduct). For
+more information see the
+[Code of Conduct FAQ](https://aws.github.io/code-of-conduct-faq) or contact
 opensource-codeofconduct@amazon.com with any additional questions or comments.
 
-
 ## Security issue notifications
-If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public github issue.
 
+See [SECURITY.md](SECURITY.md). Please do **not** create a public issue for a
+security problem.
 
 ## Licensing
 
-See the [LICENSE](LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
+See the [LICENSE](LICENSE) file. We will ask you to confirm the licensing of
+your contribution.

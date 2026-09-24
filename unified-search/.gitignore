@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+*.tgz
+
+# CDK synthesized cloud assemblies.
+#
+# `cdk.out*` rather than `cdk.out`, because `--output` can point anywhere and a
+# custom directory would otherwise be committed. These contain the resolved
+# template, which embeds the deploying AWS account ID. Committing a cloud assembly
+# or cached CDK context is a common way to leak one.
+cdk.out*/
+.cdk.staging/
+
+# Cached CDK context is account- and region-specific.
+cdk.context.json
+
+# Local working notes and scratch scripts. Untracked so that anything containing
+# live resource IDs, bucket names that embed an account ID, or test identities
+# never reaches the repository.
+notes/
+
+# CDK and cdk-nag validation output. Normally written inside the cloud assembly
+# and so already covered, but `--output` placement varies by CLI version.
+validation-report.json
+policy-validation-report.json
+
+# Environment and local configuration. `.env.example` files are the documented
+# template and are tracked; everything else may hold real values.
+.env
+.env.*
+!.env.example
+
+# Local state from connector setup tooling (may contain tenant, application, and
+# account IDs).
+kb-connector.toml
+kb-connector.state.json
+
+# Credential and key material. Nothing here should ever need committing, and a
+# certificate or private key is the worst thing to leak by accident — several
+# managed knowledge base connectors use certificate-based authentication.
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+*.jks
+*.keystore
+
+# Test and coverage output
+coverage/
+.nyc_output/
+test-results/
+
+# Editor and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*

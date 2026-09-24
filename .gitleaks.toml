@@ -1,0 +1,43 @@
+# gitleaks configuration.
+#
+# Verify a change to this file with both of the commands CI runs:
+#   gitleaks detect --no-git --redact -v      # working tree
+#   gitleaks detect --redact -v               # full history
+#
+# Both must exit 0. A malformed config makes gitleaks exit 1 with
+# "FTL Failed to load config" having scanned *nothing* — which in a long CI log
+# reads much like a clean run. Treat a config error as a failure, never a pass.
+#
+# A clean run here is necessary but not sufficient. Rulesets differ between
+# tools and versions, and an organization's CI scanner may carry rules the
+# bundled default set does not. A finding is pinned to the commit that
+# introduced it, so it outlives the line that caused it. Read "gitleaks is
+# green" as "no known pattern", not "no pattern".
+#
+# Prefer restructuring a secret-shaped pattern over allowlisting it. An
+# allowlist entry only teaches one ruleset.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Verified false positives"
+regexTarget = "line"
+regexes = [
+    # Documentation and configuration examples use the AWS-documented example
+    # account ID and example email domains. These are reserved for
+    # documentation and are not real.
+    '''123456789012''',
+    '''[\w.+-]+@example\.(com|org)''',
+]
+
+# Generated trees. `detect --no-git` does not consult .gitignore, so without
+# these a build output snapshot gets scanned alongside source, reporting
+# findings against generated copies that are not part of the repo.
+paths = [
+    '''^.*/dist/''',
+    '''^.*/build/''',
+    '''^.*/cdk\.out/''',
+    '''^.*/coverage/''',
+    '''package-lock\.json$''',
+]

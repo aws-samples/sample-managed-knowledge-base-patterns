@@ -1,0 +1,32 @@
+/*
+ * Quiet by design. This sits next to a section heading and must not compete with it, but it
+ * still has to look pressable and take a visible focus ring.
+ */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.chevron {
+  font-size: 0.7em;
+  line-height: 1;
+}

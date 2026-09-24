@@ -1,0 +1,94 @@
+/*
+ * One styling system: CSS modules plus custom properties. No utility framework.
+ *
+ * Colors are declared once here and consumed by name, which is what makes the dark
+ * scheme below a few lines rather than a parallel stylesheet.
+ */
+
+:root {
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --text: #14161a;
+  --muted: #5c6370;
+  --surface: #f6f7f9;
+  --border: #d8dce3;
+
+  --accent: #1f4ed8;
+  --accent-text: #ffffff;
+  /* Distinct from --accent: a focus ring that matches the button it sits on is
+     invisible, which defeats the point of having one. */
+  --focus: #0b5fff;
+
+  --danger-surface: #fdf2f2;
+  --danger-border: #f0b4b4;
+  --danger-text: #8a1c1c;
+
+  --warning-surface: #fff8e6;
+  --warning-border: #e8cd8a;
+  --warning-text: #6b4e07;
+}
+
+/*
+ * Dark scheme, applied by attribute rather than by `prefers-color-scheme`.
+ *
+ * The default is deliberately light and does **not** follow the operating system. This
+ * application is used to demonstrate search to a room, usually through a projector or a
+ * shared screen, where dark backgrounds wash out. Following the presenter's OS setting means
+ * the demo looks different depending on whose laptop is plugged in, which is the one thing a
+ * demo should not do.
+ *
+ * The toggle in the header switches this and persists the choice, so anyone who wants dark
+ * gets it in one click and keeps it.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #14161a;
+  --text: #e8eaee;
+  --muted: #9aa2ae;
+  --surface: #1d2026;
+  --border: #333844;
+  --accent: #6f95ff;
+  --accent-text: #0b0d10;
+  --focus: #8fb0ff;
+  --danger-surface: #2a1618;
+  --danger-border: #6d2c30;
+  --danger-text: #f3b6b6;
+  --warning-surface: #2a2413;
+  --warning-border: #6d5c25;
+  --warning-text: #f0dca4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+}
+
+a {
+  color: var(--accent);
+}
+
+/* Respect a user's reduced-motion preference globally rather than per component. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
