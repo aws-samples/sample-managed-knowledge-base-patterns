@@ -1,0 +1,8 @@
+node_modules/
+dist/
+cdk.out/
+coverage/
+package-lock.json
+cdk-outputs.json
+# Rendered from the template and holds real email addresses; never committed.
+infra/seed-data/acl/global-acl.json

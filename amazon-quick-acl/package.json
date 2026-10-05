@@ -1,0 +1,26 @@
+{
+  "name": "amazon-quick-acl",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Amazon Quick connected to an Amazon Bedrock Managed Knowledge Base, with document-level ACLs and an optional embedded chat front end",
+  "license": "MIT-0",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "workspaces": [
+    "infra",
+    "webapp"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "synth": "npm run synth --workspace infra",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,css,yml,html}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json,md,css,yml,html}\"",
+    "verify": "npm run format:check && npm run lint && npm run build && npm test && npm run synth"
+  },
+  "devDependencies": {
+    "prettier": "3.9.9"
+  }
+}

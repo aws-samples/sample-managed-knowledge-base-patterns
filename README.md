@@ -16,6 +16,7 @@ reasoning is usually the part worth reusing.
 
 | Pattern | What it demonstrates |
 | --- | --- |
+| [amazon-quick-acl](amazon-quick-acl/) | Amazon Quick connected to a Bedrock Managed Knowledge Base and embedded in your own application, where document-level ACLs give two signed-in users different answers to the same question. React, Node, CDK. |
 | [unified-search](unified-search/) | Enterprise search and chat over a managed knowledge base with document-level access control, where two authenticated users issuing the same query receive different documents and a third receives nothing. React, NestJS, CDK. |
 
 ## Getting one pattern

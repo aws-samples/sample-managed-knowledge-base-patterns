@@ -1,0 +1,34 @@
+{
+  "name": "infra",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT-0",
+  "description": "CDK app provisioning an Amazon Bedrock Managed Knowledge Base for use as an Amazon Quick knowledge source",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint \"{bin,lib,test,scripts}/**/*.ts\" --max-warnings 0",
+    "test": "vitest run",
+    "cdk": "cdk",
+    "synth": "cdk synth --quiet",
+    "deploy": "cdk deploy --require-approval never --outputs-file ./cdk-outputs.json",
+    "destroy": "cdk destroy",
+    "seed:render": "tsx scripts/render-seed.ts"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.269.0",
+    "cdk-nag": "3.0.2",
+    "constructs": "10.8.1",
+    "dotenv": "17.4.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.4",
+    "aws-cdk": "2.1141.0",
+    "eslint": "10.11.0",
+    "globals": "17.12.0",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.1",
+    "vitest": "5.0.2"
+  }
+}
