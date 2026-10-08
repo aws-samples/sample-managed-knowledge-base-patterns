@@ -52,7 +52,7 @@ const handler = createHarnessHandler(
 
 createServer(handler).listen(config.port, '127.0.0.1', () => {
   console.log(`Embed URL harness listening on http://127.0.0.1:${config.port}`);
-  console.log(`  account: ${config.accountId}   region: ${config.region}`);
+  console.log(`  region: ${config.region}`);
   console.log(`  allowed embed origin: ${config.allowedDomain}`);
   if (config.fixedAgentId) console.log(`  locked to agent: ${config.fixedAgentId}`);
 });
