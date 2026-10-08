@@ -99,7 +99,7 @@ jobs:
   #
   # Known and expected to be red: two moderate `uuid` advisories reached through
   # amazon-quicksight-embedding-sdk. They do not apply to the code path the SDK
-  # uses. See "Known limits and gotchas" in the pattern README.
+  # uses. See "Known limits" in the pattern README.
   audit-moderate:
     name: Dependency audit (moderate and above, advisory)
     runs-on: ubuntu-latest

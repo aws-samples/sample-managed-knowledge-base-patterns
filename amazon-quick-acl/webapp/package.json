@@ -6,7 +6,6 @@
   "type": "module",
   "description": "Minimal React shell hosting an embedded Amazon Quick chat agent backed by a Bedrock managed knowledge base",
   "scripts": {
-    "dev": "concurrently --kill-others --names api,web \"npm:dev:api\" \"npm:dev:web\"",
     "dev:api": "tsx server/index.ts",
     "dev:web": "vite",
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.node.json && vite build",
@@ -26,7 +25,6 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.1",
-    "concurrently": "10.0.5",
     "dotenv": "17.4.2",
     "eslint": "10.11.0",
     "eslint-plugin-react-hooks": "7.1.1",

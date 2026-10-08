@@ -3,11 +3,11 @@
  *
  * Kept free of file system access so the validation rules can be tested directly.
  *
- * On email matching, as observed against a live managed knowledge base: Bedrock compares
- * `userContext.userId` to ACL entries case-insensitively and ignores surrounding
- * whitespace, but does no alias resolution. `you@example.com` and `you+a@example.com`
- * are two distinct identities, so the entries here must name the addresses the users
- * are registered with in Amazon Quick.
+ * On email matching: Bedrock compares `userContext.userId` to ACL entries
+ * case-insensitively and ignores surrounding whitespace, but does no alias resolution.
+ * `martha_rivera@example.com` and `martha_rivera+a@example.com` are two distinct
+ * identities, so the entries here must name the addresses the users are registered with
+ * in Amazon Quick.
  */
 
 export interface AclRenderInput {

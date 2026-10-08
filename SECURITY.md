@@ -26,6 +26,9 @@ A pattern that depends on a specific security property documents it in its own
 understanding it. Read that file before modifying a pattern's authentication or
 authorization behavior.
 
+- [amazon-quick-acl](amazon-quick-acl/SECURITY.md): why the embed harness must
+  never accept a user identity from the request, and how Quick's identity
+  reaches Bedrock's ACL filtering.
 - [unified-search](unified-search/SECURITY.md): why
   `userContext.userId` must come from a verified token, and how to confirm
   what a given user is permitted to read.

@@ -13,8 +13,10 @@ Please do **not** create a public GitHub issue for security vulnerabilities.
 
 Read this before changing anything under `webapp/server/`.
 
-Amazon Bedrock Managed Knowledge Base provides **ACL-aware filtering, not
-authorization**. It does not authenticate end users: the caller passes an
+Amazon Bedrock Managed Knowledge Base applies **ACL-aware filtering** for the
+identity the caller supplies. Per the
+[AWS documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-managed-acl.html),
+authenticating end users is the caller's responsibility: the caller passes an
 identity, and Bedrock filters retrieval results against the ACLs for that
 identity.
 
@@ -59,5 +61,5 @@ code that decides the Quick identity in one small, reviewable place.
 ## Reporting scope
 
 This is a sample intended to be read and adapted, not a supported product.
-Please still report security issues through the process above — a defect copied
-out of a sample propagates.
+Please still report security issues through the process above, because a defect
+copied out of a sample propagates.

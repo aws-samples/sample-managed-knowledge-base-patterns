@@ -1,8 +1,9 @@
 # Amazon Quick + Bedrock Managed Knowledge Base
 
-Deploy an Amazon Bedrock **managed knowledge base**, connect it to **Amazon Quick** as a
-knowledge source, and surface it through Quick's chat agent, either in Quick directly or
-embedded in your own application.
+Deploy an [Amazon Bedrock managed knowledge
+base](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-build-managed.html), connect
+it to **Amazon Quick** as a knowledge source, and surface it through Quick's chat agent,
+either in Quick directly or embedded in your own application.
 
 The headline behavior: **two users query the same knowledge base and get different
 answers**, with no authentication or authorization code in the application. Quick forwards
@@ -16,9 +17,10 @@ configuration](https://docs.aws.amazon.com/quick/latest/userguide/byo-bedrock-kb
 
 What this sample adds is:
 
-- **The failure modes, cataloged.** Nearly every ACL mistake fails closed, which means
-  "no answer" and no error. The sections below say what each mistake looks like, where it
-  shows up, and how to tell it apart from the others.
+- **How to tell what's wrong when a user gets no answer.** ACL filtering fails closed, so
+  a configuration mistake shows up as an empty answer rather than an error. The sections
+  below say what each mistake looks like, where it shows up, and how to tell it apart from
+  the others.
 - **An embed harness** that shows how to put Quick chat inside your own application, and
   where the identity boundary sits when you do.
 - **A CDK stack and a seed corpus** arranged so the ACL behavior is observable in minutes.
@@ -66,10 +68,9 @@ sample provisions the knowledge base and, optionally, a thin front end. Read
 
 ## Cost
 
-There is no always-on compute in the stack, so
-the AWS side is usage-based and driven by the knowledge base: Bedrock ingestion when
-documents are indexed, storage for as long as the knowledge base exists, and retrieval per
-query, all billed to the knowledge base owner. S3 storage for three small documents and
+There is no always-on compute in the stack, so the AWS side is usage-based and driven by
+the knowledge base: Bedrock ingestion when documents are indexed, storage for as long as
+the knowledge base exists, and retrieval per query, all billed to the knowledge base owner. S3 storage for three small documents and
 their access logs is negligible. Connecting a managed knowledge base adds no Quick charge
 ([Quick billing for Bedrock knowledge
 bases](https://docs.aws.amazon.com/quick/latest/userguide/byo-bedrock-kb-billing.html)).
@@ -78,9 +79,8 @@ The standing cost is Amazon Quick, and it depends on whether your account alread
 On an existing Quick account, this sample adds two **Professional** user subscriptions
 (`READER_PRO`) for the demo users. If you sign up for Quick to run it, the account also
 carries a monthly infrastructure fee and your administrator's Admin Pro seat. New Quick
-accounts start with a 30-day free trial that waives subscription and infrastructure fees
-for up to 25 users. See [Amazon Quick pricing](https://aws.amazon.com/quicksuite/pricing/)
-for current rates and trial terms.
+accounts may be eligible for a free trial. See [Amazon Quick
+pricing](https://aws.amazon.com/quicksuite/pricing/) for current rates and trial terms.
 
 Price the usage-based part against your own corpus size and query volume rather than this
 sample's three documents, and remember that Quick subscriptions continue after
@@ -121,12 +121,10 @@ Do these first. None of it is created by the CDK stack.
    > [!IMPORTANT]
    > Use `READER_PRO` (Quick Professional), not `READER`. `READER` is the BI-only
    > Quick Sight Reader, and chat agents and spaces need Professional; see [Quick user
-   > types](https://docs.aws.amazon.com/quick/latest/userguide/user-types.html). Nothing
-   > rejects the wrong role: `RegisterUser` accepts `READER`, and
-   > `GenerateEmbedUrlForRegisteredUser` returns a normal-looking URL for a `READER`
-   > user. The failure only appears when the embedded chat refuses to load. To fix an
-   > existing user, change the role in Manage users, or by CLI (`update-user` requires
-   > the email to be restated):
+   > types](https://docs.aws.amazon.com/quick/latest/userguide/user-types.html).
+   > `RegisterUser` and `GenerateEmbedUrlForRegisteredUser` both accept a `READER` user,
+   > so the problem only appears when the chat loads. To fix an existing user, change the
+   > role in Manage users, or by CLI (`update-user` requires the email to be restated):
    >
    > ```bash
    > aws quicksight update-user --aws-account-id <account> --namespace default \
@@ -139,8 +137,9 @@ Do these first. None of it is created by the CDK stack.
    `--identity-type QUICKSIGHT` creates a Quick-local user with no external identity
    provider. You can also do this in the console under Manage Quick → Manage Users →
    Invite users. Distribution lists are rejected as invitations. If you only have one
-   mailbox, `+` aliasing (`you+a@`, `you+b@`) gives you two users; each `+` address is a
-   separate identity to both Quick and Bedrock.
+   mailbox, `+` aliasing (for example `martha_rivera+a@example.com` and
+   `martha_rivera+b@example.com`) gives you two users; each `+` address is a separate
+   identity to both Quick and Bedrock.
 
    You do **not** need their passwords or to sign in as them for the main demo. The
    optional web app in Phase 4 switches between their identities server-side. Signing in
@@ -261,8 +260,9 @@ produces no error at any later step. See [When a user gets nothing](#when-a-user
 > [!WARNING]
 > **How Bedrock matches the ACL emails.** Bedrock compares the user identity to ACL
 > entries case-insensitively and ignores surrounding whitespace, so `Martha_Rivera@...`
-> matches `martha_rivera@...`. It does **no alias resolution**: `you@example.com` does
-> not match `you+a@example.com`, because a `+` address is a distinct identity.
+> matches `martha_rivera@...`. It does **no alias resolution**:
+> `martha_rivera@example.com` does not match `martha_rivera+a@example.com`, because a `+`
+> address is a distinct identity.
 >
 > With `aclEnabled: true`, a document with **no ACL entry is not ingested at all**.
 > Missing permissions are treated as restricted, not public. Every prefix holding content
@@ -323,10 +323,8 @@ normally. The mistake appears only as empty answers for the user you meant to na
 To check which identities a document is actually readable by, use the Bedrock
 `GetIngestedDocumentAcl` and `CheckIngestedDocumentAcl` operations, both of which have
 console support. They are on the `bedrock-agent-runtime` API and need the data source ID
-(`S3DataSourceId`) as well as the knowledge base ID. Tool support lags the API: boto3
-1.43.102 and `@aws-sdk/client-bedrock-agent-runtime` 3.1140.0 include them, while older
-releases such as boto3 1.43.32 do not. If your CLI or SDK lacks them, upgrade it or use
-the Bedrock console.
+(`S3DataSourceId`) as well as the knowledge base ID. They need a current AWS CLI or SDK;
+if yours doesn't include them, upgrade it or use the Bedrock console.
 
 To put syncs on a recurring schedule afterward, set a sync schedule on the data source
 through the console or `UpdateDataSource`.
@@ -334,8 +332,8 @@ through the console or `UpdateDataSource`.
 ## Phase 3: Connect it to Amazon Quick
 
 This part is Quick-side configuration and cannot be expressed in CDK. Steps 1 and 2 are
-console-only; see [Scripting part of this phase](#scripting-part-of-this-phase) for why,
-and for the steps that can be scripted.
+done in the console; see [Scripting part of this phase](#scripting-part-of-this-phase) for
+the steps that can be scripted.
 
 There are two ways to do steps 1 and 2. Both end in the same place, a Quick knowledge base
 backed by your managed knowledge base, so pick one. Steps 3 and 4 are needed either way.
@@ -435,18 +433,17 @@ base](https://docs.aws.amazon.com/quick/latest/userguide/quick-byo-bedrock-kb.ht
 
 ### Scripting part of this phase
 
-Creating the Quick knowledge base from a Bedrock managed knowledge base is console-only
-today; the API rejects it. Do steps 1 and 2 in the console, using either option above.
+Steps 1 and 2 are done in the console, using either option above.
 
 Steps 3 and 4 can be scripted with the Quick API: `CreateSpace`, `UpdateSpaceResources`
 (resource type `KNOWLEDGE_BASE`), `UpdateSpacePermissions`, and
 `UpdateKnowledgeBasePermissions`. Two things to know before you try:
 
-- **Tool support lags the API.** At the time of writing, the AWS CLI (2.34.40) has none of
-  these operations. The AWS SDK for JavaScript v3 (`@aws-sdk/client-quicksight`) has them;
-  `check:sharing` uses their read-only counterparts.
-- **`UpdateSpacePermissions` error messages.** Check the user's role first, then vary one
-  action at a time.
+- **Use a current AWS CLI or SDK.** The AWS SDK for JavaScript v3
+  (`@aws-sdk/client-quicksight`) includes these operations; `check:sharing` uses their
+  read-only counterparts.
+- **If `UpdateSpacePermissions` fails,** check the user's role first, then vary one action
+  at a time.
 
 ### Verify the ACL behavior
 
@@ -534,14 +531,17 @@ Match the ARNs to the right users by their email addresses. Swapping A and B mak
 look broken in a way that resembles an ACL fault. The remaining variables have working
 defaults; leave `QUICK_FIXED_AGENT_ID` blank so you can select the agent in the embedded UI.
 
-Then start it:
+Then start it. The harness and Vite run in two terminals, both from `webapp/`:
 
 ```bash
-npm run dev               # harness on 127.0.0.1:3001, Vite on :5173
+npm run dev:api           # terminal 1: embed-URL harness on 127.0.0.1:3001
 ```
 
-This runs the harness and Vite together and stops both on Ctrl-C, on every platform. To
-run them separately, use `npm run dev:api` and `npm run dev:web` in two terminals.
+```bash
+npm run dev:web           # terminal 2: Vite on localhost:5173
+```
+
+Stop each with Ctrl-C.
 
 Open `http://localhost:5173`. The page renders a branded shell with an identity switcher,
 so you can watch the same question return different answers as you toggle between the two
@@ -665,7 +665,7 @@ appears in your ACLs. Bedrock ignores case but does no alias resolution, so a co
 authenticated user whose address differs from the ACL entry (a `+` alias, a secondary
 domain) gets a working session that retrieves nothing.
 
-## Known limits and gotchas
+## Known limits
 
 - **Adding a source without a permission model removes filtering for its content.** A
   knowledge base can mix ACL-enabled and non-ACL data sources, and that is supported. But
@@ -678,7 +678,10 @@ domain) gets a working session that retrieves nothing.
 - **S3 ACLs have no real-time verification.** Your ACL file is the source of truth, so
   permission changes take effect at the next sync. Connectors with a live permission
   system (SharePoint, OneDrive, Google Drive, Confluence) do verify per query.
-- **ACL awareness is filtering, not authorization.** Bedrock applies ACL-aware filtering for the identity the application supplies; authenticating the end user is the application's responsibility. It is safe here because Quick authenticates them first; it would not be safe behind an unauthenticated caller.
+- **Bedrock filters on the identity it is given.** Bedrock applies ACL-aware filtering for
+  the identity the application supplies; authenticating the end user is the
+  application's responsibility. Here, Quick authenticates the user before forwarding the
+  identity.
 - **Testing retrieval directly against Bedrock.** If you call `Retrieve` yourself to check
   ACLs without Quick, a managed knowledge base rejects `vectorSearchConfiguration`; use
   `managedSearchConfiguration` instead. Retrieval with no user identity returns nothing
@@ -687,8 +690,8 @@ domain) gets a working session that retrieves nothing.
   `amazon-quicksight-embedding-sdk`, which pins `uuid ^9`. The advisory affects only uuid
   v3/v5/v6 when an explicit buffer is passed; the SDK uses only the v4 random path, so it
   is not applicable. No patched 9.x exists, and `npm audit fix --force` downgrades the SDK
-  to a version predating `embedQuickChat`. CI's blocking audit runs at `high`; the advisory moderate-level job is expected
-  to report this.
+  to a version predating `embedQuickChat`. CI's blocking audit runs at `high`; the
+  advisory moderate-level job is expected to report this.
 - **`cdk-nag` reports two acknowledged findings**, each recorded with a reason: an `IAM5`
   wildcard on `s3:GetObject` in `infra/bin/app.ts` (the knowledge base must be able to
   read any uploaded document; narrowed with an `aws:ResourceAccount` condition), and `S1`
