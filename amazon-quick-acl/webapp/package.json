@@ -1,0 +1,39 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT-0",
+  "type": "module",
+  "description": "Minimal React shell hosting an embedded Amazon Quick chat agent backed by a Bedrock managed knowledge base",
+  "scripts": {
+    "dev:api": "tsx server/index.ts",
+    "dev:web": "vite",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.node.json && vite build",
+    "lint": "eslint \"{src,server,scripts,test}/**/*.{ts,tsx}\" --max-warnings 0",
+    "test": "vitest run",
+    "check:sharing": "tsx scripts/check-sharing.ts"
+  },
+  "dependencies": {
+    "amazon-quicksight-embedding-sdk": "2.11.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-quicksight": "3.1130.0",
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "dotenv": "17.4.2",
+    "eslint": "10.11.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.7",
+    "globals": "17.12.0",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.1",
+    "vite": "8.3.0",
+    "vitest": "5.0.2"
+  }
+}

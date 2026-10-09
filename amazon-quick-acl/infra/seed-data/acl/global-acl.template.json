@@ -1,0 +1,21 @@
+[
+  {
+    "keyPrefix": "s3://__BUCKET_NAME__/shared/",
+    "aclEntries": [
+      { "Name": "__DEMO_USER_A_EMAIL__", "Type": "USER", "Access": "ALLOW" },
+      { "Name": "__DEMO_USER_B_EMAIL__", "Type": "USER", "Access": "ALLOW" }
+    ]
+  },
+  {
+    "keyPrefix": "s3://__BUCKET_NAME__/finance/",
+    "aclEntries": [
+      { "Name": "__DEMO_USER_A_EMAIL__", "Type": "USER", "Access": "ALLOW" }
+    ]
+  },
+  {
+    "keyPrefix": "s3://__BUCKET_NAME__/engineering/",
+    "aclEntries": [
+      { "Name": "__DEMO_USER_B_EMAIL__", "Type": "USER", "Access": "ALLOW" }
+    ]
+  }
+]
