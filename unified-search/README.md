@@ -359,14 +359,6 @@ Two details the command handles for you:
   both operations and tells you whether the document was not ingested or not
   permitted.
 
-### A note on `npm install`
-
-Dependency overrides in the root `package.json` are applied during dependency
-resolution, so adding a package incrementally with `npm install <pkg>` can leave
-an already-locked transitive dependency at its old version. If `npm audit`
-reports something an override should have fixed, delete `node_modules` and
-`package-lock.json` and reinstall.
-
 ## Deployment
 
 CDK deploys the knowledge base, and optionally a Cognito user pool and an AgentCore Memory

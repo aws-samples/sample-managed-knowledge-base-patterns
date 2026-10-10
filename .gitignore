@@ -8,6 +8,7 @@
 # Editor and IDE state
 .idea/
 *.swp
+.agents
 
 # Local environment overrides
 .env
