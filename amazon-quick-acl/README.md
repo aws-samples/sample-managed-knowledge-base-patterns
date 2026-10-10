@@ -686,12 +686,6 @@ domain) gets a working session that retrieves nothing.
   ACLs without Quick, a managed knowledge base rejects `vectorSearchConfiguration`; use
   `managedSearchConfiguration` instead. Retrieval with no user identity returns nothing
   from an ACL-enabled source.
-- **`npm audit` reports two moderate `uuid` advisories**, transitively from
-  `amazon-quicksight-embedding-sdk`, which pins `uuid ^9`. The advisory affects only uuid
-  v3/v5/v6 when an explicit buffer is passed; the SDK uses only the v4 random path, so it
-  is not applicable. No patched 9.x exists, and `npm audit fix --force` downgrades the SDK
-  to a version predating `embedQuickChat`. CI's blocking audit runs at `high`; the
-  advisory moderate-level job is expected to report this.
 - **`cdk-nag` reports two acknowledged findings**, each recorded with a reason: an `IAM5`
   wildcard on `s3:GetObject` in `infra/bin/app.ts` (the knowledge base must be able to
   read any uploaded document; narrowed with an `aws:ResourceAccount` condition), and `S1`
