@@ -1,0 +1,12 @@
+AnyCompany department A business plan (fiscal year 2026)
+
+This document describes the business plan of department A for the current fiscal year.
+
+Plan management code: KINGFISHER-1101
+
+Initiatives
+1. Launch the self-service onboarding portal for new customers. Target: end of Q2. Status: on track.
+2. Migrate the order history database to a managed service. Target: end of Q3. Status: behind schedule because the data validation took longer than planned.
+3. Reduce the average support response time to under four hours. Target: end of Q4. Status: on track.
+
+The plan management code is a fictitious token that identifies this document in tests. It is not related to any real information.

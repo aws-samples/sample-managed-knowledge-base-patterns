@@ -1,0 +1,15 @@
+[project]
+name = "managed-kb-acl-sample"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "boto3>=1.43.118",
+]
+
+[dependency-groups]
+dev = [
+    "boto3-stubs[bedrock-agent-runtime,cloudformation,cognito-idp,secretsmanager]>=1.43.118",
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.17.2",
+]

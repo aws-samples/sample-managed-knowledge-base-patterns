@@ -1,0 +1,29 @@
+{
+  "name": "managed-kb-acl-infra",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT-0",
+  "bin": {
+    "app": "bin/app.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && jest",
+    "cdk": "cdk"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.274.0",
+    "cdk-nag": "^3.0.2",
+    "constructs": "^10.8.1"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.16.20",
+    "@swc/jest": "^0.2.39",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.19.2",
+    "aws-cdk": "^2.1146.1",
+    "jest": "^30.5.2",
+    "tsx": "^4.23.15",
+    "typescript": "~7.0.2"
+  }
+}

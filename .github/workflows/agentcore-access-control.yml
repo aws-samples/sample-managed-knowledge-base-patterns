@@ -1,0 +1,113 @@
+name: agentcore-access-control
+
+# Scoped to one pattern. Patterns share no build system, so each gets its own
+# workflow filtered to its own directory: a change to another pattern must not
+# run this, and a change here must not run theirs. Repository-wide checks that
+# do not care about language live in repo.yml.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agentcore-access-control/**'
+      - '.github/workflows/agentcore-access-control.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'agentcore-access-control/**'
+      - '.github/workflows/agentcore-access-control.yml'
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+defaults:
+  run:
+    working-directory: agentcore-access-control
+
+jobs:
+  verify:
+    name: Lint, type-check, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # `cache-dependency-path` is required because the lockfiles are not at the
+      # repository root. Without it the cache key cannot be computed and the
+      # dependency cache silently does nothing.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            agentcore-access-control/infra/package-lock.json
+            agentcore-access-control/frontend/package-lock.json
+
+      # The Lambda functions, the verification script, and the agent are uv
+      # projects. uv installs the Python version they require.
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+
+      # `uv sync --frozen` and `npm ci` install exactly the committed lockfiles
+      # and fail if a manifest and its lockfile disagree.
+      - name: Install
+        run: make install
+
+      # ruff, mypy --strict, oxlint, and tsc. Blocking, not advisory.
+      - name: Lint
+        run: make lint
+
+      # The infra tests synthesize the stack with cdk-nag AwsSolutionsChecks, so
+      # an unacknowledged finding fails this step. This is the infrastructure
+      # security gate, not just a unit test run.
+      - name: Test
+        run: make test
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [infra, frontend]
+    defaults:
+      run:
+        working-directory: agentcore-access-control/${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: agentcore-access-control/${{ matrix.package }}/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+  # Advisory: a newly published advisory against a transitive dependency should
+  # be visible without blocking an unrelated change. Review when this goes red.
+  audit-moderate:
+    name: Dependency audit (moderate and above, advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [infra, frontend]
+    defaults:
+      run:
+        working-directory: agentcore-access-control/${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: agentcore-access-control/${{ matrix.package }}/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=moderate
