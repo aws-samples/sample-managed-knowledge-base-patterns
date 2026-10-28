@@ -1,22 +1,36 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import * as cdk from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
+import * as iam from "aws-cdk-lib/aws-iam";
 import { AwsSolutionsChecks } from "cdk-nag";
+import { KbMcpGateway } from "../lib/constructs/kb-mcp-gateway";
 import { ManagedKbAclStack } from "../lib/managed-kb-acl-stack";
+
+const CDK_JSON_CONTEXT: Record<string, unknown> = JSON.parse(
+	fs.readFileSync(path.join(__dirname, "..", "cdk.json"), "utf8"),
+).context;
+
+interface StackOptions {
+	enableBypassSimulation?: boolean;
+	allowLocalhostCallback?: boolean;
+	stackName?: string;
+}
 
 interface Synthesized {
 	app: cdk.App;
 	template: Template;
 }
 
-function synthesize(
-	options: {
-		enableBypassSimulation?: boolean;
-		allowLocalhostCallback?: boolean;
-		stackName?: string;
-	} = {},
-): Synthesized {
-	// Skip asset bundling (uv and npm builds) in unit tests.
-	const app = new cdk.App({ context: { "aws:cdk:bundling-stacks": [] } });
+function createStack(options: StackOptions = {}): {
+	app: cdk.App;
+	stack: ManagedKbAclStack;
+} {
+	// Synthesize with the feature flags of cdk.json, which change rendered
+	// values such as ARN partitions, and skip asset bundling (uv and npm builds).
+	const app = new cdk.App({
+		context: { ...CDK_JSON_CONTEXT, "aws:cdk:bundling-stacks": [] },
+	});
 	cdk.Validations.of(app).addPlugins(new AwsSolutionsChecks(app));
 	const stack = new ManagedKbAclStack(app, options.stackName ?? "TestStack", {
 		env: { account: "123456789012", region: "us-east-1" },
@@ -24,6 +38,11 @@ function synthesize(
 		enableBypassSimulation: options.enableBypassSimulation ?? false,
 		allowLocalhostCallback: options.allowLocalhostCallback ?? false,
 	});
+	return { app, stack };
+}
+
+function synthesize(options: StackOptions = {}): Synthesized {
+	const { app, stack } = createStack(options);
 	return { app, template: Template.fromStack(stack) };
 }
 
@@ -206,9 +225,13 @@ describe("default deployment", () => {
 	});
 
 	test("response headers policy name avoids the reserved Managed prefix", () => {
-		const policies = template.findResources("AWS::CloudFront::ResponseHeadersPolicy");
+		const policies = template.findResources(
+			"AWS::CloudFront::ResponseHeadersPolicy",
+		);
 		for (const policy of Object.values(policies)) {
-			expect(policy.Properties.ResponseHeadersPolicyConfig.Name).not.toMatch(/^managed/i);
+			expect(policy.Properties.ResponseHeadersPolicyConfig.Name).not.toMatch(
+				/^managed/i,
+			);
 		}
 	});
 
@@ -265,6 +288,36 @@ describe("bypass simulation", () => {
 	});
 });
 
+describe("cdk-nag wildcard acknowledgements", () => {
+	/** Add a statement to the hardened gateway role and synthesize. */
+	function synthWithGatewayGrant(
+		statement: iam.PolicyStatementProps,
+	): () => void {
+		const { app, stack } = createStack();
+		const gateway = stack.node.findChild("Gateway") as KbMcpGateway;
+		gateway.role.addToPolicy(new iam.PolicyStatement(statement));
+		return () => app.synth();
+	}
+
+	test("reports a wildcard action added to the gateway role", () => {
+		expect(
+			synthWithGatewayGrant({
+				actions: ["bedrock:*", "s3:*"],
+				resources: ["*"],
+			}),
+		).toThrow(/AwsSolutions-IAM5/);
+	});
+
+	test("reports another action granted on every resource to the gateway role", () => {
+		expect(
+			synthWithGatewayGrant({
+				actions: ["bedrock:InvokeModel"],
+				resources: ["*"],
+			}),
+		).toThrow(/AwsSolutions-IAM5/);
+	});
+});
+
 describe("local development", () => {
 	test("adds the localhost callback when allowed", () => {
 		const { template } = synthesize({ allowLocalhostCallback: true });
@@ -287,9 +340,17 @@ describe("resource names", () => {
 
 	test.each([
 		["AWS::BedrockAgentCore::Gateway", "Name", /^([0-9a-zA-Z][-]?){1,48}$/],
-		["AWS::BedrockAgentCore::PolicyEngine", "Name", /^[A-Za-z][A-Za-z0-9_]{0,47}$/],
+		[
+			"AWS::BedrockAgentCore::PolicyEngine",
+			"Name",
+			/^[A-Za-z][A-Za-z0-9_]{0,47}$/,
+		],
 		["AWS::BedrockAgentCore::Policy", "Name", /^[A-Za-z][A-Za-z0-9_]{0,47}$/],
-		["AWS::BedrockAgentCore::Runtime", "AgentRuntimeName", /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/],
+		[
+			"AWS::BedrockAgentCore::Runtime",
+			"AgentRuntimeName",
+			/^[a-zA-Z][a-zA-Z0-9_]{0,47}$/,
+		],
 	])("%s names fit the CloudFormation constraints for long stack names", (type, property, pattern) => {
 		const values = names(type, property);
 		expect(values.length).toBeGreaterThan(0);
