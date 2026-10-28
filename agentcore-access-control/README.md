@@ -179,7 +179,7 @@ The stack deletes the knowledge base, the buckets and their objects, the user po
 
 This sample is for demonstration. The demo users share one generated password, and the web app uses the default CloudFront domain. Review the cdk-nag acknowledgements and your organization's requirements before you adapt it. ACL awareness matches users by exact email, so your identity provider must keep emails unique, verified, and stable.
 
-To report a vulnerability, see [SECURITY.md](../SECURITY.md).
+Read [SECURITY.md](SECURITY.md) before you change the interceptor, the Cedar policies, or the resource-based policy. It lists the security properties that the defenses depend on, and how to report a vulnerability.
 
 ## Contributing
 

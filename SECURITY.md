@@ -26,6 +26,9 @@ A pattern that depends on a specific security property documents it in its own
 understanding it. Read that file before modifying a pattern's authentication or
 authorization behavior.
 
+- [agentcore-access-control](agentcore-access-control/SECURITY.md): why
+  `userContext` must come from the verified access token and never from tool
+  arguments, and which layer checks each step on the way to the knowledge base.
 - [amazon-quick-acl](amazon-quick-acl/SECURITY.md): why the embed harness must
   never accept a user identity from the request, and how Quick's identity
   reaches Bedrock's ACL filtering.
