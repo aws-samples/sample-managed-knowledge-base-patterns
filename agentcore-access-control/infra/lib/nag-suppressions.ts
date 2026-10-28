@@ -224,6 +224,15 @@ export function addNagSuppressions(stack: cdk.Stack, scope: NagScope): void {
 		"AwsSolutions-SMG4",
 		"The secret holds the password of the two demo users. Delete the stack after testing.",
 	);
+	acknowledgeWildcards(scope.identity, {
+		wildcards: [
+			{
+				finding: /^Resource::<IdentitySetDemoUserPassword[0-9A-F]{8}\.Arn>:\*$/,
+				reason:
+					"The custom resource provider framework invokes the versions of the function that sets the demo user password.",
+			},
+		],
+	});
 
 	acknowledgeWildcards(scope.knowledgeBase, {
 		wildcards: [

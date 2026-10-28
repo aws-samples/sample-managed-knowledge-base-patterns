@@ -224,6 +224,27 @@ describe("default deployment", () => {
 		});
 	});
 
+	test("demo user password is read by the function, never passed as a property", () => {
+		const password = Object.values(
+			template.findResources("Custom::DemoUserPassword"),
+		);
+		expect(password).toHaveLength(1);
+		expect(Object.keys(password[0].Properties).sort()).toEqual([
+			"SecretArn",
+			"ServiceToken",
+			"UserPoolId",
+			"Usernames",
+		]);
+		expect(password[0].Properties.SecretArn).toEqual({
+			Ref: logicalId(template, "AWS::SecretsManager::Secret"),
+		});
+		// Neither a response field nor a dynamic reference of the secret value.
+		const rendered = JSON.stringify(template.toJSON());
+		expect(rendered).not.toMatch(/"SecretString"|resolve:secretsmanager/);
+		const sdkCalls = JSON.stringify(template.findResources("Custom::AWS"));
+		expect(sdkCalls).not.toMatch(/GetSecretValue|AdminSetUserPassword/);
+	});
+
 	test("response headers policy name avoids the reserved Managed prefix", () => {
 		const policies = template.findResources(
 			"AWS::CloudFront::ResponseHeadersPolicy",

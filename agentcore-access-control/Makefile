@@ -1,4 +1,4 @@
-PY_PATHS := infra/functions/interceptor:infra/functions/pre_token_generation:scripts
+PY_PATHS := infra/functions/demo_user_password:infra/functions/interceptor:infra/functions/pre_token_generation:scripts
 
 .PHONY: install test lint
 

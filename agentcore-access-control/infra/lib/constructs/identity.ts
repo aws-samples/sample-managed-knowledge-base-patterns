@@ -1,6 +1,7 @@
 import * as path from "node:path";
 import * as cdk from "aws-cdk-lib";
 import * as cognito from "aws-cdk-lib/aws-cognito";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
@@ -124,7 +125,7 @@ export class Identity extends Construct {
 	/**
 	 * Create the demo users with verified emails and one generated password
 	 * stored in AWS Secrets Manager. The password never appears in the
-	 * template or the repository.
+	 * template, the stack events, the logs, or the repository.
 	 */
 	private createDemoUsers(emails: string[]): secretsmanager.Secret {
 		const secret = new secretsmanager.Secret(this, "DemoUserPassword", {
@@ -135,54 +136,65 @@ export class Identity extends Construct {
 				excludeCharacters: "\"'\\`",
 			},
 		});
-		// CloudFormation does not resolve secure dynamic references inside
-		// custom resource properties, so read the secret with an SDK call and
-		// reference the response field. Logging hides the value.
-		const readSecret: cr.AwsSdkCall = {
-			service: "SecretsManager",
-			action: "GetSecretValue",
-			parameters: { SecretId: secret.secretArn },
-			physicalResourceId: cr.PhysicalResourceId.of("demo-user-password"),
-			logging: cr.Logging.withDataHidden(),
-		};
-		const password = new cr.AwsCustomResource(this, "ReadDemoUserPassword", {
-			onCreate: readSecret,
-			onUpdate: readSecret,
-			policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-				resources: [secret.secretArn],
-			}),
-		}).getResponseField("SecretString");
 
-		emails.forEach((email, index) => {
-			const user = new cognito.CfnUserPoolUser(this, `DemoUser${index}`, {
-				userPoolId: this.userPool.userPoolId,
-				username: email,
-				userAttributes: [
-					{ name: "email", value: email },
-					{ name: "email_verified", value: "true" },
-				],
-				messageAction: "SUPPRESS",
-			});
-			const setPassword: cr.AwsSdkCall = {
-				service: "CognitoIdentityServiceProvider",
-				action: "AdminSetUserPassword",
-				parameters: {
-					UserPoolId: this.userPool.userPoolId,
-					Username: email,
-					Password: password,
-					Permanent: true,
-				},
-				physicalResourceId: cr.PhysicalResourceId.of(`demo-user-${index}`),
-				logging: cr.Logging.withDataHidden(),
-			};
-			new cr.AwsCustomResource(this, `DemoUser${index}Password`, {
-				onCreate: setPassword,
-				onUpdate: setPassword,
-				policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-					resources: [this.userPool.userPoolArn],
+		const users = emails.map(
+			(email, index) =>
+				new cognito.CfnUserPoolUser(this, `DemoUser${index}`, {
+					userPoolId: this.userPool.userPoolId,
+					username: email,
+					userAttributes: [
+						{ name: "email", value: email },
+						{ name: "email_verified", value: "true" },
+					],
+					messageAction: "SUPPRESS",
 				}),
-			}).node.addDependency(user);
+		);
+
+		// CloudFormation does not resolve secure dynamic references inside
+		// custom resource properties, and any resolved value would appear in
+		// the stack events and in the provider logs. The function reads the
+		// secret itself, so only its ARN is a property.
+		const setPassword = new lambda.Function(this, "SetDemoUserPassword", {
+			description: "Sets the password of the demo users from the secret",
+			runtime: lambda.Runtime.PYTHON_3_14,
+			architecture: lambda.Architecture.ARM_64,
+			handler: "demo_user_password.handler",
+			code: lambda.Code.fromAsset(
+				path.join(__dirname, "..", "..", "functions", "demo_user_password"),
+				{ exclude: LOCAL_ARTIFACTS },
+			),
+			timeout: cdk.Duration.seconds(30),
+			logGroup: new logs.LogGroup(this, "SetDemoUserPasswordLogs", {
+				retention: logs.RetentionDays.ONE_MONTH,
+				removalPolicy: cdk.RemovalPolicy.DESTROY,
+			}),
 		});
+		secret.grantRead(setPassword);
+		setPassword.addToRolePolicy(
+			new iam.PolicyStatement({
+				actions: ["cognito-idp:AdminSetUserPassword"],
+				resources: [this.userPool.userPoolArn],
+			}),
+		);
+		const provider = new cr.Provider(this, "DemoUserPasswordProvider", {
+			onEventHandler: setPassword,
+			logGroup: new logs.LogGroup(this, "DemoUserPasswordProviderLogs", {
+				retention: logs.RetentionDays.ONE_MONTH,
+				removalPolicy: cdk.RemovalPolicy.DESTROY,
+			}),
+		});
+		const password = new cdk.CustomResource(this, "DemoUserPasswordSetting", {
+			serviceToken: provider.serviceToken,
+			resourceType: "Custom::DemoUserPassword",
+			properties: {
+				SecretArn: secret.secretArn,
+				UserPoolId: this.userPool.userPoolId,
+				Usernames: emails,
+			},
+		});
+		for (const user of users) {
+			password.node.addDependency(user);
+		}
 		return secret;
 	}
 }

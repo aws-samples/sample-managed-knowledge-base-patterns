@@ -32,7 +32,7 @@ The browser sends the user's Cognito access token to AgentCore Runtime, and the 
 ├── infra/                  AWS CDK app (TypeScript)
 │   ├── bin/app.ts
 │   ├── lib/constructs/     Identity, knowledge base, gateway, runtime, hosting, bypass simulation
-│   ├── functions/          Lambda functions: request interceptor, pre token generation
+│   ├── functions/          Lambda functions: request interceptor, pre token generation, demo user password
 │   ├── data/documents/     Sample documents and their ACL metadata
 │   └── test/
 ├── scripts/

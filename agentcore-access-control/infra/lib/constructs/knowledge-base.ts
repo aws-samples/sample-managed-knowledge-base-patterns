@@ -1,6 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import * as bedrock from "aws-cdk-lib/aws-bedrock";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as logs from "aws-cdk-lib/aws-logs";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 import * as cr from "aws-cdk-lib/custom-resources";
@@ -147,6 +148,12 @@ export class KnowledgeBase extends Construct {
 					resources: [this.knowledgeBaseArn],
 				}),
 			]),
+			// Without a log group in the stack, Lambda creates one that
+			// `cdk destroy` leaves behind.
+			logGroup: new logs.LogGroup(this, "StartIngestionLogs", {
+				retention: logs.RetentionDays.ONE_MONTH,
+				removalPolicy: cdk.RemovalPolicy.DESTROY,
+			}),
 		});
 		ingestion.node.addDependency(dataSource);
 	}
