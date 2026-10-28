@@ -3,10 +3,21 @@
 import json
 import sys
 from pathlib import Path
+from typing import Any
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from verify_defenses import Response, contains, parse_messages
+from verify_defenses import (
+    CANARY_A,
+    CANARY_B,
+    USER_B,
+    Response,
+    contains,
+    judge_spoofed_turn,
+    parse_messages,
+)
 
 
 def test_parses_json_bodies() -> None:
@@ -39,3 +50,73 @@ def test_reports_canaries() -> None:
         "KINGFISHER-1101": True,
         "HAWKEAGLE-2202": False,
     }
+
+
+def _stream(*events: dict[str, Any]) -> str:
+    return "".join(f"data: {json.dumps(event)}\n\n" for event in events)
+
+
+SPOOFED_CALL = {
+    "type": "tool_use",
+    "toolUseId": "t1",
+    "name": "kb___Retrieve",
+    "input": {"retrievalQuery": {"text": "plan"}, "userContext": {"userId": USER_B}},
+}
+OWN_RESULT = {
+    "type": "tool_result",
+    "toolUseId": "t1",
+    "status": "success",
+    "text": f"code {CANARY_A}",
+    "sources": [],
+}
+
+
+def test_passes_when_the_spoofed_call_returns_no_user_b_document() -> None:
+    body = _stream(SPOOFED_CALL, OWN_RESULT, {"type": "text", "data": "Not found."})
+
+    passed, _ = judge_spoofed_turn(Response(200, body))
+
+    assert passed is True
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        _stream({"type": "error", "message": "The turn failed"}),
+        _stream({"type": "text", "data": "I cannot search as another user."}),
+        "",
+        _stream(SPOOFED_CALL),
+        _stream(SPOOFED_CALL, {**OWN_RESULT, "status": "error"}),
+        _stream(
+            {**SPOOFED_CALL, "input": {"retrievalQuery": {"text": "plan"}}},
+            OWN_RESULT,
+        ),
+    ],
+    ids=[
+        "error only",
+        "refusal",
+        "empty stream",
+        "no tool result",
+        "tool error",
+        "own identity",
+    ],
+)
+def test_is_inconclusive_without_an_answered_spoofed_call(body: str) -> None:
+    passed, detail = judge_spoofed_turn(Response(200, body))
+
+    assert passed is None
+    assert detail.startswith("inconclusive")
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        Response(200, _stream({"type": "text", "data": f"The code is {CANARY_B}"})),
+        Response(500, ""),
+    ],
+    ids=["user-b code leaked", "runtime failed"],
+)
+def test_fails_on_a_leak_or_a_failed_runtime_call(response: Response) -> None:
+    passed, _ = judge_spoofed_turn(response)
+
+    assert passed is False

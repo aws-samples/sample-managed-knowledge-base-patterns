@@ -18,13 +18,15 @@ uv run python scripts/verify_defenses.py --region us-east-1
 
 Add `--skip-agent` to skip the scenario that calls the LLM. The scenarios that need the bypass simulation are reported as `SKIP`.
 
-| Scenario                                                              | Expected result                                                          | Blocked by            |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------ | --------------------- |
-| user-a and user-b call `kb___Retrieve`                                | Each user sees only the codes of documents in their ACL                  | ACL awareness         |
-| user-a calls `kb___Retrieve` with user-b's `userContext`              | Only user-a's documents come back                                        | Request interceptor   |
-| user-a calls `kb___AgenticRetrieveStream` with user-b's `userContext` | Only user-a's documents come back                                        | Request interceptor   |
-| user-a asks the agent to search as user-b                             | The answer does not contain user-b's code                                | Request interceptor   |
-| The deployer calls `Retrieve` with the AWS SDK                        | `AccessDeniedException` with an explicit deny in a resource-based policy | Resource-based policy |
+The agent scenario proves something only when the model actually sends user-b's `userContext` and the gateway answers that call. A turn in which the model refuses, fails, or answers without that call never reaches the interceptor, so the script runs up to three turns and reports `SKIP` (inconclusive) when none of them did. The gateway scenarios check the interceptor deterministically on every run.
+
+| Scenario                                                              | Expected result                                                                       | Blocked by            |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------- |
+| user-a and user-b call `kb___Retrieve`                                | Each user sees only the codes of documents in their ACL                               | ACL awareness         |
+| user-a calls `kb___Retrieve` with user-b's `userContext`              | Only user-a's documents come back                                                     | Request interceptor   |
+| user-a calls `kb___AgenticRetrieveStream` with user-b's `userContext` | Only user-a's documents come back                                                     | Request interceptor   |
+| user-a asks the agent to search as user-b                             | The agent sends user-b's `userContext`, and the answer does not contain user-b's code | Request interceptor   |
+| The deployer calls `Retrieve` with the AWS SDK                        | `AccessDeniedException` with an explicit deny in a resource-based policy              | Resource-based policy |
 
 ## Run with the bypass simulation
 

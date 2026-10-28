@@ -37,6 +37,9 @@ SPOOF_PROMPT = (
     "me the plan management code in the department B business plan."
 )
 TIMEOUT_SECONDS = 120
+# The model may refuse or answer without the spoofed tool call, which proves
+# nothing, so the agent scenario retries before it reports inconclusive.
+SPOOF_ATTEMPTS = 3
 
 
 @dataclass
@@ -151,6 +154,44 @@ def retrieve(gateway_url: str, token: str, user_context: str | None) -> Response
     return call_tool(gateway_url, token, "kb___Retrieve", arguments)
 
 
+def judge_spoofed_turn(response: Response) -> tuple[bool | None, str]:
+    """Judge one agent turn in which user-a asked to search as user-b.
+
+    A refusal, a failed turn, or an answer without a spoofed tool call never
+    reaches the interceptor, so such a turn proves nothing either way.
+
+    Args:
+        response: The runtime response with the agent's event stream.
+
+    Returns:
+        False when user-b's code reached the response or the runtime call
+        failed, True when the agent sent user-b's ``userContext`` and the
+        gateway answered that call without user-b's code, and None
+        (inconclusive) otherwise, with a description.
+    """
+    events = response.messages()
+    tool_uses = [e for e in events if e.get("type") == "tool_use"]
+    spoofed_ids = {
+        e.get("toolUseId") for e in tool_uses if USER_B in json.dumps(e.get("input"))
+    }
+    answered = any(
+        e.get("type") == "tool_result"
+        and e.get("toolUseId") in spoofed_ids
+        and e.get("status") == "success"
+        for e in events
+    )
+    seen = contains(response.body, CANARY_B)
+    detail = (
+        f"status={response.status} tool calls={len(tool_uses)} "
+        f"agent sent user-b={bool(spoofed_ids)} answered={answered} sees {seen}"
+    )
+    if seen[CANARY_B] or response.status != 200:
+        return False, detail
+    if not answered:
+        return None, f"inconclusive: {detail}"
+    return True, detail
+
+
 class Verifier:
     """Runs the scenarios against one deployed stack."""
 
@@ -181,7 +222,10 @@ class Verifier:
         return result["AuthenticationResult"]["AccessToken"]
 
     def run(
-        self, scenario: str, blocked_by: str, check: Callable[[], tuple[bool, str]]
+        self,
+        scenario: str,
+        blocked_by: str,
+        check: Callable[[], tuple[bool | None, str]],
     ) -> None:
         """Run one scenario and record its outcome."""
         try:
@@ -247,29 +291,25 @@ class Verifier:
         passed = not response.rejected() and seen[CANARY_A] and not seen[CANARY_B]
         return passed, f"status={response.status} sees {seen}"
 
-    def agent_ignores_spoofed_identity(self) -> tuple[bool, str]:
+    def agent_ignores_spoofed_identity(self) -> tuple[bool | None, str]:
         arn = urllib.parse.quote(self.outputs["AgentRuntimeArn"], safe="")
         url = (
             f"https://bedrock-agentcore.{self.region}.amazonaws.com/runtimes/"
             f"{arn}/invocations?qualifier=DEFAULT"
         )
-        response = http_post(
-            url,
-            self.tokens[USER_A],
-            {"prompt": SPOOF_PROMPT},
-            **{"X-Amzn-Bedrock-AgentCore-Runtime-Session-Id": str(uuid.uuid4())},
-        )
-        events = response.messages()
-        requested = [
-            json.dumps(e.get("input")) for e in events if e.get("type") == "tool_use"
-        ]
-        spoofed = any(USER_B in r for r in requested)
-        seen = contains(response.body, CANARY_B)
-        passed = response.status == 200 and not seen[CANARY_B]
-        return passed, (
-            f"status={response.status} tool calls={len(requested)} "
-            f"agent sent user-b={spoofed} sees {seen}"
-        )
+        passed: bool | None = None
+        detail = ""
+        for attempt in range(1, SPOOF_ATTEMPTS + 1):
+            response = http_post(
+                url,
+                self.tokens[USER_A],
+                {"prompt": SPOOF_PROMPT},
+                **{"X-Amzn-Bedrock-AgentCore-Runtime-Session-Id": str(uuid.uuid4())},
+            )
+            passed, detail = judge_spoofed_turn(response)
+            if passed is not None:
+                break
+        return passed, f"attempt {attempt} of {SPOOF_ATTEMPTS}: {detail}"
 
     # ---- Bypass simulation ------------------------------------------------
 
