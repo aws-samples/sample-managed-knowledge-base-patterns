@@ -9,11 +9,14 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import verify_defenses
 from verify_defenses import (
     CANARY_A,
     CANARY_B,
+    USER_A,
     USER_B,
     Response,
+    Verifier,
     contains,
     judge_spoofed_turn,
     parse_messages,
@@ -120,3 +123,65 @@ def test_fails_on_a_leak_or_a_failed_runtime_call(response: Response) -> None:
     passed, _ = judge_spoofed_turn(response)
 
     assert passed is False
+
+
+def _tool_result(text: str, is_error: bool) -> Response:
+    content = [{"type": "text", "text": text}]
+    return Response(
+        200, json.dumps({"result": {"content": content, "isError": is_error}})
+    )
+
+
+MASKED_DENIAL = _tool_result(
+    "InternalServerException - An internal error occurred.", True
+)
+EXPLICIT_DENIAL = _tool_result(
+    "DependencyFailedException - not authorized to perform: bedrock:Retrieve "
+    "with an explicit deny in a resource-based policy",
+    True,
+)
+
+
+@pytest.mark.parametrize(
+    ("bypass", "control", "expected"),
+    [
+        (EXPLICIT_DENIAL, None, True),
+        (MASKED_DENIAL, _tool_result(f"code {CANARY_A}", False), True),
+        (MASKED_DENIAL, MASKED_DENIAL, None),
+        (_tool_result(f"code {CANARY_B}", False), None, False),
+        (_tool_result("no documents", False), None, False),
+    ],
+    ids=[
+        "explicit denial",
+        "masked denial, hardened gateway succeeds",
+        "masked denial, hardened gateway fails",
+        "user-b code leaked",
+        "not rejected",
+    ],
+)
+def test_judges_agentic_search_through_the_gateway_without_controls(
+    monkeypatch: pytest.MonkeyPatch,
+    bypass: Response,
+    control: Response | None,
+    expected: bool | None,
+) -> None:
+    calls: list[str] = []
+
+    def agentic_retrieve(gateway_url: str, token: str, user_context: str) -> Response:
+        calls.append(gateway_url)
+        if gateway_url == "no-controls":
+            return bypass
+        assert control is not None, "unexpected call to the hardened gateway"
+        return control
+
+    monkeypatch.setattr(verify_defenses, "agentic_retrieve", agentic_retrieve)
+    verifier = Verifier.__new__(Verifier)
+    verifier.outputs = {"NoControlsGatewayUrl": "no-controls", "GatewayUrl": "hardened"}
+    verifier.tokens = {USER_A: "token-a"}
+
+    passed, _ = verifier.resource_policy_blocks_other_gateway_agentic()
+
+    assert passed is expected
+    assert calls == (
+        ["no-controls"] if control is None else ["no-controls", "hardened"]
+    )

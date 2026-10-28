@@ -40,6 +40,7 @@ TIMEOUT_SECONDS = 120
 # The model may refuse or answer without the spoofed tool call, which proves
 # nothing, so the agent scenario retries before it reports inconclusive.
 SPOOF_ATTEMPTS = 3
+RESOURCE_POLICY_DENIAL = "explicit deny in a resource-based policy"
 
 
 @dataclass
@@ -154,6 +155,19 @@ def retrieve(gateway_url: str, token: str, user_context: str | None) -> Response
     return call_tool(gateway_url, token, "kb___Retrieve", arguments)
 
 
+def agentic_retrieve(gateway_url: str, token: str, user_context: str) -> Response:
+    """Call the AgenticRetrieveStream tool with a caller supplied userContext."""
+    return call_tool(
+        gateway_url,
+        token,
+        "kb___AgenticRetrieveStream",
+        {
+            "messages": [{"role": "user", "content": {"text": QUERY}}],
+            "userContext": {"userId": user_context},
+        },
+    )
+
+
 def judge_spoofed_turn(response: Response) -> tuple[bool | None, str]:
     """Judge one agent turn in which user-a asked to search as user-b.
 
@@ -190,6 +204,16 @@ def judge_spoofed_turn(response: Response) -> tuple[bool | None, str]:
     if not answered:
         return None, f"inconclusive: {detail}"
     return True, detail
+
+
+def denied_by_resource_policy(
+    error: ClientError, expected_code: str
+) -> tuple[bool, str]:
+    """Return whether the knowledge base resource policy denied an SDK call."""
+    code = error.response.get("Error", {}).get("Code", "")
+    message = error.response.get("Error", {}).get("Message", "")
+    denied = code == expected_code and RESOURCE_POLICY_DENIAL in message
+    return denied, f"{code}: {message[:160]}"
 
 
 class Verifier:
@@ -278,14 +302,8 @@ class Verifier:
         return seen[CANARY_A] and not seen[CANARY_B], f"sees {seen}"
 
     def interceptor_overwrites_agentic(self) -> tuple[bool, str]:
-        response = call_tool(
-            self.outputs["GatewayUrl"],
-            self.tokens[USER_A],
-            "kb___AgenticRetrieveStream",
-            {
-                "messages": [{"role": "user", "content": {"text": QUERY}}],
-                "userContext": {"userId": USER_B},
-            },
+        response = agentic_retrieve(
+            self.outputs["GatewayUrl"], self.tokens[USER_A], USER_B
         )
         seen = contains(response.body, CANARY_A, CANARY_B)
         passed = not response.rejected() and seen[CANARY_A] and not seen[CANARY_B]
@@ -324,17 +342,40 @@ class Verifier:
         response = retrieve(
             self.outputs["PolicyOnlyGatewayUrl"], self.tokens[USER_A], USER_A
         )
-        denied_by_kb = "resource-based policy" in response.body
+        denied_by_kb = RESOURCE_POLICY_DENIAL in response.body
         return response.rejected() and denied_by_kb, summarize(response)
 
     def resource_policy_blocks_other_gateway(self) -> tuple[bool, str]:
         response = retrieve(
             self.outputs["NoControlsGatewayUrl"], self.tokens[USER_A], USER_B
         )
-        seen = contains(response.body, CANARY_B)
-        denied_by_kb = "resource-based policy" in response.body
-        return response.rejected() and denied_by_kb and not seen[CANARY_B], summarize(
-            response
+        return blocked_by_resource_policy(response)
+
+    def resource_policy_blocks_other_gateway_agentic(
+        self,
+    ) -> tuple[bool | None, str]:
+        response = agentic_retrieve(
+            self.outputs["NoControlsGatewayUrl"], self.tokens[USER_A], USER_B
+        )
+        if contains(response.body, CANARY_B)[CANARY_B] or not response.rejected():
+            return False, summarize(response)
+        if RESOURCE_POLICY_DENIAL in response.body:
+            return True, summarize(response)
+        # The gateway reports the denial inside the agentic search as a generic
+        # InternalServerException. The same call through the hardened gateway,
+        # whose role is the only one the resource policy exempts, tells a
+        # denial apart from a failing service.
+        control = agentic_retrieve(
+            self.outputs["GatewayUrl"], self.tokens[USER_A], USER_A
+        )
+        if control.rejected() or not contains(control.body, CANARY_A)[CANARY_A]:
+            return None, (
+                f"inconclusive: {summarize(response)}; the hardened gateway also "
+                f"failed: {summarize(control)}"
+            )
+        return True, (
+            f"{summarize(response)}; the same call through the hardened gateway "
+            "role succeeds"
         )
 
     # ---- Direct API calls with the deployer's credentials -----------------
@@ -348,13 +389,49 @@ class Verifier:
                 userContext={"userId": USER_B},
             )
         except ClientError as error:
-            code = error.response.get("Error", {}).get("Code", "")
-            message = error.response.get("Error", {}).get("Message", "")
-            denied = (
-                code == "AccessDeniedException" and "resource-based policy" in message
-            )
-            return denied, f"{code}: {message[:160]}"
+            return denied_by_resource_policy(error, "AccessDeniedException")
         return False, "Retrieve succeeded"
+
+    def resource_policy_blocks_direct_agentic_retrieve(self) -> tuple[bool, str]:
+        # The resource policy cannot name bedrock:AgenticRetrieveStream. Its
+        # internal search is authorized as bedrock:Retrieve, which the policy
+        # denies, and the denial arrives as an event of the response stream.
+        client = self.session.client("bedrock-agent-runtime")
+        try:
+            response = client.agentic_retrieve_stream(
+                retrievers=[
+                    {
+                        "configuration": {
+                            "knowledgeBase": {
+                                "knowledgeBaseId": self.outputs["KnowledgeBaseId"]
+                            }
+                        }
+                    }
+                ],
+                agenticRetrieveConfiguration={
+                    "foundationModelType": "MANAGED",
+                    "rerankingModelType": "MANAGED",
+                },
+                messages=[{"role": "user", "content": {"text": QUERY}}],
+                generateResponse=False,
+                userContext={"userId": USER_B},
+            )
+            events = [json.dumps(event, default=str) for event in response["stream"]]
+        except ClientError as error:
+            return denied_by_resource_policy(error, "dependencyFailedException")
+        seen = contains("".join(events), CANARY_B)
+        return (
+            False,
+            f"AgenticRetrieveStream returned {len(events)} events, sees {seen}",
+        )
+
+
+def blocked_by_resource_policy(response: Response) -> tuple[bool, str]:
+    """Return whether the knowledge base resource policy rejected a tool call."""
+    seen = contains(response.body, CANARY_B)
+    denied_by_kb = RESOURCE_POLICY_DENIAL in response.body
+    passed = response.rejected() and denied_by_kb and not seen[CANARY_B]
+    return passed, summarize(response)
 
 
 def summarize(response: Response) -> str:
@@ -423,6 +500,11 @@ def main() -> int:
             "Resource-based policy",
             v.resource_policy_blocks_other_gateway,
         ),
+        (
+            "Gateway without interceptor and policy, AgenticRetrieveStream",
+            "Resource-based policy",
+            v.resource_policy_blocks_other_gateway_agentic,
+        ),
     ]
     for scenario, blocked_by, check in simulation:
         if "PolicyOnlyGatewayUrl" in v.outputs:
@@ -433,6 +515,11 @@ def main() -> int:
         "Deployer calls Retrieve directly with the SDK",
         "Resource-based policy",
         v.resource_policy_blocks_direct_retrieve,
+    )
+    v.run(
+        "Deployer calls AgenticRetrieveStream directly with the SDK",
+        "Resource-based policy",
+        v.resource_policy_blocks_direct_agentic_retrieve,
     )
 
     labels = {True: "PASS", False: "FAIL", None: "SKIP"}
