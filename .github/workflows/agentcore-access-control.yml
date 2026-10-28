@@ -89,6 +89,29 @@ jobs:
       - name: Dependency audit
         run: npm audit --audit-level=high
 
+  # The code that runs in the account (the agent, the Lambda functions, and the
+  # verification script) is locked by uv, not npm. pip-audit has no severity
+  # threshold, so any advisory blocks; accept one with --ignore-vuln.
+  audit-python:
+    name: Python dependency audit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ['.', agent]
+    defaults:
+      run:
+        working-directory: agentcore-access-control/${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+
+      - name: Dependency audit
+        run: |
+          uv export --frozen --all-groups --no-emit-project --format requirements-txt --output-file "$RUNNER_TEMP/requirements.txt"
+          uvx pip-audit@2.10.0 --disable-pip --no-deps --vulnerability-service osv -r "$RUNNER_TEMP/requirements.txt"
+
   # Advisory: a newly published advisory against a transitive dependency should
   # be visible without blocking an unrelated change. Review when this goes red.
   audit-moderate:
