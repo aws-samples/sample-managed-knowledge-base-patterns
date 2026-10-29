@@ -147,6 +147,36 @@ def test_rejects_non_object_params() -> None:
     assert _error(result)["error"]["message"] == "Invalid tools/call params"
 
 
+SPOOFED_CALL = {
+    "jsonrpc": "2.0",
+    "id": 7,
+    "method": "tools/call",
+    "params": {
+        "name": "kb___Retrieve",
+        "arguments": {"userContext": {"userId": "user-b@example.com"}},
+    },
+}
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        [SPOOFED_CALL],
+        [SPOOFED_CALL, {**SPOOFED_CALL, "id": 8}],
+        json.dumps(SPOOFED_CALL),
+        42,
+    ],
+    ids=["batch of one", "batch of two", "JSON string", "number"],
+)
+def test_rejects_bodies_that_are_not_a_json_object(body: Any) -> None:
+    result = interceptor.handler(_event(body, _auth()), None)
+
+    error = _error(result)
+    assert error["id"] is None
+    assert error["error"]["message"] == "Request body must be a JSON object"
+    assert "user-b@example.com" not in json.dumps(result)
+
+
 @pytest.mark.parametrize("method", ["initialize", "tools/list", "ping"])
 def test_passes_other_methods_through_unchanged(method: str) -> None:
     body = {"jsonrpc": "2.0", "id": 1, "method": method, "params": {}}

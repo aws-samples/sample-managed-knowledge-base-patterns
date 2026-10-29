@@ -8,8 +8,9 @@ overwrites ``arguments.userContext`` of every ``tools/call`` request. Whatever
 the MCP client or the LLM put in ``userContext`` never reaches the knowledge
 base.
 
-Requests that cannot be attributed to a verified email are rejected with a
-JSON-RPC error (fail closed). AgentCore Policy evaluates the transformed
+Requests that cannot be attributed to a verified email, and request bodies
+that are not a single JSON object, are rejected with a JSON-RPC error (fail
+closed). AgentCore Policy evaluates the transformed
 request afterwards and denies it if ``userContext.userId`` still differs from
 the token's ``email`` claim.
 """
@@ -39,7 +40,13 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """
     gateway_request = event.get("mcp", {}).get("gatewayRequest", {})
     body = gateway_request.get("body") or {}
-    if not (isinstance(body, dict) and body.get("method") == "tools/call"):
+    if not isinstance(body, dict):
+        # A JSON-RPC batch (a list) or a JSON string can carry a tools/call
+        # that the checks below never see, so reject it instead of passing it
+        # through. MCP 2025-06-18 removed batching.
+        logger.warning("Rejected request: body is a %s", type(body).__name__)
+        return _error_response("Request body must be a JSON object", {})
+    if body.get("method") != "tools/call":
         return _pass_through(body)
 
     # The JWT authorizer already verified the token, so decoding is enough.

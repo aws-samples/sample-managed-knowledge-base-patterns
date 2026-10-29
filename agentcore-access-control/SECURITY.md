@@ -22,7 +22,7 @@ Amazon Bedrock Managed Knowledge Base provides ACL-aware filtering for the ident
 
 ## Failure behavior worth knowing
 
-Every layer fails closed. The interceptor rejects a `tools/call` without a verified email claim with a JSON-RPC error. AgentCore Policy permits a call only when `userContext.userId` is present and equals the claim. ACL-aware retrieval omits a document when ACL evaluation fails or its ACL metadata is missing. The resource-based policy is an explicit deny, which overrides identity-based allows in the same account.
+Every layer fails closed. The interceptor rejects a `tools/call` without a verified email claim with a JSON-RPC error, and it rejects any request body that is not a single JSON object, such as a JSON-RPC batch, because the overwrite would not see a `tools/call` inside it. AgentCore Policy permits a call only when `userContext.userId` is present and equals the claim. ACL-aware retrieval omits a document when ACL evaluation fails or its ACL metadata is missing. The resource-based policy is an explicit deny, which overrides identity-based allows in the same account.
 
 A misconfiguration therefore presents as fewer results or an access denied error rather than as a leak, so confirm each layer instead of inferring it from the absence of errors. `scripts/verify_defenses.py` checks each defense against the path it targets. See [docs/verification.md](docs/verification.md).
 
