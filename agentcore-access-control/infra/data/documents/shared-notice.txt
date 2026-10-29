@@ -1,0 +1,10 @@
+AnyCompany notice to all departments
+
+This notice is shared with every department.
+
+Notice code: FALCON-3303
+
+1. The annual security awareness training is due by the end of Q2. Every employee must complete it.
+2. Business plan progress reviews take place in the first week of each quarter. Each department presents the status of its initiatives.
+
+The notice code is a fictitious token that identifies this document in tests. It is not related to any real information.

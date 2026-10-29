@@ -1,0 +1,33 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Node.js
+node_modules/
+npm-debug.log*
+dist/
+coverage/
+
+# CDK
+cdk.out/
+cdk.context.json
+outputs.json
+infra/**/*.js
+infra/**/*.d.ts
+!infra/jest.config.js
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Local environment
+.env
+.env.*
+!.env.example
+frontend/public/config.json

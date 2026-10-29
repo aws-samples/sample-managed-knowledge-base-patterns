@@ -1,0 +1,12 @@
+AnyCompany department B business plan (fiscal year 2026)
+
+This document describes the business plan of department B for the current fiscal year.
+
+Plan management code: HAWKEAGLE-2202
+
+Initiatives
+1. Open a new distribution center in the northern region. Target: end of Q2. Status: behind schedule because of a permit delay.
+2. Renew the contracts with the three largest suppliers. Target: end of Q3. Status: on track.
+3. Introduce demand forecasting for seasonal products. Target: end of Q4. Status: not started.
+
+The plan management code is a fictitious token that identifies this document in tests. It is not related to any real information.
