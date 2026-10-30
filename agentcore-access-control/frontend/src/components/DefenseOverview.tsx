@@ -25,7 +25,7 @@ const LAYERS = [
 		title: "Resource-based policy",
 		layer: "Resource layer, secondary defense",
 		description:
-			"The knowledge base denies Retrieve to every principal except the execution role of this gateway.",
+			"The knowledge base denies Retrieve and GetDocumentContent to every principal except the execution role of this gateway.",
 	},
 ];
 
