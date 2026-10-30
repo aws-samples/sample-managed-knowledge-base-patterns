@@ -51,3 +51,27 @@ export function addAutoDeleteObjectsLogGroup(stack: cdk.Stack): void {
 	});
 	handler.addPropertyOverride("LoggingConfig.LogGroup", logGroup.logGroupName);
 }
+
+/**
+ * Delete every log group of the stack only after every IAM role. Custom
+ * resources invoke their functions while the stack is being deleted, and
+ * Lambda delivers the log events a few seconds later. If the log group is
+ * gone by then, Lambda creates it again with the function's role. Once the
+ * role is deleted, a late log event can no longer recreate the log group.
+ */
+export function deleteLogGroupsAfterRoles(stack: cdk.Stack): void {
+	const resources = stack.node
+		.findAll()
+		.filter((node) => node instanceof cdk.CfnResource);
+	const logGroups = resources.filter(
+		(resource) => resource.cfnResourceType === "AWS::Logs::LogGroup",
+	);
+	const roles = resources.filter(
+		(resource) => resource.cfnResourceType === "AWS::IAM::Role",
+	);
+	for (const role of roles) {
+		for (const logGroup of logGroups) {
+			role.addResourceDependency(logGroup);
+		}
+	}
+}

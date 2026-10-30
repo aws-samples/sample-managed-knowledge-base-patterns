@@ -400,4 +400,14 @@ describe("log groups", () => {
 			);
 		}
 	});
+
+	test("log groups are deleted after every role, so no function can recreate them", () => {
+		const roles = template.findResources("AWS::IAM::Role");
+		expect(Object.keys(roles).length).toBeGreaterThan(0);
+		for (const role of Object.values(roles)) {
+			expect(role.DependsOn).toEqual(
+				expect.arrayContaining(Object.keys(logGroups)),
+			);
+		}
+	});
 });

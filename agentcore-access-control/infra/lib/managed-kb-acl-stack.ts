@@ -7,7 +7,10 @@ import { FrontendHosting } from "./constructs/frontend-hosting";
 import { Identity } from "./constructs/identity";
 import { KbMcpGateway } from "./constructs/kb-mcp-gateway";
 import { KnowledgeBase } from "./constructs/knowledge-base";
-import { addAutoDeleteObjectsLogGroup } from "./log-groups";
+import {
+	addAutoDeleteObjectsLogGroup,
+	deleteLogGroupsAfterRoles,
+} from "./log-groups";
 import { addNagSuppressions } from "./nag-suppressions";
 
 export interface ManagedKbAclStackProps extends cdk.StackProps {
@@ -138,6 +141,7 @@ export class ManagedKbAclStack extends cdk.Stack {
 		}
 
 		addAutoDeleteObjectsLogGroup(this);
+		deleteLogGroupsAfterRoles(this);
 
 		addNagSuppressions(this, {
 			hosting,
