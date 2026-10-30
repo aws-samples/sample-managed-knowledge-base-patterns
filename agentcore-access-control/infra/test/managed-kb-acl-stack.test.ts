@@ -410,4 +410,22 @@ describe("log groups", () => {
 			);
 		}
 	});
+
+	test("the application log group of the runtime is deleted with the stack", () => {
+		const runtimeId = logicalId(template, "AWS::BedrockAgentCore::Runtime");
+		template.hasResourceProperties("Custom::AWS", {
+			Delete: {
+				"Fn::Join": [
+					"",
+					[
+						Match.stringLikeRegexp(
+							'"action":"deleteLogGroup".*"logGroupName":"/aws/bedrock-agentcore/runtimes/$',
+						),
+						{ "Fn::GetAtt": [runtimeId, "AgentRuntimeId"] },
+						Match.stringLikeRegexp('^-DEFAULT"'),
+					],
+				],
+			},
+		});
+	});
 });

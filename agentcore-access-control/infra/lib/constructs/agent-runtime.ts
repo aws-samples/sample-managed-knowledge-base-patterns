@@ -1,7 +1,9 @@
 import * as cdk from "aws-cdk-lib";
 import * as agentcore from "aws-cdk-lib/aws-bedrockagentcore";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as cr from "aws-cdk-lib/custom-resources";
 import { Construct } from "constructs";
+import { awsCustomResourceLogGroup } from "../log-groups";
 import { agentCodeBundling } from "./bundling";
 import { JwtAuthorizerConfig } from "./kb-mcp-gateway";
 
@@ -59,6 +61,30 @@ export class AgentRuntime extends Construct {
 		// Binding is idempotent; doing it now adds the code asset read grant
 		// before aspects (cdk-nag acknowledgements) inspect the role policy.
 		artifact.bind(this.runtime, this.runtime);
+
+		// The runtime creates the log group for the agent's stdout itself when
+		// it is created, so the stack cannot own it. Delete it with the stack.
+		const { region, account } = cdk.Stack.of(this);
+		new cr.AwsCustomResource(this, "DeleteApplicationLogs", {
+			onDelete: {
+				service: "CloudWatchLogs",
+				action: "deleteLogGroup",
+				parameters: {
+					logGroupName: this.runtime.applicationLogGroup.logGroupName,
+				},
+				ignoreErrorCodesMatching: "ResourceNotFoundException",
+			},
+			policy: cr.AwsCustomResourcePolicy.fromStatements([
+				new iam.PolicyStatement({
+					actions: ["logs:DeleteLogGroup"],
+					// The runtime ID is the runtime name with a generated suffix.
+					resources: [
+						`arn:aws:logs:${region}:${account}:log-group:/aws/bedrock-agentcore/runtimes/${props.runtimeName}-*`,
+					],
+				}),
+			]),
+			logGroup: awsCustomResourceLogGroup(this),
+		});
 
 		this.runtime.addToRolePolicy(
 			new iam.PolicyStatement({
