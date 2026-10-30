@@ -2,7 +2,7 @@
 
 This sample shows how to let an AI agent search a shared Amazon Bedrock Managed Knowledge Base through Amazon Bedrock AgentCore Gateway while each user can retrieve only the documents they are allowed to view. The LLM never decides who the user is. Trusted code derives the user from the verified access token, and independent layers stop requests when that code fails or is bypassed.
 
-The sample is the companion code of the AWS blog post "Fine-grained access control for Bedrock Managed Knowledge Base as MCP tools". It deploys a web app, a Strands agent on AgentCore Runtime, and every defense described in the post.
+The sample is the companion code of the AWS blog post "Fine-grained access control for Amazon Bedrock Managed Knowledge Base tools". It deploys a web app, a Strands agent on AgentCore Runtime, and every defense described in the post.
 
 ![Architecture](docs/images/architecture.png)
 
