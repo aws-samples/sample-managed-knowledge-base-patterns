@@ -380,3 +380,52 @@ describe("resource names", () => {
 		}
 	});
 });
+
+describe("log groups", () => {
+	const { template } = synthesize({ enableBypassSimulation: true });
+	const logGroups = template.findResources("AWS::Logs::LogGroup");
+
+	test("every log group is deleted with the stack", () => {
+		for (const logGroup of Object.values(logGroups)) {
+			expect(logGroup.DeletionPolicy).toBe("Delete");
+		}
+	});
+
+	test("every Lambda function logs to a log group of the stack", () => {
+		const functions = template.findResources("AWS::Lambda::Function");
+		expect(Object.keys(functions).length).toBeGreaterThan(0);
+		for (const fn of Object.values(functions)) {
+			expect(Object.keys(logGroups)).toContain(
+				fn.Properties.LoggingConfig?.LogGroup?.Ref,
+			);
+		}
+	});
+
+	test("log groups are deleted after every role, so no function can recreate them", () => {
+		const roles = template.findResources("AWS::IAM::Role");
+		expect(Object.keys(roles).length).toBeGreaterThan(0);
+		for (const role of Object.values(roles)) {
+			expect(role.DependsOn).toEqual(
+				expect.arrayContaining(Object.keys(logGroups)),
+			);
+		}
+	});
+
+	test("the application log group of the runtime is deleted with the stack", () => {
+		const runtimeId = logicalId(template, "AWS::BedrockAgentCore::Runtime");
+		template.hasResourceProperties("Custom::AWS", {
+			Delete: {
+				"Fn::Join": [
+					"",
+					[
+						Match.stringLikeRegexp(
+							'"action":"deleteLogGroup".*"logGroupName":"/aws/bedrock-agentcore/runtimes/$',
+						),
+						{ "Fn::GetAtt": [runtimeId, "AgentRuntimeId"] },
+						Match.stringLikeRegexp('^-DEFAULT"'),
+					],
+				],
+			},
+		});
+	});
+});

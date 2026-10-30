@@ -301,6 +301,12 @@ export function addNagSuppressions(stack: cdk.Stack, scope: NagScope): void {
 				reason:
 					"Cross-Region inference can route to the foundation model in any Region.",
 			},
+			{
+				finding:
+					/^Resource::arn:aws:logs:[^:]+:[^:]+:log-group:\/aws\/bedrock-agentcore\/runtimes\/[a-z0-9]+_agent-\*$/,
+				reason:
+					"The runtime ID has a generated suffix, so the log group cleanup matches the runtime name prefix.",
+			},
 		],
 		anyResource: {
 			actions: [
