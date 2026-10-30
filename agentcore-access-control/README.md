@@ -173,7 +173,7 @@ cd infra
 npx cdk destroy
 ```
 
-The stack deletes the knowledge base, the buckets and their objects, the user pool, and the demo password secret.
+The stack deletes the knowledge base, the buckets and their objects, the user pool, the demo password secret, and the CloudWatch Logs log groups of every Lambda function and of the agent runtime.
 
 ## Security
 
