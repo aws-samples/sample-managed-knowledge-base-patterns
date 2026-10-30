@@ -4,6 +4,7 @@ import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
+import { bucketDeploymentLogGroup } from "../log-groups";
 import { viteAppBundling } from "./bundling";
 
 export interface FrontendHostingProps {
@@ -112,6 +113,7 @@ export class FrontendHosting extends Construct {
 			cacheControl: [s3deploy.CacheControl.noCache()],
 			distribution: this.distribution,
 			distributionPaths: ["/*"],
+			logGroup: bucketDeploymentLogGroup(this),
 		});
 	}
 }

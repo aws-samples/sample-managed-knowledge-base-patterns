@@ -380,3 +380,24 @@ describe("resource names", () => {
 		}
 	});
 });
+
+describe("log groups", () => {
+	const { template } = synthesize({ enableBypassSimulation: true });
+	const logGroups = template.findResources("AWS::Logs::LogGroup");
+
+	test("every log group is deleted with the stack", () => {
+		for (const logGroup of Object.values(logGroups)) {
+			expect(logGroup.DeletionPolicy).toBe("Delete");
+		}
+	});
+
+	test("every Lambda function logs to a log group of the stack", () => {
+		const functions = template.findResources("AWS::Lambda::Function");
+		expect(Object.keys(functions).length).toBeGreaterThan(0);
+		for (const fn of Object.values(functions)) {
+			expect(Object.keys(logGroups)).toContain(
+				fn.Properties.LoggingConfig?.LogGroup?.Ref,
+			);
+		}
+	});
+});
