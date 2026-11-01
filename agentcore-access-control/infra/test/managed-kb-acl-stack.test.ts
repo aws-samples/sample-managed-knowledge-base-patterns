@@ -380,3 +380,85 @@ describe("resource names", () => {
 		}
 	});
 });
+
+describe("log groups", () => {
+	const { template } = synthesize({ enableBypassSimulation: true });
+	const logGroups = template.findResources("AWS::Logs::LogGroup");
+
+	test("every log group is deleted with the stack", () => {
+		for (const logGroup of Object.values(logGroups)) {
+			expect(logGroup.DeletionPolicy).toBe("Delete");
+		}
+	});
+
+	test("every log group keeps its events for 30 days", () => {
+		expect(Object.keys(logGroups).length).toBeGreaterThan(0);
+		for (const logGroup of Object.values(logGroups)) {
+			expect(logGroup.Properties.RetentionInDays).toBe(30);
+		}
+	});
+
+	test("every Lambda function logs to a log group of the stack", () => {
+		const functions = template.findResources("AWS::Lambda::Function");
+		expect(Object.keys(functions).length).toBeGreaterThan(0);
+		for (const fn of Object.values(functions)) {
+			expect(Object.keys(logGroups)).toContain(
+				fn.Properties.LoggingConfig?.LogGroup?.Ref,
+			);
+		}
+	});
+
+	test("log groups are deleted after every role, so no function can recreate them", () => {
+		const roles = template.findResources("AWS::IAM::Role");
+		expect(Object.keys(roles).length).toBeGreaterThan(0);
+		for (const role of Object.values(roles)) {
+			expect(role.DependsOn).toEqual(
+				expect.arrayContaining(Object.keys(logGroups)),
+			);
+		}
+	});
+
+	test("the application log group of the runtime is deleted with the stack", () => {
+		const runtimeId = logicalId(template, "AWS::BedrockAgentCore::Runtime");
+		template.hasResourceProperties("Custom::AWS", {
+			Delete: {
+				"Fn::Join": [
+					"",
+					[
+						Match.stringLikeRegexp(
+							'"action":"deleteLogGroup".*"logGroupName":"/aws/bedrock-agentcore/runtimes/$',
+						),
+						{ "Fn::GetAtt": [runtimeId, "AgentRuntimeId"] },
+						// A missing log group must not fail the stack deletion.
+						Match.stringLikeRegexp(
+							'^-DEFAULT"\\},"ignoreErrorCodesMatching":"ResourceNotFoundException"',
+						),
+					],
+				],
+			},
+		});
+	});
+
+	test("the log group cleanup can delete only the application log group of the runtime", () => {
+		const runtimeId = logicalId(template, "AWS::BedrockAgentCore::Runtime");
+		const policies = template.findResources("AWS::IAM::Policy");
+		const resources = Object.values(policies)
+			.flatMap((policy) => policy.Properties.PolicyDocument.Statement)
+			.filter((statement) =>
+				[statement.Action].flat().includes("logs:DeleteLogGroup"),
+			)
+			.map((statement) => statement.Resource);
+		expect(resources).toEqual([
+			{
+				"Fn::Join": [
+					"",
+					[
+						"arn:aws:logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/",
+						{ "Fn::GetAtt": [runtimeId, "AgentRuntimeId"] },
+						"-DEFAULT:*",
+					],
+				],
+			},
+		]);
+	});
+});
