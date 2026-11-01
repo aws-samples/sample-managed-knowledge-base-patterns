@@ -64,7 +64,6 @@ export class AgentRuntime extends Construct {
 
 		// The runtime creates the log group for the agent's stdout itself when
 		// it is created, so the stack cannot own it. Delete it with the stack.
-		const { region, account } = cdk.Stack.of(this);
 		new cr.AwsCustomResource(this, "DeleteApplicationLogs", {
 			onDelete: {
 				service: "CloudWatchLogs",
@@ -77,10 +76,7 @@ export class AgentRuntime extends Construct {
 			policy: cr.AwsCustomResourcePolicy.fromStatements([
 				new iam.PolicyStatement({
 					actions: ["logs:DeleteLogGroup"],
-					// The runtime ID is the runtime name with a generated suffix.
-					resources: [
-						`arn:aws:logs:${region}:${account}:log-group:/aws/bedrock-agentcore/runtimes/${props.runtimeName}-*`,
-					],
+					resources: [this.runtime.applicationLogGroup.logGroupArn],
 				}),
 			]),
 			logGroup: awsCustomResourceLogGroup(this),

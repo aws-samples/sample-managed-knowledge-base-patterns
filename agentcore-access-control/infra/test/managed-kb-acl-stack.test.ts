@@ -428,4 +428,27 @@ describe("log groups", () => {
 			},
 		});
 	});
+
+	test("the log group cleanup can delete only the application log group of the runtime", () => {
+		const runtimeId = logicalId(template, "AWS::BedrockAgentCore::Runtime");
+		const policies = template.findResources("AWS::IAM::Policy");
+		const resources = Object.values(policies)
+			.flatMap((policy) => policy.Properties.PolicyDocument.Statement)
+			.filter((statement) =>
+				[statement.Action].flat().includes("logs:DeleteLogGroup"),
+			)
+			.map((statement) => statement.Resource);
+		expect(resources).toEqual([
+			{
+				"Fn::Join": [
+					"",
+					[
+						"arn:aws:logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/",
+						{ "Fn::GetAtt": [runtimeId, "AgentRuntimeId"] },
+						"-DEFAULT:*",
+					],
+				],
+			},
+		]);
+	});
 });

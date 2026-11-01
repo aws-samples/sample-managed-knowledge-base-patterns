@@ -303,9 +303,9 @@ export function addNagSuppressions(stack: cdk.Stack, scope: NagScope): void {
 			},
 			{
 				finding:
-					/^Resource::arn:aws:logs:[^:]+:[^:]+:log-group:\/aws\/bedrock-agentcore\/runtimes\/[a-z0-9]+_agent-\*$/,
+					/^Resource::arn:[^:]+:logs:[^:]+:[^:]+:log-group:\/aws\/bedrock-agentcore\/runtimes\/<AgentRuntime[0-9A-F]{8}\.AgentRuntimeId>-DEFAULT:\*$/,
 				reason:
-					"The runtime ID has a generated suffix, so the log group cleanup matches the runtime name prefix.",
+					"The log group cleanup names only the runtime log group. Its ARN ends in :*, the form that CloudWatch Logs uses in IAM policies.",
 			},
 		],
 		anyResource: {
