@@ -391,6 +391,13 @@ describe("log groups", () => {
 		}
 	});
 
+	test("every log group keeps its events for 30 days", () => {
+		expect(Object.keys(logGroups).length).toBeGreaterThan(0);
+		for (const logGroup of Object.values(logGroups)) {
+			expect(logGroup.Properties.RetentionInDays).toBe(30);
+		}
+	});
+
 	test("every Lambda function logs to a log group of the stack", () => {
 		const functions = template.findResources("AWS::Lambda::Function");
 		expect(Object.keys(functions).length).toBeGreaterThan(0);
@@ -422,7 +429,10 @@ describe("log groups", () => {
 							'"action":"deleteLogGroup".*"logGroupName":"/aws/bedrock-agentcore/runtimes/$',
 						),
 						{ "Fn::GetAtt": [runtimeId, "AgentRuntimeId"] },
-						Match.stringLikeRegexp('^-DEFAULT"'),
+						// A missing log group must not fail the stack deletion.
+						Match.stringLikeRegexp(
+							'^-DEFAULT"\\},"ignoreErrorCodesMatching":"ResourceNotFoundException"',
+						),
 					],
 				],
 			},
