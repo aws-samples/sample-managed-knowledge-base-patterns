@@ -1,0 +1,28 @@
+{
+  "name": "@retrieval-instructions/typescript",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT-0",
+  "description": "The ri-sample commands in TypeScript: retrieval instructions, release pins, and AgenticRetrieveStream requests",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings 0",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-agent": "3.1155.0",
+    "@aws-sdk/client-bedrock-agent-runtime": "3.1155.0",
+    "@aws-sdk/client-cloudformation": "3.1155.0",
+    "@aws-sdk/client-cloudtrail": "3.1155.0",
+    "@aws-sdk/client-sts": "3.1155.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.4",
+    "eslint": "10.11.0",
+    "globals": "17.12.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.1",
+    "vitest": "5.0.2"
+  }
+}
