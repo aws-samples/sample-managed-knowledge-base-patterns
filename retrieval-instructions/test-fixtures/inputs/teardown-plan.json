@@ -7,7 +7,8 @@
       "versions": [
         "1"
       ],
-      "action": "delete"
+      "action": "delete",
+      "reason": null
     },
     {
       "name": "assistant-team-support",
@@ -16,19 +17,22 @@
         "2",
         "1"
       ],
-      "action": "delete"
+      "action": "delete",
+      "reason": null
     },
     {
       "name": "assistant-sales-region-central",
       "id": "klmno12345",
       "versions": null,
-      "action": "already deleted"
+      "action": "already deleted",
+      "reason": null
     },
     {
       "name": "assistant-structured-json",
       "id": "pqrst67890",
-      "versions": [],
-      "action": "skip (not tagged app=retrieval-instructions-sample)"
+      "versions": null,
+      "action": "skip",
+      "reason": "not tagged app=retrieval-instructions-sample"
     }
   ]
 }
