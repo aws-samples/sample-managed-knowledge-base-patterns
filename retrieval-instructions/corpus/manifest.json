@@ -1,0 +1,308 @@
+{
+  "note": "Synthetic AnyCompany Smart Home corpus. AnyCompany is a fictitious company. Each <file>.md.metadata.json must equal its entry's region, audience_team, and sensitivity; infra/test/corpus.test.ts checks this.",
+  "asOf": "2026-10-01",
+  "docs": [
+    {
+      "docId": "MT-D01",
+      "path": "docs/global/global-warranty-policy-v3-0.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": [
+        "regional warranty addenda replace the term"
+      ]
+    },
+    {
+      "docId": "MT-D02",
+      "path": "docs/global/global-returns-policy-v2-0.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": [
+        "regional returns addenda replace window and fee"
+      ]
+    },
+    {
+      "docId": "MT-D03",
+      "path": "docs/global/global-support-contacts.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D04",
+      "path": "docs/global/product-overview-anysmartproduct-5-and-6.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D05",
+      "path": "docs/global/public-price-list-2026.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D06",
+      "path": "docs/global/firmware-release-notes-public-5x.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D07",
+      "path": "docs/global/faq-general.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D08",
+      "path": "docs/global/holiday-return-extension-2026.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D09",
+      "path": "docs/global/reconditioned-units-policy.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": [
+        "distractor: different warranty and return window for reconditioned units"
+      ]
+    },
+    {
+      "docId": "MT-D10",
+      "path": "docs/global/returns-policy-2024-archived.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": [
+        "superseded 2024 return window"
+      ]
+    },
+    {
+      "docId": "MT-D11",
+      "path": "docs/global/data-retention-notice-lc104-v2-0.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D12",
+      "path": "docs/global/data-retention-notice-lc104-v1-0-superseded.md",
+      "scope": "global",
+      "region": "global",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": [
+        "superseded retention period; shares the 36-month literal with the Sales Region Central warranty term"
+      ]
+    },
+    {
+      "docId": "MT-D13",
+      "path": "docs/sales-region-north/north-warranty-addendum.md",
+      "scope": "sales-region-north",
+      "region": "sales-region-north",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D14",
+      "path": "docs/sales-region-north/north-returns-addendum.md",
+      "scope": "sales-region-north",
+      "region": "sales-region-north",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D15",
+      "path": "docs/sales-region-north/north-local-support-and-conventions.md",
+      "scope": "sales-region-north",
+      "region": "sales-region-north",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D16",
+      "path": "docs/sales-region-central/central-warranty-addendum.md",
+      "scope": "sales-region-central",
+      "region": "sales-region-central",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D17",
+      "path": "docs/sales-region-central/central-returns-addendum.md",
+      "scope": "sales-region-central",
+      "region": "sales-region-central",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D18",
+      "path": "docs/sales-region-central/central-local-support-and-conventions.md",
+      "scope": "sales-region-central",
+      "region": "sales-region-central",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D19",
+      "path": "docs/sales-region-south/south-warranty-addendum.md",
+      "scope": "sales-region-south",
+      "region": "sales-region-south",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D20",
+      "path": "docs/sales-region-south/south-returns-addendum.md",
+      "scope": "sales-region-south",
+      "region": "sales-region-south",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D21",
+      "path": "docs/sales-region-south/south-local-support-and-conventions.md",
+      "scope": "sales-region-south",
+      "region": "sales-region-south",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D22",
+      "path": "docs/sales-region-south/south-purchase-evidence-requirements.md",
+      "scope": "sales-region-south",
+      "region": "sales-region-south",
+      "audience_team": "all",
+      "sensitivity": "public",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D23",
+      "path": "docs/team-support/support-ticket-playbook.md",
+      "scope": "team-support",
+      "region": "global",
+      "audience_team": "team-support",
+      "sensitivity": "internal",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D24",
+      "path": "docs/team-support/support-escalation-matrix.md",
+      "scope": "team-support",
+      "region": "global",
+      "audience_team": "team-support",
+      "sensitivity": "internal",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D25",
+      "path": "docs/team-support/support-macro-library.md",
+      "scope": "team-support",
+      "region": "global",
+      "audience_team": "team-support",
+      "sensitivity": "internal",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D26",
+      "path": "docs/team-field-sales/field-sales-discount-tiers-2026.md",
+      "scope": "team-field-sales",
+      "region": "global",
+      "audience_team": "team-field-sales",
+      "sensitivity": "internal",
+      "conflicts": [
+        "Sales Region South cap lowers the tier"
+      ]
+    },
+    {
+      "docId": "MT-D27",
+      "path": "docs/team-field-sales/field-sales-deal-desk-process.md",
+      "scope": "team-field-sales",
+      "region": "global",
+      "audience_team": "team-field-sales",
+      "sensitivity": "internal",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D28",
+      "path": "docs/team-field-sales/field-sales-south-discount-cap.md",
+      "scope": "team-field-sales",
+      "region": "sales-region-south",
+      "audience_team": "team-field-sales",
+      "sensitivity": "internal",
+      "conflicts": [
+        "caps the global tier for Sales Region South"
+      ]
+    },
+    {
+      "docId": "MT-D29",
+      "path": "docs/team-legal-compliance/legal-central-consumer-terms-lc212.md",
+      "scope": "team-legal-compliance",
+      "region": "sales-region-central",
+      "audience_team": "team-legal-compliance",
+      "sensitivity": "internal",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D30",
+      "path": "docs/team-legal-compliance/legal-hold-procedure-lh09.md",
+      "scope": "team-legal-compliance",
+      "region": "global",
+      "audience_team": "team-legal-compliance",
+      "sensitivity": "internal",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D31",
+      "path": "docs/team-engineering/eng-known-issue-ki-4471.md",
+      "scope": "team-engineering",
+      "region": "global",
+      "audience_team": "team-engineering",
+      "sensitivity": "restricted",
+      "conflicts": []
+    },
+    {
+      "docId": "MT-D32",
+      "path": "docs/team-engineering/eng-firmware-diagnostics-internal.md",
+      "scope": "team-engineering",
+      "region": "global",
+      "audience_team": "team-engineering",
+      "sensitivity": "restricted",
+      "conflicts": []
+    }
+  ]
+}
