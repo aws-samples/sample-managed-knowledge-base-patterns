@@ -1,0 +1,7 @@
+Teardown plan (nothing is deleted without --yes):
+  name                            id          versions  action
+  assistant-sales-region-north    abcde12345  1         delete
+  assistant-team-support          fghij67890  2, 1      delete
+  assistant-sales-region-central  klmno12345  -         already deleted
+  assistant-structured-json       pqrst67890  none      skip (not tagged app=retrieval-instructions-sample)
+Run teardown --yes to delete 2 instructions and their versions.

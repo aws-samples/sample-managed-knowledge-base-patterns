@@ -1,0 +1,8 @@
+Tenant: none
+Instruction: none
+Applied: none
+Filter: none
+Message:
+  How many days do I have to return an opened AnySmartProduct-5?
+Answer:
+The return window depends on where you bought the unit. Under the global returns policy you have 30 days from the delivery date, and Sales Region North allows 40 days.

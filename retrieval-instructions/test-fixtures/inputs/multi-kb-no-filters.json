@@ -1,0 +1,11 @@
+{
+  "command": "multi-kb",
+  "stream": "multi-kb-no-filters.json",
+  "instruction": "assistant-sales-region-south",
+  "version": "1",
+  "sharedKnowledgeBaseId": "ABCDE12345",
+  "southKnowledgeBaseId": "FGHIJ67890",
+  "sharedFilter": null,
+  "southFilter": null,
+  "question": "How many days do I have to return an unopened AnySmartProduct-6?"
+}

@@ -1,0 +1,10 @@
+Tenant: sales-region-central
+Instruction: assistant-sales-region-central version 1
+Applied: klmno12345 version 1
+Filter: audience_team = all; region in (global, sales-region-central)
+Message:
+  Customer sales region: Sales Region Central.
+  How many days do I have to return an opened AnySmartProduct-5?
+Answer:
+Si compró su AnySmartProduct-5 en la Región de Ventas Central, tiene 45 días desde la fecha de entrega para devolverlo. Las unidades abiertas tienen una tarifa de reposición de 12,00 USD.
+Source: central-returns-addendum.md

@@ -1,0 +1,23 @@
+{
+  "command": "support-v2",
+  "name": "assistant-team-support",
+  "id": "fghij67890",
+  "version": "2",
+  "change": "answerFormat gains a final line 'Ticket ref: pending' after the 'Next action:' line; every other field is unchanged.",
+  "rows": [
+    {
+      "key": "sales-region-north",
+      "name": "assistant-sales-region-north",
+      "latestVersion": "1",
+      "live": "1",
+      "canary": null
+    },
+    {
+      "key": "team-support",
+      "name": "assistant-team-support",
+      "latestVersion": "2",
+      "live": "1",
+      "canary": null
+    }
+  ]
+}

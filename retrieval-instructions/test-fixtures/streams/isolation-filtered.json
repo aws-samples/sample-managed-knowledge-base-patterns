@@ -1,0 +1,146 @@
+[
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "SpeculativeRetrieval",
+        "status": "SUCCEEDED",
+        "message": "Speculative retrieval completed successfully",
+        "retrievalResponse": [
+          {
+            "content": {
+              "text": "Units bought in Sales Region North can be returned within 40 days."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/sales-region-north/north-returns-addendum.md",
+              "_document_title": "north-returns-addendum.md",
+              "region": "sales-region-north",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          },
+          {
+            "content": {
+              "text": "A customer can return a unit within 30 days of the delivery date."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/global/global-returns-policy-v2-0.md",
+              "_document_title": "global-returns-policy-v2-0.md",
+              "region": "global",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Planning",
+        "status": "IN_PROGRESS",
+        "message": "Agent planning started",
+        "appliedInstruction": {
+          "id": "abcde12345",
+          "version": "1"
+        }
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Retrieval",
+        "status": "SUCCEEDED",
+        "message": "Retrieval completed successfully",
+        "retrievalResponse": [
+          {
+            "content": {
+              "text": "Opened units carry a restocking fee of $15.00."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/sales-region-north/north-returns-addendum.md",
+              "_document_title": "north-returns-addendum.md",
+              "region": "sales-region-north",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          },
+          {
+            "content": {
+              "text": "Units bought from 2026-11-15 to 2026-12-31 can be returned until 2027-01-15."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/global/holiday-return-extension-2026.md",
+              "_document_title": "holiday-return-extension-2026.md",
+              "region": "global",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Planning",
+        "status": "SUCCEEDED",
+        "message": "Agent planning completed",
+        "appliedInstruction": {
+          "id": "abcde12345",
+          "version": "1"
+        }
+      }
+    }
+  },
+  {
+    "result": {
+      "results": [
+        {
+          "content": {
+            "text": "Units bought in Sales Region North can be returned within 40 days."
+          },
+          "metadata": {
+            "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/sales-region-north/north-returns-addendum.md",
+            "_document_title": "north-returns-addendum.md",
+            "region": "sales-region-north",
+            "audience_team": "all",
+            "sensitivity": "public"
+          },
+          "sourceRetriever": {
+            "identifier": "ABCDE12345"
+          }
+        },
+        {
+          "content": {
+            "text": "A customer can return a unit within 30 days of the delivery date."
+          },
+          "metadata": {
+            "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/global/global-returns-policy-v2-0.md",
+            "_document_title": "global-returns-policy-v2-0.md",
+            "region": "global",
+            "audience_team": "all",
+            "sensitivity": "public"
+          },
+          "sourceRetriever": {
+            "identifier": "ABCDE12345"
+          }
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,174 @@
+[
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "SpeculativeRetrieval",
+        "status": "IN_PROGRESS",
+        "message": "Starting speculative retrieval for query: How many days do I have to return an opened AnySmartProduct-5?",
+        "retrievalMetadata": [
+          {
+            "identifier": "ABCDE12345",
+            "retrievalType": "BedrockKnowledgeBase"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "SpeculativeRetrieval",
+        "status": "SUCCEEDED",
+        "message": "Speculative retrieval completed successfully",
+        "retrievalResponse": [
+          {
+            "content": {
+              "text": "Units bought in Sales Region Central can be returned within 45 days."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/sales-region-central/central-returns-addendum.md",
+              "_document_title": "central-returns-addendum.md",
+              "region": "sales-region-central",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          },
+          {
+            "content": {
+              "text": "A customer can return a unit within 30 days of the delivery date."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/global/global-returns-policy-v2-0.md",
+              "_document_title": "global-returns-policy-v2-0.md",
+              "region": "global",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Planning",
+        "status": "IN_PROGRESS",
+        "message": "Agent planning started (devolución)",
+        "appliedInstruction": {
+          "id": "klmno12345",
+          "version": "1"
+        }
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Retrieval",
+        "status": "IN_PROGRESS",
+        "message": "Starting retrieval for query: Sales Region Central return window",
+        "retrievalMetadata": [
+          {
+            "identifier": "ABCDE12345",
+            "retrievalType": "BedrockKnowledgeBase"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Retrieval",
+        "status": "SUCCEEDED",
+        "message": "Retrieval completed successfully",
+        "retrievalResponse": [
+          {
+            "content": {
+              "text": "Opened units carry a restocking fee of $12.00."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/sales-region-central/central-returns-addendum.md",
+              "_document_title": "central-returns-addendum.md",
+              "region": "sales-region-central",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          },
+          {
+            "content": {
+              "text": "Sales Region Central support contacts."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/sales-region-central/central-local-support-and-conventions.md",
+              "_document_title": "central-local-support-and-conventions.md",
+              "region": "sales-region-central",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Planning",
+        "status": "SUCCEEDED",
+        "message": "Agent planning completed",
+        "appliedInstruction": {
+          "id": "klmno12345",
+          "version": "1"
+        }
+      }
+    }
+  },
+  {
+    "responseEvent": {
+      "text": "Si compró su AnySmartProduct-5 en la Región de Ventas Central, "
+    }
+  },
+  {
+    "responseEvent": {
+      "text": "tiene 45 días desde la fecha de entrega para devolverlo."
+    }
+  },
+  {
+    "result": {
+      "results": [
+        {
+          "content": {
+            "text": "Units bought in Sales Region Central can be returned within 45 days."
+          },
+          "metadata": {
+            "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/sales-region-central/central-returns-addendum.md",
+            "_document_title": "central-returns-addendum.md",
+            "region": "sales-region-central",
+            "audience_team": "all",
+            "sensitivity": "public"
+          },
+          "sourceRetriever": {
+            "identifier": "ABCDE12345"
+          }
+        }
+      ],
+      "generatedResponse": {
+        "answer": "Si compró su AnySmartProduct-5 en la Región de Ventas Central, tiene 45 días desde la fecha de entrega para devolverlo. Las unidades abiertas tienen una tarifa de reposición de 12,00 USD.\nSource: central-returns-addendum.md"
+      }
+    }
+  }
+]

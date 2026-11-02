@@ -1,0 +1,9 @@
+{
+  "command": "cloudtrail",
+  "state": "state.json",
+  "since": 60,
+  "pages": [
+    "page-1.json",
+    "page-2.json"
+  ]
+}

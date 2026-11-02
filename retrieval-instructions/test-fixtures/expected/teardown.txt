@@ -1,0 +1,5 @@
+assistant-sales-region-north deleted (versions 1)
+assistant-team-support deleted (versions 2, 1)
+assistant-sales-region-central already deleted
+assistant-structured-json skipped (not tagged app=retrieval-instructions-sample)
+Deleted 2 instructions. Removed sample-state.json.

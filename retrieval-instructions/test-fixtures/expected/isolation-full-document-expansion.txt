@@ -1,0 +1,21 @@
+Tenant: sales-region-north
+Question: What is the return window, and is there a known issue with the AnySmartProduct-5 firmware?
+
+Without the tenant filter:
+  step                  document                     scope                 entitled
+  SpeculativeRetrieval  north-returns-addendum.md    sales-region-north    yes
+  SpeculativeRetrieval  central-returns-addendum.md  sales-region-central  no
+  SpeculativeRetrieval  south-returns-addendum.md    sales-region-south    no
+  Retrieval             north-returns-addendum.md    sales-region-north    yes
+  Retrieval             eng-known-issue-ki-4471.md   team-engineering      no
+  Retrieval             support-ticket-playbook.md   team-support          no
+  result                north-returns-addendum.md    sales-region-north    yes
+  result                eng-known-issue-ki-4471.md   team-engineering      no
+  Outside the tenant's entitlement: 4 of 5 documents
+
+With the tenant filter:
+  step                   document                   scope               entitled
+  FullDocumentExpansion  north-returns-addendum.md  sales-region-north  yes
+  FullDocumentExpansion  unknown                    unknown             unknown
+  Outside the tenant's entitlement: 1 of 2 documents
+Result: FAIL (the filtered request retrieved 1 document the tenant isn't entitled to or that couldn't be identified)

@@ -1,0 +1,6 @@
+{
+  "command": "release-route",
+  "state": "state.json",
+  "tenant": "team-support",
+  "requests": 10
+}

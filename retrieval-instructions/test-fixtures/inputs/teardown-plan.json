@@ -1,0 +1,34 @@
+{
+  "command": "teardown-plan",
+  "candidates": [
+    {
+      "name": "assistant-sales-region-north",
+      "id": "abcde12345",
+      "versions": [
+        "1"
+      ],
+      "action": "delete"
+    },
+    {
+      "name": "assistant-team-support",
+      "id": "fghij67890",
+      "versions": [
+        "2",
+        "1"
+      ],
+      "action": "delete"
+    },
+    {
+      "name": "assistant-sales-region-central",
+      "id": "klmno12345",
+      "versions": null,
+      "action": "already deleted"
+    },
+    {
+      "name": "assistant-structured-json",
+      "id": "pqrst67890",
+      "versions": [],
+      "action": "skip (not tagged app=retrieval-instructions-sample)"
+    }
+  ]
+}

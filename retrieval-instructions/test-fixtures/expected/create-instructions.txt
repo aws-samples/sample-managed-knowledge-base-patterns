@@ -1,0 +1,11 @@
+Region: us-east-1
+Retrieval instructions in this account and Region: 12 of 50 before this run, 4 to create
+  key                    name                             id          result             versions  live
+  sales-region-north     assistant-sales-region-north     abcde12345  created            1         1
+  sales-region-central   assistant-sales-region-central   klmno12345  created            1         1
+  sales-region-south     assistant-sales-region-south     uvwxy12345  created            1         1
+  team-support           assistant-team-support           fghij67890  already created    1, 2      1
+  team-field-sales       assistant-team-field-sales       bcdef23456  created            1         1
+  team-legal-compliance  assistant-team-legal-compliance  cdefg34567  recovered          1         1
+  structured-json        assistant-structured-json        pqrst67890  versions recorded  1         1
+Retrieval instructions in this account and Region: 16 of 50 after this run

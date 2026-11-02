@@ -1,0 +1,9 @@
+Tenant: sales-region-central
+Instruction: none
+Applied: none
+Filter: audience_team = all; region in (global, sales-region-central)
+Message:
+  Customer sales region: Sales Region Central.
+  How many days do I have to return an opened AnySmartProduct-5?
+Answer:
+You can return an opened AnySmartProduct-5 bought in Sales Region Central within 45 days of the delivery date. A restocking fee of $12.00 applies.

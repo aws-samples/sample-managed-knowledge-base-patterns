@@ -1,0 +1,12 @@
+Tenant: team-support
+Instruction: assistant-team-support version 2 (routed by the release configuration, request 0)
+Applied: fghij67890 version 2
+Filter: audience_team in (all, team-support)
+Message:
+  What is the return window for an opened AnySmartProduct-5?
+Answer:
+Ticket note:
+- Return window depends on the sales region of purchase; the question names none.
+- Global base policy: 30 days from the delivery date, $10.00 restocking fee for opened units.
+Next action: Confirm the customer's sales region of purchase before quoting the return window.
+Ticket ref: pending
