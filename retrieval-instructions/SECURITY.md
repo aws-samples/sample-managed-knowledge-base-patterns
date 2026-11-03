@@ -49,15 +49,26 @@ The optional tenant roles use tag conditions on retrieval instructions:
   statement requires its tenant in both `aws:RequestTag/tenant` and
   `aws:ResourceTag/tenant`, which stops it from retagging another tenant's instruction
   into its own scope.
-- **The platform admin's scope**, which is the `app=retrieval-instructions-sample` tag.
-  A tenant admin can't take its own instruction out of that scope: the
-  `KeepSampleAppTag` deny refuses a `TagResource` that sets `app` to another value, and
-  no role has `bedrock:UntagResource`.
+- **The platform admin's scope**, which is every retrieval instruction in the account
+  and Region that has a `tenant` tag, the one tag the post's create snippet sets. It can
+  create an instruction only with a `tenant` tag, tag an instruction only when the
+  instruction and the request both carry one, and read, update, and version only
+  instructions that have one. In an account that other applications share, their
+  instructions with a `tenant` tag are in this scope too. To narrow it, add a condition
+  on a second tag that only your instructions carry, such as
+  `app=retrieval-instructions-sample`: `aws:RequestTag/app` on the create statement, and
+  `aws:ResourceTag/app` on the tag and manage statements.
+- **The `app` tag on the sample's instructions.** The tenant admin can create an
+  instruction only with `app=retrieval-instructions-sample`, and the `KeepSampleAppTag`
+  deny refuses a `TagResource` that sets `app` to another value. No role has
+  `bedrock:UntagResource`, so the tag stays. `teardown` deletes only instructions with
+  that tag, and a platform admin that you narrow with it keeps every tenant admin's
+  instructions in scope.
 
-`verify-abac` checks the apply, retag, and `app` denials and the platform admin's read.
-It doesn't check the tenant admin's create path (its `aws:RequestTag/app` condition),
-because a create would use quota. That path follows the structure described in
-[DESIGN.md](DESIGN.md#iam).
+`verify-abac` checks the apply, retag, and `app` denials and the platform admin's read
+of another tenant's instruction. It doesn't check a create by either admin, because a
+create would use quota. [DESIGN.md](DESIGN.md#iam) compares these statements with the
+structure that was tested against the service.
 
 What the conditions don't cover:
 

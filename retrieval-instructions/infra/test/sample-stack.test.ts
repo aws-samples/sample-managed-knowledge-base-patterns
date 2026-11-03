@@ -373,33 +373,35 @@ describe('tenant roles', () => {
     ]);
   });
 
-  it('scopes the platform admin to the sample tag', () => {
+  it('scopes the platform admin to instructions with a tenant tag, and to no other tag', () => {
     expect(inlineStatements(withRoles, platformAdminId)).toEqual([
       {
-        Sid: 'CreateOnlyAppAndTenantTagged',
+        Sid: 'CreateOnlyTenantTagged',
         Effect: 'Allow',
         Action: 'bedrock:CreateRetrievalInstruction',
         Resource: INSTRUCTIONS,
+        Condition: { Null: { 'aws:RequestTag/tenant': 'false' } },
+      },
+      {
+        Sid: 'TagOnlyWhenRequestAndResourceAreTenantTagged',
+        Effect: 'Allow',
+        Action: 'bedrock:TagResource',
+        Resource: INSTRUCTIONS,
         Condition: {
-          StringEquals: { 'aws:RequestTag/app': 'retrieval-instructions-sample' },
-          Null: { 'aws:RequestTag/tenant': 'false' },
+          Null: { 'aws:RequestTag/tenant': 'false', 'aws:ResourceTag/tenant': 'false' },
         },
       },
       {
-        Sid: 'ManageAppInstructions',
+        Sid: 'ManageTenantTagged',
         Effect: 'Allow',
         Action: [
           'bedrock:CreateRetrievalInstructionVersion',
           'bedrock:GetRetrievalInstruction',
           'bedrock:ListRetrievalInstructionVersions',
-          'bedrock:TagResource',
           'bedrock:UpdateRetrievalInstruction',
         ],
         Resource: INSTRUCTIONS,
-        Condition: {
-          StringEquals: { 'aws:ResourceTag/app': 'retrieval-instructions-sample' },
-          Null: { 'aws:ResourceTag/tenant': 'false' },
-        },
+        Condition: { Null: { 'aws:ResourceTag/tenant': 'false' } },
       },
       {
         Sid: 'ListCannotBeTagScoped',

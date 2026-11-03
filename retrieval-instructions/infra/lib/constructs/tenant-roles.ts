@@ -124,8 +124,9 @@ export class TenantRoles extends Construct {
             }),
             // TagOnlyWhenRequestAndResourceAreOwnTenant constrains only the tenant key.
             // This deny keeps the sample tag, so every instruction stays in the
-            // platform admin's scope and the teardown guard's. Null ... false requires
-            // the key, because StringNotEquals alone is also true when it is absent.
+            // teardown guard's scope, and in the platform admin's if you narrow that
+            // role with the sample tag (SECURITY.md). Null ... false requires the key,
+            // because StringNotEquals alone is also true when it is absent.
             new iam.PolicyStatement({
               sid: 'KeepSampleAppTag',
               effect: iam.Effect.DENY,

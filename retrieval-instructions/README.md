@@ -78,8 +78,9 @@ With `--combined`, they create 4 more. Everything the sample creates carries the
 Optional parts. None of them is needed for the core walkthrough:
 
 - **Tenant roles.** An applier role and a tenant admin role for one tenant, plus a
-  platform admin role. Created only when you deploy with `-c trustedPrincipalArn=...`.
-  See [Check the tenant roles](#check-the-tenant-roles-optional).
+  platform admin role that manages every instruction with a `tenant` tag. Created only
+  when you deploy with `-c trustedPrincipalArn=...`. See
+  [Check the tenant roles](#check-the-tenant-roles-optional).
 - **The Sales Region South knowledge base.** On by default, and only the `multi-kb`
   step uses it. Deploy with `-c southKnowledgeBase=false` to leave it out.
 - **Combined instructions** for a region and team pair, with
@@ -782,6 +783,11 @@ them creates an instruction:
 3. The tenant admin retags another tenant's instruction into its own scope (denied).
 4. The tenant admin changes the `app` tag on its own instruction (denied).
 5. The platform admin reads another tenant's instruction (allowed).
+
+The platform admin manages every retrieval instruction in the account and Region that
+has a `tenant` tag, including one created as the post shows, with only that tag. In an
+account that other applications share, narrow it with another tag, as
+[SECURITY.md](SECURITY.md#what-the-iam-tag-conditions-cover) describes.
 
 Two notes:
 
