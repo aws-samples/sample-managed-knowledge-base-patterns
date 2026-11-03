@@ -43,8 +43,8 @@ authenticated tenant:
 4. It calls `AgenticRetrieveStream` on the shared knowledge base with all three.
 
 Optional AWS Identity and Access Management (IAM) roles show how tag conditions limit
-which instruction a tenant role can apply. The trace and AWS CloudTrail record which
-instruction version answered.
+which instruction a tenant role can apply. The trace shows which instruction version
+answered, and AWS CloudTrail can record the calls.
 
 A retrieval instruction changes how an answer is written. It isn't an authorization or
 data-isolation boundary: the filter is what keeps a tenant to its own documents. See
@@ -490,9 +490,10 @@ Source: central-returns-addendum.md
 `--trace` prints the first `Planning` trace event, whose `appliedInstruction` holds the
 ID and version that answered. Every `ask` also checks it against the requested version.
 
-Each apply also creates a `GetRetrievalInstruction` management event in CloudTrail event
-history, invoked by `bedrock.amazonaws.com` under your session, with the version when
-one is pinned. Events take a few minutes to appear:
+CloudTrail event history can also show the `GetRetrievalInstruction` call that Amazon
+Bedrock makes for each apply, as a management event invoked by `bedrock.amazonaws.com`
+under your session. The event can include the version, when the request pins one.
+Events can take a few minutes to appear:
 
 ```bash
 uv run ri-sample cloudtrail --since 60 --wait

@@ -1,9 +1,9 @@
 """Which tenant instruction and version Amazon Bedrock read, from CloudTrail event history.
 
 When a request applies a retrieval instruction, Amazon Bedrock calls GetRetrievalInstruction on the caller's
-behalf. Event history records that management event with `invokedBy: bedrock.amazonaws.com`, the
-instruction ID, and the version (none for DRAFT). AgenticRetrieveStream is a data event, which event
-history doesn't hold; a trail records it only after you enable data events.
+behalf. Event history can show that management event with `invokedBy: bedrock.amazonaws.com`, the
+instruction ID, and the version (none for DRAFT), as it did when the sample was tested. AgenticRetrieveStream
+is a data event, which event history doesn't hold; a trail records it only after you enable data events.
 """
 
 from __future__ import annotations
