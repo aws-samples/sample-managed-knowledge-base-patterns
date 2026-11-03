@@ -152,6 +152,6 @@ describe('parity with test-fixtures/expected', () => {
       .map((f) => f.slice(0, -'.json'.length))
       .sort();
     expect(inputs).toEqual(CASES);
-    expect(CASES).toHaveLength(20);
+    expect(CASES).toHaveLength(21);
   });
 });

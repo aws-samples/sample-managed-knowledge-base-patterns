@@ -1,12 +1,11 @@
 /**
- * Strict validation of the structured JSON reply that instructions/structured-json.json asks for.
+ * Validation of the structured JSON reply that instructions/structured-json.json asks for.
  *
- * The reply must be exactly one JSON object with the keys answer, sources, confidence,
- * followUpQuestion, and outOfScope. A reply wrapped in one markdown code fence is reported as
- * `fenced`: readable, but not strict.
+ * The answerFormat asks for exactly one JSON object and nothing else, with exactly the keys
+ * answer, sources, confidence, followUpQuestion, and outOfScope. It doesn't specify their values,
+ * so neither does this check. A reply wrapped in one markdown code fence is reported as `fenced`:
+ * readable, but not strict.
  */
-
-import { pyJsonDumps } from './output';
 
 export const ANSWER_KEYS = [
   'answer',
@@ -15,12 +14,11 @@ export const ANSWER_KEYS = [
   'followUpQuestion',
   'outOfScope',
 ] as const;
-export const CONFIDENCE_VALUES = ['high', 'medium', 'low'];
 const FENCE = /^\s*```[a-zA-Z]*[ \t]*\r?\n([\s\S]*?)\r?\n?```\s*$/;
 
 export interface Validation {
   parseClass: string; // strict, fenced, prose-wrapped, unparseable, or empty
-  strictValid: boolean; // the whole reply is the JSON object and every schema rule holds
+  strictValid: boolean; // the whole reply is one JSON object with exactly the five keys
   lenientValid: boolean; // as strict, but one code fence around the object is tolerated
   errors: string[];
   value: Record<string, unknown> | null; // the parsed object when lenientValid
@@ -33,7 +31,7 @@ function kind(value: unknown): string {
   return typeof value;
 }
 
-/** Everything wrong with a parsed reply. An empty list means it matches the schema. */
+/** Everything wrong with a parsed reply. An empty list means an object with exactly the five keys. */
 export function schemaErrors(value: unknown): string[] {
   if (kind(value) !== 'object') return [`top level is ${kind(value)}, expected object`];
   const obj = value as Record<string, unknown>;
@@ -46,32 +44,6 @@ export function schemaErrors(value: unknown): string[] {
       .filter((key) => !allowed.includes(key))
       .map((key) => `extra key ${key}`),
   );
-  if ('answer' in obj && !(typeof obj.answer === 'string' && obj.answer.trim())) {
-    errors.push('answer must be a non-empty string');
-  }
-  if ('sources' in obj) {
-    if (!Array.isArray(obj.sources)) errors.push('sources must be an array');
-    else if (!obj.sources.every((source) => typeof source === 'string')) {
-      errors.push('sources must contain only strings');
-    }
-  }
-  if (
-    'confidence' in obj &&
-    !(typeof obj.confidence === 'string' && CONFIDENCE_VALUES.includes(obj.confidence))
-  ) {
-    errors.push(
-      `confidence ${pyJsonDumps(obj.confidence)} is not one of high, medium, low`,
-    );
-  }
-  if (
-    'followUpQuestion' in obj &&
-    !(obj.followUpQuestion === null || typeof obj.followUpQuestion === 'string')
-  ) {
-    errors.push('followUpQuestion must be a string or null');
-  }
-  if ('outOfScope' in obj && typeof obj.outOfScope !== 'boolean') {
-    errors.push('outOfScope must be a boolean');
-  }
   return errors;
 }
 

@@ -1,7 +1,8 @@
-"""Strict validation of the structured JSON reply that instructions/structured-json.json asks for.
+"""Validation of the structured JSON reply that instructions/structured-json.json asks for.
 
-The reply must be exactly one JSON object with the keys answer, sources, confidence, followUpQuestion, and
-outOfScope. A reply wrapped in one markdown code fence is reported as `fenced`: readable, but not strict.
+The answerFormat asks for exactly one JSON object and nothing else, with exactly the keys answer, sources,
+confidence, followUpQuestion, and outOfScope. It doesn't specify their values, so neither does this check. A reply
+wrapped in one markdown code fence is reported as `fenced`: readable, but not strict.
 """
 
 from __future__ import annotations
@@ -12,14 +13,13 @@ from dataclasses import dataclass, field
 from typing import Any
 
 ANSWER_KEYS = ("answer", "sources", "confidence", "followUpQuestion", "outOfScope")
-CONFIDENCE_VALUES = ("high", "medium", "low")
 _FENCE = re.compile(r"^\s*```[a-zA-Z]*[ \t]*\r?\n([\s\S]*?)\r?\n?```\s*$")
 
 
 @dataclass
 class Validation:
     parse_class: str  # strict, fenced, prose-wrapped, unparseable, or empty
-    strict_valid: bool  # the whole reply is the JSON object and every schema rule holds
+    strict_valid: bool  # the whole reply is one JSON object with exactly the five keys
     lenient_valid: bool  # as strict, but one code fence around the object is tolerated
     errors: list[str] = field(default_factory=list)
     value: dict[str, Any] | None = None  # the parsed object when lenient_valid
@@ -33,28 +33,11 @@ def _kind(value: Any) -> str:
 
 
 def schema_errors(value: Any) -> list[str]:
-    """Everything wrong with a parsed reply. An empty list means it matches the schema."""
+    """Everything wrong with a parsed reply. An empty list means an object with exactly the five keys."""
     if not isinstance(value, dict):
         return [f"top level is {_kind(value)}, expected object"]
     errors = [f"missing key {key}" for key in ANSWER_KEYS if key not in value]
     errors += [f"extra key {key}" for key in value if key not in ANSWER_KEYS]
-    answer = value.get("answer")
-    if "answer" in value and not (isinstance(answer, str) and answer.strip()):
-        errors.append("answer must be a non-empty string")
-    sources = value.get("sources")
-    if "sources" in value:
-        if not isinstance(sources, list):
-            errors.append("sources must be an array")
-        elif not all(isinstance(source, str) for source in sources):
-            errors.append("sources must contain only strings")
-    if "confidence" in value and value["confidence"] not in CONFIDENCE_VALUES:
-        errors.append(f"confidence {json.dumps(value['confidence'])} is not one of high, medium, low")
-    if "followUpQuestion" in value and not (
-        value["followUpQuestion"] is None or isinstance(value["followUpQuestion"], str)
-    ):
-        errors.append("followUpQuestion must be a string or null")
-    if "outOfScope" in value and not isinstance(value["outOfScope"], bool):
-        errors.append("outOfScope must be a boolean")
     return errors
 
 

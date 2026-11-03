@@ -125,4 +125,4 @@ def test_formatter_output_equals_the_expected_file(case: str) -> None:
 def test_every_expected_file_has_an_input_file() -> None:
     inputs = sorted(p.stem for p in Path(FIXTURES / "inputs").glob("*.json"))
     assert inputs == CASES
-    assert len(CASES) == 20
+    assert len(CASES) == 21

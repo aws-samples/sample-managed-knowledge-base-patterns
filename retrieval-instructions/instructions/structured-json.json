@@ -4,7 +4,7 @@
     "kind": "json",
     "description": "Answers as one JSON object with five keys (synthetic demo)",
     "instruction": {
-      "answerFormat": "Reply with exactly one JSON object and nothing else. Do not use markdown, do not use code fences, and do not write any text before or after the object.\nThe object has exactly these five keys and no others:\n- \"answer\": a string. The answer to the customer's question, written only from the retrieved documents.\n- \"sources\": an array of strings. The file names of the documents the answer relies on, exactly as the documents are named. Use an empty array if no document supports an answer.\n- \"confidence\": one of \"high\", \"medium\" or \"low\". Use \"high\" when the documents state the answer directly, \"medium\" when you combined or inferred across documents, and \"low\" when support is thin or missing.\n- \"followUpQuestion\": a string or null. One clarifying question when the customer's situation is ambiguous, otherwise null.\n- \"outOfScope\": a boolean. true when the documents do not contain the information needed to answer the question, otherwise false."
+      "answerFormat": "Reply with exactly one JSON object and nothing else. Do not use markdown, do not use code fences, and do not write any text before or after the object. The object has exactly these five keys and no others: \"answer\", \"sources\", \"confidence\", \"followUpQuestion\", \"outOfScope\"."
     }
   }
 ]

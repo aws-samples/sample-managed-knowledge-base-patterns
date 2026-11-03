@@ -631,8 +631,8 @@ lives in `sample-state.json`; Amazon Bedrock serves whichever version each reque
 ### 8. Return structured JSON
 
 `assistant-structured-json` has only an `answerFormat`, which asks for one JSON object
-with five keys. The command applies it with a filter for public documents and validates
-the reply:
+with exactly five keys and nothing else. The command applies it with a filter for public
+documents and checks that the reply is one JSON object with exactly those keys:
 
 ```bash
 uv run ri-sample structured-json --question "How long is the warranty on an AnySmartProduct-6?"
@@ -653,17 +653,18 @@ Validation: PASS (one JSON object with exactly the five keys)
   outOfScope: false
 ```
 
-The full `answerFormat` text is in `instructions/structured-json.json`:
+This is the whole `answerFormat`, the text the post shows. In
+`instructions/structured-json.json` it's one line:
 
 ```text
-Reply with exactly one JSON object and nothing else. Do not use markdown, do not use code fences, and do not write any text before or after the object.
-The object has exactly these five keys and no others:
-- "answer": a string. The answer to the customer's question, written only from the retrieved documents.
-- "sources": an array of strings. The file names of the documents the answer relies on, exactly as the documents are named. Use an empty array if no document supports an answer.
-- "confidence": one of "high", "medium" or "low". Use "high" when the documents state the answer directly, "medium" when you combined or inferred across documents, and "low" when support is thin or missing.
-- "followUpQuestion": a string or null. One clarifying question when the customer's situation is ambiguous, otherwise null.
-- "outOfScope": a boolean. true when the documents do not contain the information needed to answer the question, otherwise false.
+Reply with exactly one JSON object and nothing else. Do not use markdown, do not use code
+fences, and do not write any text before or after the object. The object has exactly these
+five keys and no others: "answer", "sources", "confidence", "followUpQuestion", "outOfScope".
 ```
+
+It names the keys but not their values, so the check doesn't look at the values. A reply
+in a code fence, or with text before or after the object, fails the check, and the
+command exits with code 1.
 
 ### 9. Query two knowledge bases with a filter each
 

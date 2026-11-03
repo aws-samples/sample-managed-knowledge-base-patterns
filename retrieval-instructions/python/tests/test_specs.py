@@ -26,6 +26,12 @@ from ri_sample.structured_json import ANSWER_KEYS
 from support import fixture
 
 CONSTANTS = fixture("constants.json")
+# The answerFormat text the post shows, joined into one line.
+POST_ANSWER_FORMAT = (
+    "Reply with exactly one JSON object and nothing else. Do not use markdown, do not use code fences, and do not "
+    "write any text before or after the object. The object has exactly these five keys and no others: "
+    '"answer", "sources", "confidence", "followUpQuestion", "outOfScope".'
+)
 GOOD = {
     "key": "sales-region-north",
     "kind": "region",
@@ -67,9 +73,10 @@ def test_create_call_tag_literal_equals_the_sample_tag() -> None:
     assert f'"{SAMPLE_TAG_KEY}": "{SAMPLE_APP}"' in line
 
 
-def test_structured_json_spec_names_the_five_keys() -> None:
+def test_structured_json_spec_is_the_posts_answer_format() -> None:
     spec = next(s for s in default_specs() if s.kind == "json")
     assert set(spec.instruction) == {"answerFormat"}
+    assert spec.instruction["answerFormat"] == POST_ANSWER_FORMAT
     assert all(f'"{key}"' in spec.instruction["answerFormat"] for key in ANSWER_KEYS)
 
 

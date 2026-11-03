@@ -5,6 +5,7 @@ Values are filled in from the command's results; answers print verbatim. Tables 
 
 from __future__ import annotations
 
+import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -162,13 +163,12 @@ def format_multi_kb(
 
 
 def _value(value: Any) -> str:
-    if value is None:
-        return "null"
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, list):
-        return ", ".join(str(v) for v in value) if value else "none"
-    return str(value)
+    """A string as is, a list of strings joined, and any other JSON value as JSON, the same in both languages."""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list) and all(isinstance(item, str) for item in value):
+        return ", ".join(value) if value else "none"
+    return json.dumps(value, ensure_ascii=False)
 
 
 def format_structured_json(

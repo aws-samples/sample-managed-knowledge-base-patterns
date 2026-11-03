@@ -1,4 +1,4 @@
-"""The strict validator for the five-key JSON reply."""
+"""The validator for the five-key JSON reply: one JSON object and nothing else, with exactly the five keys."""
 
 from __future__ import annotations
 
@@ -53,18 +53,19 @@ def test_non_json_replies_fail(reply: str | None, parse_class: str) -> None:
 
 
 @pytest.mark.parametrize(
-    ("patch", "error"),
+    "patch",
     [
-        ({"answer": " "}, "answer must be a non-empty string"),
-        ({"sources": "a.md"}, "sources must be an array"),
-        ({"sources": ["a.md", 1]}, "sources must contain only strings"),
-        ({"confidence": "certain"}, 'confidence "certain" is not one of high, medium, low'),
-        ({"followUpQuestion": 3}, "followUpQuestion must be a string or null"),
-        ({"outOfScope": "false"}, "outOfScope must be a boolean"),
+        {"answer": ""},
+        {"sources": [{"file": "a.md"}, 1]},
+        {"confidence": 0.9},
+        {"followUpQuestion": False},
+        {"outOfScope": "no"},
     ],
 )
-def test_wrong_value_types_fail(patch: dict[str, Any], error: str) -> None:
-    assert validate_reply(json.dumps({**VALID, **patch})).errors == [error]
+def test_any_value_passes(patch: dict[str, Any]) -> None:
+    # The answerFormat names the keys and not their values, so the values aren't checked.
+    check = validate_reply(json.dumps({**VALID, **patch}))
+    assert (check.strict_valid, check.errors, check.value) == (True, [], {**VALID, **patch})
 
 
 def test_top_level_array_fails() -> None:

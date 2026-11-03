@@ -55,15 +55,20 @@ describe('structured JSON validator', () => {
     expect(check.value).toBeNull();
   });
 
-  it.each<[Record<string, unknown>, string]>([
-    [{ answer: ' ' }, 'answer must be a non-empty string'],
-    [{ sources: 'a.md' }, 'sources must be an array'],
-    [{ sources: ['a.md', 1] }, 'sources must contain only strings'],
-    [{ confidence: 'certain' }, 'confidence "certain" is not one of high, medium, low'],
-    [{ followUpQuestion: 3 }, 'followUpQuestion must be a string or null'],
-    [{ outOfScope: 'false' }, 'outOfScope must be a boolean'],
-  ])('fails a wrong value type %j', (patch, error) => {
-    expect(validateReply(dumps({ ...VALID, ...patch })).errors).toEqual([error]);
+  // The answerFormat names the keys and not their values, so the values aren't checked.
+  it.each<Record<string, unknown>>([
+    { answer: '' },
+    { sources: [{ file: 'a.md' }, 1] },
+    { confidence: 0.9 },
+    { followUpQuestion: false },
+    { outOfScope: 'no' },
+  ])('accepts any value %j', (patch) => {
+    const check = validateReply(dumps({ ...VALID, ...patch }));
+    expect([check.strictValid, check.errors, check.value]).toEqual([
+      true,
+      [],
+      { ...VALID, ...patch },
+    ]);
   });
 
   it('fails a top-level array', () => {

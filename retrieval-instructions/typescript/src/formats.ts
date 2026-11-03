@@ -11,7 +11,14 @@ import { UNKNOWN, classify, outside as isOutside } from './corpus';
 import { STACK_NAME } from './deployment';
 import { type Filter, describeFilter } from './filters';
 import type { Candidate } from './instructions';
-import { dumpsCompact, plural, pyStr, table, versionsText } from './output';
+import {
+  dumpsCompact,
+  plural,
+  pyJsonDumps,
+  pyStr,
+  table,
+  versionsText,
+} from './output';
 import { type ReleaseConfig, canaryText, describeRelease, versionFor } from './release';
 import type { State } from './state';
 import { ANSWER_KEYS, validateReply } from './structured-json';
@@ -203,12 +210,12 @@ export function formatMultiKb(v: MultiKbView): [string, number] {
   return [lines.join('\n') + '\n', outside];
 }
 
+/** A string as is, a list of strings joined, and any other JSON value as JSON, the same in both languages. */
 function value(item: unknown): string {
-  if (item === null || item === undefined) return 'null';
-  if (typeof item === 'boolean') return item ? 'true' : 'false';
-  if (Array.isArray(item))
-    return item.length ? item.map((v) => String(v)).join(', ') : 'none';
-  return String(item);
+  if (typeof item === 'string') return item;
+  if (Array.isArray(item) && item.every((v) => typeof v === 'string'))
+    return item.length ? item.join(', ') : 'none';
+  return pyJsonDumps(item, false);
 }
 
 export interface StructuredJsonView {

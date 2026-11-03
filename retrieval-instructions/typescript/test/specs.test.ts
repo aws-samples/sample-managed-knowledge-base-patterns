@@ -19,6 +19,12 @@ import { ANSWER_KEYS } from '../src/structured-json';
 import { fixture, tempDir } from './support';
 
 const CONSTANTS = fixture('constants.json');
+// The answerFormat text the post shows, joined into one line.
+const POST_ANSWER_FORMAT =
+  'Reply with exactly one JSON object and nothing else. Do not use markdown, do not use ' +
+  'code fences, and do not write any text before or after the object. The object has ' +
+  'exactly these five keys and no others: ' +
+  '"answer", "sources", "confidence", "followUpQuestion", "outOfScope".';
 const GOOD = {
   key: 'sales-region-north',
   kind: 'region',
@@ -91,9 +97,10 @@ describe('specs', () => {
     expect(line).toContain(`${SAMPLE_TAG_KEY}: '${SAMPLE_APP}'`);
   });
 
-  it('names the five keys in the structured JSON spec', () => {
+  it("uses the post's answerFormat in the structured JSON spec", () => {
     const spec = defaultSpecs().find((s) => s.kind === 'json');
     expect(Object.keys(spec?.instruction ?? {})).toEqual(['answerFormat']);
+    expect(spec?.instruction.answerFormat).toBe(POST_ANSWER_FORMAT);
     for (const key of ANSWER_KEYS)
       expect(spec?.instruction.answerFormat).toContain(`"${key}"`);
   });
