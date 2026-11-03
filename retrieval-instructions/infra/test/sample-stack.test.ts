@@ -232,11 +232,15 @@ describe('corpus bucket and upload', () => {
     });
   });
 
-  it('uploads under docs/ and deletes the objects on stack deletion', () => {
+  it('uploads under docs/ and empties the bucket on stack deletion', () => {
     defaults.hasResourceProperties('Custom::CDKBucketDeployment', {
       DestinationBucketKeyPrefix: 'docs/',
-      RetainOnDelete: false,
+      RetainOnDelete: Match.absent(),
       Prune: true,
+    });
+    defaults.resourceCountIs('Custom::S3AutoDeleteObjects', 1);
+    defaults.hasResourceProperties('AWS::S3::Bucket', {
+      Tags: Match.arrayWith([{ Key: 'aws-cdk:auto-delete-objects', Value: 'true' }]),
     });
   });
 });
@@ -493,7 +497,7 @@ describe('every option set', () => {
 
       it('logs every function to a stack log group that is deleted after every role', () => {
         const logGroups = resourcesOf(template, 'AWS::Logs::LogGroup');
-        expect(logGroups.length).toBe(2);
+        expect(logGroups.length).toBe(3);
         for (const [, group] of logGroups) {
           expect(group.DeletionPolicy).toBe('Delete');
         }

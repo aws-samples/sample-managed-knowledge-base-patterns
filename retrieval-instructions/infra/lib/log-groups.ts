@@ -18,6 +18,33 @@ export function awsCustomResourceLogGroup(scope: Construct): logs.ILogGroup {
   return stackLogGroup(scope, 'AwsCustomResourceLogs');
 }
 
+/**
+ * The handler that `autoDeleteObjects` adds is a plain CloudFormation function: CDK has
+ * no log group option for it, and `Tags.of` doesn't reach it or its role. Send its logs
+ * to a stack log group, and give the function and its role these tags. Call this after
+ * the bucket exists.
+ */
+export function configureAutoDeleteObjectsHandler(
+  stack: cdk.Stack,
+  tags: Record<string, string>,
+): void {
+  const provider = stack.node.tryFindChild(
+    'Custom::S3AutoDeleteObjectsCustomResourceProvider',
+  );
+  const role = provider?.node.tryFindChild('Role');
+  const handler = provider?.node.tryFindChild('Handler');
+  if (!(role instanceof cdk.CfnResource) || !(handler instanceof cdk.CfnResource)) {
+    throw new Error(
+      'The S3 auto-delete handler was not found. Check its construct IDs after upgrading AWS CDK.',
+    );
+  }
+  const logGroup = stackLogGroup(stack, 'AutoDeleteObjectsLogs');
+  handler.addPropertyOverride('LoggingConfig.LogGroup', logGroup.logGroupName);
+  const tagList = Object.entries(tags).map(([Key, Value]) => ({ Key, Value }));
+  role.addPropertyOverride('Tags', tagList);
+  handler.addPropertyOverride('Tags', tagList);
+}
+
 /** Return the stack's log group with this ID, creating it on first use. */
 function stackLogGroup(scope: Construct, id: string): logs.ILogGroup {
   const stack = cdk.Stack.of(scope);

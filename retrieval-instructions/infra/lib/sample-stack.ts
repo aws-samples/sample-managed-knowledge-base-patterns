@@ -5,7 +5,10 @@ import { Corpus, CORPUS_PREFIX } from './constructs/corpus';
 import { ManagedKnowledgeBase } from './constructs/managed-knowledge-base';
 import { PlatformAdminRole } from './constructs/platform-admin-role';
 import { TenantRoles } from './constructs/tenant-roles';
-import { deleteLogGroupsAfterRoles } from './log-groups';
+import {
+  configureAutoDeleteObjectsHandler,
+  deleteLogGroupsAfterRoles,
+} from './log-groups';
 import { acknowledgeStackFindings } from './nag-acknowledgments';
 import {
   OUTPUT_KEYS,
@@ -56,6 +59,7 @@ export class RetrievalInstructionsSampleStack extends cdk.Stack {
     const { options } = props;
 
     this.corpus = new Corpus(this, 'Corpus');
+    configureAutoDeleteObjectsHandler(this, { [SAMPLE_TAG_KEY]: SAMPLE_TAG_VALUE });
     const corpus = {
       bucket: this.corpus.bucket,
       corpusFingerprint: this.corpus.fingerprint,

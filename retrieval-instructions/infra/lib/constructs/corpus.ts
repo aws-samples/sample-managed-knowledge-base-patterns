@@ -12,9 +12,10 @@ export const CORPUS_PREFIX = 'docs/';
 const EXCLUDE = ['**/.DS_Store'];
 
 /**
- * The corpus bucket and its upload. The deployment deletes the objects it put under
- * docs/ when the stack is deleted (retainOnDelete false), so the bucket is empty when
- * CloudFormation deletes it, without the extra auto-delete handler.
+ * The corpus bucket and its upload. `autoDeleteObjects` empties the bucket when the
+ * stack is deleted, so CloudFormation can delete it. `retainOnDelete: false` on the
+ * deployment wouldn't: CDK tags the bucket as owned by the deployment, and the
+ * deployment's handler skips its delete for a bucket with that tag.
  */
 export class Corpus extends Construct {
   readonly bucket: s3.Bucket;
@@ -30,6 +31,7 @@ export class Corpus extends Construct {
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
     });
 
     this.deployment = new s3deploy.BucketDeployment(this, 'Deployment', {
@@ -37,7 +39,6 @@ export class Corpus extends Construct {
       destinationBucket: this.bucket,
       destinationKeyPrefix: CORPUS_PREFIX,
       prune: true,
-      retainOnDelete: false,
       logGroup: bucketDeploymentLogGroup(this),
     });
 

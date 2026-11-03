@@ -66,9 +66,9 @@ _Figure 2: Where tenant isolation comes from._
 - A Sales Region South knowledge base, `retrieval-instructions-sample-south`, with a data
   source over `docs/global/` and `docs/sales-region-south/` (16 documents), and its own
   service role.
-- An ingestion job for each knowledge base, started on deploy, and two AWS Lambda
-  functions that CDK uses to upload the documents and start the jobs, with their log
-  groups.
+- An ingestion job for each knowledge base, started on deploy, and three AWS Lambda
+  functions that CDK uses to upload the documents, start the jobs, and empty the bucket
+  when you delete the stack, with their log groups.
 
 The SDK commands create 7 retrieval instructions in your account and Region, each with
 version 1: one for each tenant, plus `assistant-structured-json` for the JSON example.
