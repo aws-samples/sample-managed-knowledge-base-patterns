@@ -196,7 +196,15 @@ uv run ri-sample status --wait
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Region: us-east-1
+Stack: RetrievalInstructionsSample (CREATE_COMPLETE)
+Tenant roles: none
+Knowledge bases:
+  knowledge base  id          data source  latest ingestion  started               scanned  indexed  failed
+  shared          ABCDE12345  KLMNO12345   COMPLETE          2026-11-03T02:00:26Z  32       32       0
+  south           FGHIJ67890  PQRST67890   COMPLETE          2026-11-03T02:00:27Z  16       16       0
+Retrieval instructions in this account and Region: 0 of 50 (50 free)
+Sample instructions: none (run create-instructions)
 ```
 
 If the deploy fails with "No AWS account", configure AWS credentials, then deploy again.
@@ -207,6 +215,9 @@ Each step shows the Python command. For the TypeScript version, replace `uv run 
 with `npm run -s ri-sample --`, which writes the same output. Both programs read and
 write one state file, `sample-state.json`, so you can create the instructions in one
 language and ask in the other. Don't run both at the same time.
+
+The example outputs come from a test run. Answers vary from run to run, even at a pinned
+version, and long ones are cut at `[...]`.
 
 ### 1. Create and pin an instruction for each tenant
 
@@ -220,7 +231,17 @@ state file. Each instruction is named `assistant-<tenant>` and tagged with
 `tenant=<tenant>` and `app=retrieval-instructions-sample`.
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Region: us-east-1
+Retrieval instructions in this account and Region: 0 of 50 before this run, 7 to create
+  key                    name                             id          result   versions  live
+  sales-region-north     assistant-sales-region-north     abcde12345  created  1         1
+  sales-region-central   assistant-sales-region-central   bcdef23456  created  1         1
+  sales-region-south     assistant-sales-region-south     cdefg34567  created  1         1
+  team-support           assistant-team-support           defgh45678  created  1         1
+  team-field-sales       assistant-team-field-sales       efghi56789  created  1         1
+  team-legal-compliance  assistant-team-legal-compliance  fghij67890  created  1         1
+  structured-json        assistant-structured-json        ghijk78901  created  1         1
+Retrieval instructions in this account and Region: 7 of 50 after this run
 ```
 
 If a review fails, the command prints each reason. Edit the instruction in
@@ -239,7 +260,43 @@ uv run ri-sample ask --tenant sales-region-central \
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Tenant: none
+Instruction: none
+Applied: none
+Filter: none
+Message:
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+The return window for an AnySmartProduct-5 depends on where it was purchased, since the global policy sets a default that regional addenda can override:
+
+| Sales region | Return window | Restocking fee (opened units) |
+|---|---|---|
+| Global base (no regional addendum) | 30 days from delivery | $10.00 |
+| Sales Region North | 40 days from delivery | $15.00 |
+| Sales Region Central | 45 days from delivery | $12.00 |
+| Sales Region South | 14 days from delivery (unopened only) | $25.00 (all returns) |
+[...]
+Could you tell me which sales region you purchased the AnySmartProduct-5 in (e.g., North, Central, South, or another region), and whether it's a new or reconditioned unit? That will let me give you the exact number of days that applies to your case.
+
+Tenant: sales-region-central
+Instruction: assistant-sales-region-central version 1
+Applied: bcdef23456 version 1
+Filter: audience_team = all; region in (global, sales-region-central)
+Message:
+  Customer sales region: Sales Region Central.
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+Tiene 45 días desde la fecha de entrega para devolver su AnySmartProduct-5 comprado en Sales Region Central.
+
+Algunos detalles importantes:
+- Puede devolver la unidad aunque esté abierta, siempre que incluya todos los accesorios.
+- Si la unidad está abierta, se aplica una tarifa de reacondicionamiento de 12,00 USD; si está sin abrir y en su empaque original sellado, no se cobra ninguna tarifa.
+- Si su compra cae dentro de un período de extensión de devolución por temporada navideña, se aplica la fecha que sea más tardía entre la extensión y la ventana normal de 45 días.
+- Para iniciar la devolución, contáctenos con su número de pedido y le emitiremos la autorización de devolución junto con una etiqueta prepagada.
+
+Si su AnySmartProduct-5 fue comprado en otra región de ventas, se aplican las reglas de esa región y le pedimos que se comunique con los contactos de soporte global correspondientes.
+
+Source: central-returns-addendum.md
 ```
 
 `baseline` sends no instruction, no tenant line, and no filter. `ask` sends the tenant's
@@ -257,7 +314,44 @@ uv run ri-sample ask --tenant team-support \
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Tenant: sales-region-north
+Instruction: assistant-sales-region-north version 1
+Applied: abcde12345 version 1
+Filter: audience_team = all; region in (global, sales-region-north)
+Message:
+  Customer sales region: Sales Region North.
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+You have 40 days from the delivery date to return your AnySmartProduct-5, since you bought it in Sales Region North. The unit can be opened as long as all accessories that came in the box are included. If it's opened, a $15.00 restocking fee applies; if it's unopened and in sealed packaging, there's no fee. If your purchase falls within a holiday return extension period, whichever is later between the extension date and this 40-day window will apply. To start a return, just contact Sales Region North support with your order number, and they'll issue a return authorization and prepaid label.
+
+Source: north-returns-addendum.md
+
+Tenant: sales-region-central
+Instruction: assistant-sales-region-central version 1
+Applied: bcdef23456 version 1
+Filter: audience_team = all; region in (global, sales-region-central)
+Message:
+  Customer sales region: Sales Region Central.
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+Tiene 45 días desde la fecha de entrega para devolver su AnySmartProduct-5 comprado en Sales Region Central.
+[...]
+Source: central-returns-addendum.md
+
+Tenant: team-support
+Instruction: assistant-team-support version 1
+Applied: defgh45678 version 1
+Filter: audience_team in (all, team-support)
+Message:
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+Ticket note:
+- Global base return window is 30 days from delivery; opened units allowed with all accessories; $10 restocking fee if opened, none if unopened.
+- Sales region addenda override this: North 40 days, Central 45 days, South 14 days (unopened only).
+- If the unit is reconditioned, the window is 7 days with no restocking fee instead.
+- Return window depends on the sales region of purchase, which is not stated in the query.
+
+Next action: Confirm the sales region of purchase (and whether the unit is new or reconditioned) with the customer before quoting the exact return window.
 ```
 
 The support team's instruction asks for a ticket note. Without `--region`, a team tenant
@@ -276,7 +370,55 @@ uv run ri-sample isolation --tenant sales-region-north \
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Tenant: sales-region-north
+Question: How many days do I have to return an AnySmartProduct-5?
+
+Without the tenant filter:
+  [...]
+  Outside the tenant's entitlement: 2 of 7 documents
+
+With the tenant filter:
+  [...]
+  Outside the tenant's entitlement: 0 of 7 documents
+Result: PASS (the filtered request retrieved only documents the tenant is entitled to)
+
+Tenant: sales-region-north
+Question: Why do some AnySmartProduct-6 units restart after firmware 5.3.2, and what is the root cause?
+
+Without the tenant filter:
+  step                  document                                     scope               entitled
+  SpeculativeRetrieval  eng-known-issue-ki-4471.md                   team-engineering    no
+  SpeculativeRetrieval  firmware-release-notes-public-5x.md          global              yes
+  SpeculativeRetrieval  eng-firmware-diagnostics-internal.md         team-engineering    no
+  SpeculativeRetrieval  support-ticket-playbook.md                   team-support        no
+  SpeculativeRetrieval  product-overview-anysmartproduct-5-and-6.md  global              yes
+  SpeculativeRetrieval  north-returns-addendum.md                    sales-region-north  yes
+  SpeculativeRetrieval  north-warranty-addendum.md                   sales-region-north  yes
+  result                eng-known-issue-ki-4471.md                   team-engineering    no
+  result                firmware-release-notes-public-5x.md          global              yes
+  result                eng-firmware-diagnostics-internal.md         team-engineering    no
+  result                support-ticket-playbook.md                   team-support        no
+  result                product-overview-anysmartproduct-5-and-6.md  global              yes
+  result                north-returns-addendum.md                    sales-region-north  yes
+  result                north-warranty-addendum.md                   sales-region-north  yes
+  Outside the tenant's entitlement: 3 of 7 documents
+
+With the tenant filter:
+  step                  document                                     scope               entitled
+  SpeculativeRetrieval  firmware-release-notes-public-5x.md          global              yes
+  SpeculativeRetrieval  product-overview-anysmartproduct-5-and-6.md  global              yes
+  SpeculativeRetrieval  north-returns-addendum.md                    sales-region-north  yes
+  SpeculativeRetrieval  north-warranty-addendum.md                   sales-region-north  yes
+  SpeculativeRetrieval  north-local-support-and-conventions.md       sales-region-north  yes
+  SpeculativeRetrieval  global-warranty-policy-v3-0.md               global              yes
+  result                firmware-release-notes-public-5x.md          global              yes
+  result                product-overview-anysmartproduct-5-and-6.md  global              yes
+  result                north-returns-addendum.md                    sales-region-north  yes
+  result                north-warranty-addendum.md                   sales-region-north  yes
+  result                north-local-support-and-conventions.md       sales-region-north  yes
+  result                global-warranty-policy-v3-0.md               global              yes
+  Outside the tenant's entitlement: 0 of 6 documents
+Result: PASS (the filtered request retrieved only documents the tenant is entitled to)
 ```
 
 The command fails (exit code 1) if the filtered call retrieved any document the tenant
@@ -294,7 +436,22 @@ uv run ri-sample ask --tenant team-support --region sales-region-south \
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Tenant: team-support
+Instruction: assistant-team-support version 1
+Applied: defgh45678 version 1
+Filter: audience_team in (all, team-support); region in (global, sales-region-south)
+Message:
+  Customer sales region: Sales Region South.
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+Ticket note:
+- Customer purchased AnySmartProduct-5 in Sales Region South.
+- South returns addendum replaces global window: return period is 14 days from delivery date, not the global 30 days.
+- Only unopened units in original sealed packaging qualify; opened units cannot be returned for refund in this region.
+- A $25.00 restocking fee applies to all South returns, including unopened units.
+- Purchase evidence (receipt, invoice, or order confirmation) is required to process the return.
+
+Next action: Confirm the unit is unopened and request purchase evidence before processing the return under the Sales Region South returns addendum.
 ```
 
 Optional: to try one combined instruction per region and team pair instead, create the
@@ -314,7 +471,19 @@ uv run ri-sample ask --tenant sales-region-central --trace \
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Tenant: sales-region-central
+Instruction: assistant-sales-region-central version 1
+Applied: bcdef23456 version 1
+Planning trace event:
+  {"step": "Planning", "status": "IN_PROGRESS", "message": "Agent planning started", "appliedInstruction": {"id": "bcdef23456", "version": "1"}}
+Filter: audience_team = all; region in (global, sales-region-central)
+Message:
+  Customer sales region: Sales Region Central.
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+Tiene 45 días desde la fecha de entrega para devolver su AnySmartProduct-5. Esta es la ventana de devolución específica para Sales Region Central, que sustituye a la regla global de 30 días. Si el equipo viene abierto, puede devolverlo igualmente siempre que incluya todos los accesorios; si está sin abrir y con el empaque original sellado, no se le cobrará ningún cargo por reposición, y si viene abierto se aplica un cargo de 12,00 USD. Además, si su compra cayó dentro del periodo de extensión de devoluciones por fiestas, se aplica la fecha que sea más tardía entre esa extensión y la ventana normal de 45 días. Para iniciar la devolución, solo tiene que contactar al soporte de Sales Region Central con su número de pedido, y ellos le darán la autorización de devolución y una etiqueta prepagada.
+
+Source: central-returns-addendum.md
 ```
 
 `--trace` prints the first `Planning` trace event, whose `appliedInstruction` holds the
@@ -329,7 +498,17 @@ uv run ri-sample cloudtrail --since 60 --wait
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+GetRetrievalInstruction calls made by Amazon Bedrock in the last 60 minutes:
+  time                  tenant                version  caller role          error
+  2026-11-03T02:22:01Z  sales-region-central  1        ExampleOperatorRole  none
+  2026-11-03T02:26:02Z  sales-region-north    1        ExampleOperatorRole  none
+  2026-11-03T02:26:21Z  sales-region-central  1        ExampleOperatorRole  none
+  2026-11-03T02:26:38Z  team-support          1        ExampleOperatorRole  none
+  2026-11-03T02:35:37Z  sales-region-north    1        ExampleOperatorRole  none
+  2026-11-03T02:35:39Z  sales-region-north    1        ExampleOperatorRole  none
+  2026-11-03T02:35:52Z  sales-region-north    1        ExampleOperatorRole  none
+  2026-11-03T02:35:54Z  sales-region-north    1        ExampleOperatorRole  none
+AgenticRetrieveStream events in event history for the same window: 0 (a data event: only a trail that records data events has it)
 ```
 
 The `AgenticRetrieveStream` call itself is a data event, which event history doesn't
@@ -346,7 +525,18 @@ uv run ri-sample support-v2
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Updated assistant-team-support (defgh45678) and created version 2.
+Change: answerFormat gains a final line 'Ticket ref: pending' after the 'Next action:' line; every other field is unchanged.
+Release pins are unchanged:
+  key                    name                             latest version  live  canary
+  sales-region-north     assistant-sales-region-north     1               1     none
+  sales-region-central   assistant-sales-region-central   1               1     none
+  sales-region-south     assistant-sales-region-south     1               1     none
+  team-support           assistant-team-support           2               1     none
+  team-field-sales       assistant-team-field-sales       1               1     none
+  team-legal-compliance  assistant-team-legal-compliance  1               1     none
+  structured-json        assistant-structured-json        1               1     none
+To send one request in five to version 2, run: release set --tenant team-support --live 1 --canary 2 --every 5
 ```
 
 Send one request in two to version 2, check which version each request gets, then promote
@@ -366,7 +556,70 @@ uv run ri-sample release show
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Release for team-support: live 1, canary 2 (1 in 2)
+
+Tenant: team-support
+Release: live 1, canary 2 (1 in 2)
+  request  version
+  0        2
+  1        1
+  2        2
+  3        1
+  4        2
+  5        1
+  6        2
+  7        1
+  8        2
+  9        1
+Requests per version: 1 = 5, 2 = 5
+
+Tenant: team-support
+Instruction: assistant-team-support version 2 (routed by the release configuration, request 0)
+Applied: defgh45678 version 2
+Filter: audience_team in (all, team-support)
+Message:
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+Ticket note:
+- Global base return window for AnySmartProduct-5 is 30 days from delivery date; opened units allowed with all accessories included.
+- Sales region addenda override this: Region North = 40 days, Region Central = 45 days, Region South = 14 days, unopened only.
+- Reconditioned units (labeled "Reconditioned") get only 7 days, no restocking fee.
+- Agent must confirm the sales region of purchase to give the exact window, since the question doesn't name one.
+Next action: Ask customer to confirm sales region of purchase and whether unit is new or reconditioned, then apply matching policy.
+Ticket ref: pending
+
+Tenant: team-support
+Instruction: assistant-team-support version 1 (routed by the release configuration, request 1)
+Applied: defgh45678 version 1
+Filter: audience_team in (all, team-support)
+Message:
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+Ticket note:
+- Return window depends on the sales region where the unit was purchased, not where the customer lives.
+- Global base policy (no regional addendum applies): 30 days from delivery date, opened units allowed if all accessories included.
+- Sales Region North: 40 days; Sales Region Central: 45 days; Sales Region South: 14 days, unopened only.
+- Reconditioned units follow a separate rule: 7 days from delivery, no restocking fee.
+Next action: Confirm the sales region of purchase with the customer (and whether the unit is new or reconditioned) before quoting the exact return window.
+
+Release for team-support: live 2, no canary
+
+Tenant: sales-region-north
+Instruction: assistant-sales-region-north version 1
+Applied: abcde12345 version 1
+Filter: audience_team = all; region in (global, sales-region-north)
+Message:
+[...]
+
+Release configuration in sample-state.json:
+  key                    name                             versions  live  canary
+  sales-region-north     assistant-sales-region-north     1         1     none
+  sales-region-central   assistant-sales-region-central   1         1     none
+  sales-region-south     assistant-sales-region-south     1         1     none
+  team-support           assistant-team-support           1, 2      2     none
+  team-field-sales       assistant-team-field-sales       1         1     none
+  team-legal-compliance  assistant-team-legal-compliance  1         1     none
+  structured-json        assistant-structured-json        1         1     none
 ```
 
 Request 0 goes to version 2 and request 1 to version 1. After the promotion, the other
@@ -385,7 +638,18 @@ uv run ri-sample structured-json --question "How long is the warranty on an AnyS
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Instruction: assistant-structured-json version 1
+Applied: ghijk78901 version 1
+Filter: audience_team = all
+Question: How long is the warranty on an AnySmartProduct-6?
+Reply:
+{"answer": "It depends on where the AnySmartProduct-6 was purchased. The global base warranty is 24 months from the purchase date. However, regional addenda override this: in Sales Region Central it's 36 months, in Sales Region North it's 30 months, and in Sales Region South it's 12 months. Note that the warranty term does not restart upon repair or replacement, and if the unit is reconditioned, a separate 6-month warranty from the delivery date applies instead of the regular terms. Could you tell me which sales region the unit was purchased in, and whether it is a new or reconditioned unit, so I can give you the exact warranty length?", "sources": ["global-warranty-policy-v3-0.md", "central-warranty-addendum.md", "north-warranty-addendum.md", "south-warranty-addendum.md", "reconditioned-units-policy.md"], "confidence": "high", "followUpQuestion": "Which sales region was the AnySmartProduct-6 purchased in, and is it a new or reconditioned unit?", "outOfScope": false}
+Validation: PASS (one JSON object with exactly the five keys)
+  answer: It depends on where the AnySmartProduct-6 was purchased. The global base warranty is 24 months from the purchase date. However, regional addenda override this: in Sales Region Central it's 36 months, in Sales Region North it's 30 months, and in Sales Region South it's 12 months. Note that the warranty term does not restart upon repair or replacement, and if the unit is reconditioned, a separate 6-month warranty from the delivery date applies instead of the regular terms. Could you tell me which sales region the unit was purchased in, and whether it is a new or reconditioned unit, so I can give you the exact warranty length?
+  sources: global-warranty-policy-v3-0.md, central-warranty-addendum.md, north-warranty-addendum.md, south-warranty-addendum.md, reconditioned-units-policy.md
+  confidence: high
+  followUpQuestion: Which sales region was the AnySmartProduct-6 purchased in, and is it a new or reconditioned unit?
+  outOfScope: false
 ```
 
 The full `answerFormat` text is in `instructions/structured-json.json`:
@@ -414,7 +678,68 @@ uv run ri-sample multi-kb --no-filters \
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Tenant: sales-region-south
+Instruction: assistant-sales-region-south version 1
+Applied: cdefg34567 version 1
+Retrievers:
+  retriever  knowledge base  filter
+  shared     ABCDE12345      audience_team = all; region = global
+  south      FGHIJ67890      audience_team = all; region = sales-region-south
+Message:
+  Customer sales region: Sales Region South.
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+You have 14 days from the delivery date to return an AnySmartProduct-5 purchased in Sales Region South. This Sales Region South return window replaces the global 30-day window and applies all year, including the November–December holiday period, since the holiday return extension does not apply in Sales Region South. Please note that only unopened units in their original sealed packaging are eligible for return, a restocking fee of USD 25.00 applies to every return (including unopened units), and purchase evidence is required for every return. Opened units cannot be returned for a refund, though a faulty opened unit may be assessed under the Sales Region South warranty addendum.
+
+To start a return, contact Sales Region South support with your order number and purchase evidence.
+
+Source: south-returns-addendum.md
+
+Documents:
+  retriever  document                          scope               entitled
+  shared     global-returns-policy-v2-0.md     global              yes
+  south      south-returns-addendum.md         sales-region-south  yes
+  south      south-warranty-addendum.md        sales-region-south  yes
+  shared     returns-policy-2024-archived.md   global              yes
+  shared     faq-general.md                    global              yes
+  shared     holiday-return-extension-2026.md  global              yes
+  shared     global-warranty-policy-v3-0.md    global              yes
+  shared     reconditioned-units-policy.md     global              yes
+  Outside the tenant's entitlement: 0 of 8 documents
+
+Tenant: sales-region-south
+Instruction: assistant-sales-region-south version 1
+Applied: cdefg34567 version 1
+Retrievers:
+  retriever  knowledge base  filter
+  shared     ABCDE12345      none (--no-filters)
+  south      FGHIJ67890      none (--no-filters)
+Message:
+  Customer sales region: Sales Region South.
+  How many days do I have to return an AnySmartProduct-5?
+Answer:
+You have 14 days from the delivery date to return an AnySmartProduct-5 bought in Sales Region South. Only unopened units in their original sealed packaging are eligible for a refund return, and purchase evidence is required for every return. Please note that this 14-day window applies all year, as the holiday return extension does not apply in Sales Region South. A restocking fee of USD 25.00 applies to every return in Sales Region South, including unopened units. If your unit is opened and faulty, it cannot be returned for a refund, but it may be assessed under the Sales Region South warranty addendum instead. To start a return, contact Sales Region South support with your order number and purchase evidence.
+
+Source: south-returns-addendum.md
+
+Documents:
+  retriever  document                                scope                  entitled
+  shared     south-returns-addendum.md               sales-region-south     yes
+  south      south-returns-addendum.md               sales-region-south     yes
+  south      south-warranty-addendum.md              sales-region-south     yes
+  south      holiday-return-extension-2026.md        global                 yes
+  south      global-returns-policy-v2-0.md           global                 yes
+  south      south-local-support-and-conventions.md  sales-region-south     yes
+  south      returns-policy-2024-archived.md         global                 yes
+  south      faq-general.md                          global                 yes
+  shared     north-returns-addendum.md               sales-region-north     no
+  shared     central-returns-addendum.md             sales-region-central   no
+  shared     south-warranty-addendum.md              sales-region-south     yes
+  shared     holiday-return-extension-2026.md        global                 yes
+  shared     global-returns-policy-v2-0.md           global                 yes
+  shared     legal-central-consumer-terms-lc212.md   team-legal-compliance  no
+  shared     south-local-support-and-conventions.md  sales-region-south     yes
+  Outside the tenant's entitlement: 3 of 10 documents
 ```
 
 `--no-filters` sends the same request without the retriever filters, so you can see what
@@ -438,7 +763,15 @@ uv run ri-sample verify-abac
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Tenant: sales-region-north
+Other tenant: sales-region-central
+  check  role            action                                                             expected  observed  result
+  1      applier         apply assistant-sales-region-north                                 allow     allow     PASS
+  2      applier         apply assistant-sales-region-central                               deny      deny      PASS
+  3      tenant admin    tag assistant-sales-region-central with tenant=sales-region-north  deny      deny      PASS
+  4      tenant admin    tag assistant-sales-region-north with app=verify-abac-check        deny      deny      PASS
+  5      platform admin  read assistant-sales-region-central                                allow     allow     PASS
+Result: PASS (5 of 5 checks as expected)
 ```
 
 The checks assume the applier, the tenant admin, and the platform admin, and none of
@@ -531,7 +864,7 @@ delivers log files to the bucket, usually within 15 minutes. The record has `eve
 `AgenticRetrieveStream` and `eventCategory` `Data`:
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+{"eventName": "AgenticRetrieveStream", "eventCategory": "Data", "eventTime": "2026-11-03T04:21:49Z"}
 ```
 
 The trail bills $0.10 per 100,000 data events, plus S3 storage for the log files. Delete
@@ -640,7 +973,33 @@ uv run ri-sample teardown --yes
 ```
 
 ```text
-EXAMPLE-OUTPUT-PENDING
+Teardown plan (nothing is deleted without --yes):
+  name                                           id          versions  action
+  assistant-sales-region-north                   abcde12345  1         delete
+  assistant-sales-region-central                 bcdef23456  1         delete
+  assistant-sales-region-south                   cdefg34567  1         delete
+  assistant-team-support                         defgh45678  2, 1      delete
+  assistant-team-field-sales                     efghi56789  1         delete
+  assistant-team-legal-compliance                fghij67890  1         delete
+  assistant-structured-json                      ghijk78901  1         delete
+  assistant-sales-region-north-team-support      hijkl89012  1         delete
+  assistant-sales-region-north-team-field-sales  ijklm90123  1         delete
+  assistant-sales-region-south-team-support      jklmn01234  1         delete
+  assistant-sales-region-south-team-field-sales  klmno12345  1         delete
+Run teardown --yes to delete 11 instructions and their versions.
+
+assistant-sales-region-north deleted (versions 1)
+assistant-sales-region-central deleted (versions 1)
+assistant-sales-region-south deleted (versions 1)
+assistant-team-support deleted (versions 2, 1)
+assistant-team-field-sales deleted (versions 1)
+assistant-team-legal-compliance deleted (versions 1)
+assistant-structured-json deleted (versions 1)
+assistant-sales-region-north-team-support deleted (versions 1)
+assistant-sales-region-north-team-field-sales deleted (versions 1)
+assistant-sales-region-south-team-support deleted (versions 1)
+assistant-sales-region-south-team-field-sales deleted (versions 1)
+Deleted 11 instructions. Removed sample-state.json.
 ```
 
 `teardown` deletes each instruction's versions, newest first, then the instruction. It
