@@ -32,6 +32,10 @@ authorization behavior.
 - [amazon-quick-acl](amazon-quick-acl/SECURITY.md): why the embed harness must
   never accept a user identity from the request, and how Quick's identity
   reaches Bedrock's ACL filtering.
+- [retrieval-instructions](retrieval-instructions/SECURITY.md): why the
+  metadata filter must come from the authenticated tenant on the server, why a
+  retrieval instruction is not an isolation boundary, and what the tenant role
+  tag conditions do and do not cover.
 - [unified-search](unified-search/SECURITY.md): why
   `userContext.userId` must come from a verified token, and how to confirm
   what a given user is permitted to read.
