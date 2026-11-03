@@ -525,10 +525,10 @@ aws cloudtrail put-event-selectors --trail-name retrieval-instructions-sample-da
 aws cloudtrail start-logging --name retrieval-instructions-sample-data-events
 ```
 
-Wait two minutes before the first call, because calls right after `start-logging` can be
-missed. Then run one `ask` from the walkthrough. CloudTrail delivers log files to the
-bucket, usually within 15 minutes. The record has `eventName` `AgenticRetrieveStream` and
-`eventCategory` `Data`:
+Wait five minutes before the first call, because the trail can miss calls made in the first
+few minutes after `start-logging`. Then run one `ask` from the walkthrough. CloudTrail
+delivers log files to the bucket, usually within 15 minutes. The record has `eventName`
+`AgenticRetrieveStream` and `eventCategory` `Data`:
 
 ```text
 EXAMPLE-OUTPUT-PENDING
