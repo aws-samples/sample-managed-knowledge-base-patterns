@@ -2,9 +2,9 @@
  * Validation of the structured JSON reply that instructions/structured-json.json asks for.
  *
  * The answerFormat asks for exactly one JSON object and nothing else, with exactly the keys
- * answer, sources, confidence, followUpQuestion, and outOfScope. It doesn't specify their values,
- * so neither does this check. A reply wrapped in one markdown code fence is reported as `fenced`:
- * readable, but not strict.
+ * answer, sources, confidence, followUpQuestion, and outOfScope. It says when outOfScope is
+ * true but not what the values look like, so this check doesn't look at the values. A reply
+ * wrapped in one markdown code fence is reported as `fenced`: readable, but not strict.
  */
 
 export const ANSWER_KEYS = [

@@ -63,7 +63,7 @@ def test_non_json_replies_fail(reply: str | None, parse_class: str) -> None:
     ],
 )
 def test_any_value_passes(patch: dict[str, Any]) -> None:
-    # The answerFormat names the keys and not their values, so the values aren't checked.
+    # The answerFormat doesn't say what the values look like, so they aren't checked.
     check = validate_reply(json.dumps({**VALID, **patch}))
     assert (check.strict_valid, check.errors, check.value) == (True, [], {**VALID, **patch})
 

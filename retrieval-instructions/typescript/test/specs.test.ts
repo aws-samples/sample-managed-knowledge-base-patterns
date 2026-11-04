@@ -24,7 +24,8 @@ const POST_ANSWER_FORMAT =
   'Reply with exactly one JSON object and nothing else. Do not use markdown, do not use ' +
   'code fences, and do not write any text before or after the object. The object has ' +
   'exactly these five keys and no others: ' +
-  '"answer", "sources", "confidence", "followUpQuestion", "outOfScope".';
+  '"answer", "sources", "confidence", "followUpQuestion", "outOfScope". ' +
+  'If you cannot answer, set "outOfScope" to true.';
 const GOOD = {
   key: 'sales-region-north',
   kind: 'region',

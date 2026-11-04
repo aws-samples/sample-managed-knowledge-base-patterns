@@ -55,7 +55,7 @@ describe('structured JSON validator', () => {
     expect(check.value).toBeNull();
   });
 
-  // The answerFormat names the keys and not their values, so the values aren't checked.
+  // The answerFormat doesn't say what the values look like, so they aren't checked.
   it.each<Record<string, unknown>>([
     { answer: '' },
     { sources: [{ file: 'a.md' }, 1] },

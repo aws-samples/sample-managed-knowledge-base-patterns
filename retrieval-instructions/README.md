@@ -661,11 +661,12 @@ This is the whole `answerFormat`, the text the post shows. In
 Reply with exactly one JSON object and nothing else. Do not use markdown, do not use code
 fences, and do not write any text before or after the object. The object has exactly these
 five keys and no others: "answer", "sources", "confidence", "followUpQuestion", "outOfScope".
+If you cannot answer, set "outOfScope" to true.
 ```
 
-It names the keys but not their values, so the check doesn't look at the values. A reply
-in a code fence, or with text before or after the object, fails the check, and the
-command exits with code 1.
+It names the keys and says when `outOfScope` is true, but not what the values look like,
+so the check doesn't look at the values. A reply in a code fence, or with text before or
+after the object, fails the check, and the command exits with code 1.
 
 ### 9. Query two knowledge bases with a filter each
 
