@@ -1,0 +1,27 @@
+{
+  "command": "ask",
+  "stream": "ask-team.json",
+  "tenant": "team-support",
+  "instruction": "assistant-team-support",
+  "version": "2",
+  "requestIndex": 0,
+  "trace": false,
+  "tenantLine": null,
+  "filter": {
+    "orAll": [
+      {
+        "equals": {
+          "key": "audience_team",
+          "value": "all"
+        }
+      },
+      {
+        "equals": {
+          "key": "audience_team",
+          "value": "team-support"
+        }
+      }
+    ]
+  },
+  "question": "What is the return window for an opened AnySmartProduct-5?"
+}

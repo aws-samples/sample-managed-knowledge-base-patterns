@@ -1,0 +1,9 @@
+Tenant: sales-region-north
+Other tenant: sales-region-central
+  check  role            action                                                             expected  observed  result
+  1      applier         apply assistant-sales-region-north                                 allow     allow     PASS
+  2      applier         apply assistant-sales-region-central                               deny      deny      PASS
+  3      tenant admin    tag assistant-sales-region-central with tenant=sales-region-north  deny      deny      PASS
+  4      tenant admin    tag assistant-sales-region-north with app=verify-abac-check        deny      deny      PASS
+  5      platform admin  read assistant-sales-region-central                                allow     allow     PASS
+Result: PASS (5 of 5 checks as expected)

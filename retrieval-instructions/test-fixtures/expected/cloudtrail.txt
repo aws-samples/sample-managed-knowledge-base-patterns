@@ -1,0 +1,6 @@
+GetRetrievalInstruction calls made by Amazon Bedrock in the last 60 minutes:
+  time                  tenant              version  caller role          error
+  2026-10-01T12:02:00Z  team-support        2        ExampleApplierRole   AccessDenied
+  2026-10-01T12:05:00Z  sales-region-north  1        ExampleOperatorRole  none
+  2026-10-01T12:20:00Z  team-support        DRAFT    ExampleOperatorRole  none
+AgenticRetrieveStream events in event history for the same window: 2

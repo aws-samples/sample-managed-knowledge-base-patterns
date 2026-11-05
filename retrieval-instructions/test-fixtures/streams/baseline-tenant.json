@@ -1,0 +1,61 @@
+[
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Planning",
+        "status": "IN_PROGRESS",
+        "message": "Agent planning started"
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Retrieval",
+        "status": "SUCCEEDED",
+        "message": "Retrieval completed successfully",
+        "retrievalResponse": [
+          {
+            "content": {
+              "text": "Units bought in Sales Region Central can be returned within 45 days."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/sales-region-central/central-returns-addendum.md",
+              "_document_title": "central-returns-addendum.md",
+              "region": "sales-region-central",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "result": {
+      "results": [
+        {
+          "content": {
+            "text": "Units bought in Sales Region Central can be returned within 45 days."
+          },
+          "metadata": {
+            "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/sales-region-central/central-returns-addendum.md",
+            "_document_title": "central-returns-addendum.md",
+            "region": "sales-region-central",
+            "audience_team": "all",
+            "sensitivity": "public"
+          },
+          "sourceRetriever": {
+            "identifier": "ABCDE12345"
+          }
+        }
+      ],
+      "generatedResponse": {
+        "answer": "You can return an opened AnySmartProduct-5 bought in Sales Region Central within 45 days of the delivery date. A restocking fee of $12.00 applies."
+      }
+    }
+  }
+]

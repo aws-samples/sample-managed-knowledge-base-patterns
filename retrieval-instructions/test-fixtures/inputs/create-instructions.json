@@ -1,0 +1,80 @@
+{
+  "command": "create-instructions",
+  "region": "us-east-1",
+  "instructionCount": 12,
+  "quota": 50,
+  "needed": 4,
+  "results": [
+    {
+      "key": "sales-region-north",
+      "name": "assistant-sales-region-north",
+      "id": "abcde12345",
+      "result": "created",
+      "versions": [
+        "1"
+      ],
+      "live": "1"
+    },
+    {
+      "key": "sales-region-central",
+      "name": "assistant-sales-region-central",
+      "id": "klmno12345",
+      "result": "created",
+      "versions": [
+        "1"
+      ],
+      "live": "1"
+    },
+    {
+      "key": "sales-region-south",
+      "name": "assistant-sales-region-south",
+      "id": "uvwxy12345",
+      "result": "created",
+      "versions": [
+        "1"
+      ],
+      "live": "1"
+    },
+    {
+      "key": "team-support",
+      "name": "assistant-team-support",
+      "id": "fghij67890",
+      "result": "already created",
+      "versions": [
+        "1",
+        "2"
+      ],
+      "live": "1"
+    },
+    {
+      "key": "team-field-sales",
+      "name": "assistant-team-field-sales",
+      "id": "bcdef23456",
+      "result": "created",
+      "versions": [
+        "1"
+      ],
+      "live": "1"
+    },
+    {
+      "key": "team-legal-compliance",
+      "name": "assistant-team-legal-compliance",
+      "id": "cdefg34567",
+      "result": "recovered",
+      "versions": [
+        "1"
+      ],
+      "live": "1"
+    },
+    {
+      "key": "structured-json",
+      "name": "assistant-structured-json",
+      "id": "pqrst67890",
+      "result": "versions recorded",
+      "versions": [
+        "1"
+      ],
+      "live": "1"
+    }
+  ]
+}

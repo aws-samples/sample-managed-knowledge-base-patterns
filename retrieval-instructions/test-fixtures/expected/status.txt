@@ -1,0 +1,13 @@
+Region: us-east-1
+Stack: RetrievalInstructionsSample (CREATE_COMPLETE)
+Tenant roles: none
+Knowledge bases:
+  knowledge base  id          data source  latest ingestion  started               scanned  indexed  failed
+  shared          ABCDE12345  KLMNO12345   COMPLETE          2026-10-01T11:50:00Z  32       32       0
+  south           FGHIJ67890  PQRST67890   COMPLETE          2026-10-01T11:50:02Z  16       16       0
+Retrieval instructions in this account and Region: 9 of 50 (41 free)
+Sample instructions:
+  key                   name                            status     latest version  live  canary
+  sales-region-north    assistant-sales-region-north    ACTIVE     1               1     none
+  sales-region-central  assistant-sales-region-central  not found  -               1     none
+  team-support          assistant-team-support          ACTIVE     2               1     2 (1 in 5)

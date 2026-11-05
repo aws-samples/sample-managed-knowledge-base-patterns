@@ -1,0 +1,13 @@
+{
+  "command": "structured-json",
+  "stream": "structured-json-valid.json",
+  "instruction": "assistant-structured-json",
+  "version": "1",
+  "filter": {
+    "equals": {
+      "key": "audience_team",
+      "value": "all"
+    }
+  },
+  "question": "Can I return an opened AnySmartProduct-5?"
+}

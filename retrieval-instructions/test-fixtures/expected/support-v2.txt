@@ -1,0 +1,7 @@
+Updated assistant-team-support (fghij67890) and created version 2.
+Change: answerFormat gains a final line 'Ticket ref: pending' after the 'Next action:' line; every other field is unchanged.
+Release pins are unchanged:
+  key                 name                          latest version  live  canary
+  sales-region-north  assistant-sales-region-north  1               1     none
+  team-support        assistant-team-support        2               1     none
+To send one request in five to version 2, run: release set --tenant team-support --live 1 --canary 2 --every 5

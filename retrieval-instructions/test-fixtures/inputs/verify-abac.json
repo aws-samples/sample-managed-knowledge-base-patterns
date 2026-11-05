@@ -1,0 +1,37 @@
+{
+  "command": "verify-abac",
+  "tenant": "sales-region-north",
+  "other": "sales-region-central",
+  "checks": [
+    {
+      "role": "applier",
+      "action": "apply assistant-sales-region-north",
+      "expected": "allow",
+      "observed": "allow"
+    },
+    {
+      "role": "applier",
+      "action": "apply assistant-sales-region-central",
+      "expected": "deny",
+      "observed": "deny"
+    },
+    {
+      "role": "tenant admin",
+      "action": "tag assistant-sales-region-central with tenant=sales-region-north",
+      "expected": "deny",
+      "observed": "deny"
+    },
+    {
+      "role": "tenant admin",
+      "action": "tag assistant-sales-region-north with app=verify-abac-check",
+      "expected": "deny",
+      "observed": "deny"
+    },
+    {
+      "role": "platform admin",
+      "action": "read assistant-sales-region-central",
+      "expected": "allow",
+      "observed": "allow"
+    }
+  ]
+}

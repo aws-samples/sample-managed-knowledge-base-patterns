@@ -1,0 +1,10 @@
+node_modules/
+cdk.out*/
+coverage/
+.venv*/
+package-lock.json
+# The corpus is copied byte for byte, and both languages read and write the test
+# fixtures byte for byte, so the formatter must not rewrite either.
+corpus/
+test-fixtures/
+sample-state.json

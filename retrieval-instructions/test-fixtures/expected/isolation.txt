@@ -1,0 +1,25 @@
+Tenant: sales-region-north
+Question: What is the return window, and is there a known issue with the AnySmartProduct-5 firmware?
+
+Without the tenant filter:
+  step                  document                     scope                 entitled
+  SpeculativeRetrieval  north-returns-addendum.md    sales-region-north    yes
+  SpeculativeRetrieval  central-returns-addendum.md  sales-region-central  no
+  SpeculativeRetrieval  south-returns-addendum.md    sales-region-south    no
+  Retrieval             north-returns-addendum.md    sales-region-north    yes
+  Retrieval             eng-known-issue-ki-4471.md   team-engineering      no
+  Retrieval             support-ticket-playbook.md   team-support          no
+  result                north-returns-addendum.md    sales-region-north    yes
+  result                eng-known-issue-ki-4471.md   team-engineering      no
+  Outside the tenant's entitlement: 4 of 5 documents
+
+With the tenant filter:
+  step                  document                          scope               entitled
+  SpeculativeRetrieval  north-returns-addendum.md         sales-region-north  yes
+  SpeculativeRetrieval  global-returns-policy-v2-0.md     global              yes
+  Retrieval             north-returns-addendum.md         sales-region-north  yes
+  Retrieval             holiday-return-extension-2026.md  global              yes
+  result                north-returns-addendum.md         sales-region-north  yes
+  result                global-returns-policy-v2-0.md     global              yes
+  Outside the tenant's entitlement: 0 of 3 documents
+Result: PASS (the filtered request retrieved only documents the tenant is entitled to)

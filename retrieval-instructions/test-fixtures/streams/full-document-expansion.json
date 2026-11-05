@@ -1,0 +1,73 @@
+[
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Planning",
+        "status": "IN_PROGRESS",
+        "message": "Agent planning started",
+        "appliedInstruction": {
+          "id": "abcde12345",
+          "version": "1"
+        }
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "FullDocumentExpansion",
+        "status": "IN_PROGRESS",
+        "message": "Starting full document expansion for document: s3://amzn-s3-demo-bucket/docs/sales-region-north/north-returns-addendum.md",
+        "retrievalMetadata": [
+          {
+            "identifier": "ABCDE12345",
+            "retrievalType": "BedrockKnowledgeBase"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "FullDocumentExpansion",
+        "status": "SUCCEEDED",
+        "message": "Full document expansion completed successfully",
+        "retrievalMetadata": [
+          {
+            "identifier": "ABCDE12345",
+            "retrievalType": "BedrockKnowledgeBase"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "FullDocumentExpansion",
+        "status": "IN_PROGRESS",
+        "message": "Starting full document expansion",
+        "retrievalMetadata": [
+          {
+            "identifier": "ABCDE12345",
+            "retrievalType": "BedrockKnowledgeBase"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Planning",
+        "status": "SUCCEEDED",
+        "message": "Agent planning completed",
+        "appliedInstruction": {
+          "id": "abcde12345",
+          "version": "1"
+        }
+      }
+    }
+  }
+]

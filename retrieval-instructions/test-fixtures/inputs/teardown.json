@@ -1,0 +1,35 @@
+{
+  "command": "teardown",
+  "outcomes": [
+    {
+      "name": "assistant-sales-region-north",
+      "result": "deleted",
+      "versions": [
+        "1"
+      ],
+      "reason": null
+    },
+    {
+      "name": "assistant-team-support",
+      "result": "deleted",
+      "versions": [
+        "2",
+        "1"
+      ],
+      "reason": null
+    },
+    {
+      "name": "assistant-sales-region-central",
+      "result": "already deleted",
+      "versions": [],
+      "reason": null
+    },
+    {
+      "name": "assistant-structured-json",
+      "result": "skipped",
+      "versions": [],
+      "reason": "not tagged app=retrieval-instructions-sample"
+    }
+  ],
+  "stateFileRemoved": true
+}

@@ -1,0 +1,37 @@
+{
+  "Events": [
+    {
+      "EventName": "GetRetrievalInstruction",
+      "EventSource": "bedrock.amazonaws.com",
+      "ReadOnly": "true",
+      "EventTime": "2026-10-01T12:20:00Z",
+      "Username": "example-session",
+      "CloudTrailEvent": "{\"eventVersion\": \"1.11\", \"userIdentity\": {\"type\": \"AssumedRole\", \"arn\": \"arn:aws:sts::123456789012:assumed-role/ExampleOperatorRole/example-session\", \"accountId\": \"123456789012\", \"sessionContext\": {\"sessionIssuer\": {\"type\": \"Role\", \"arn\": \"arn:aws:iam::123456789012:role/ExampleOperatorRole\", \"userName\": \"ExampleOperatorRole\"}}, \"invokedBy\": \"bedrock.amazonaws.com\"}, \"eventTime\": \"2026-10-01T12:20:00Z\", \"eventSource\": \"bedrock.amazonaws.com\", \"eventName\": \"GetRetrievalInstruction\", \"awsRegion\": \"us-east-1\", \"requestParameters\": {\"retrievalInstructionId\": \"fghij67890\"}, \"responseElements\": null, \"readOnly\": true, \"eventType\": \"AwsApiCall\", \"managementEvent\": true, \"recipientAccountId\": \"123456789012\", \"eventCategory\": \"Management\"}"
+    },
+    {
+      "EventName": "GetRetrievalInstruction",
+      "EventSource": "bedrock.amazonaws.com",
+      "ReadOnly": "true",
+      "EventTime": "2026-10-01T12:15:00Z",
+      "Username": "example-session",
+      "CloudTrailEvent": "{\"eventVersion\": \"1.11\", \"userIdentity\": {\"type\": \"AssumedRole\", \"arn\": \"arn:aws:sts::123456789012:assumed-role/ExampleOperatorRole/example-session\", \"accountId\": \"123456789012\", \"sessionContext\": {\"sessionIssuer\": {\"type\": \"Role\", \"arn\": \"arn:aws:iam::123456789012:role/ExampleOperatorRole\", \"userName\": \"ExampleOperatorRole\"}}}, \"eventTime\": \"2026-10-01T12:15:00Z\", \"eventSource\": \"bedrock.amazonaws.com\", \"eventName\": \"GetRetrievalInstruction\", \"awsRegion\": \"us-east-1\", \"requestParameters\": {\"retrievalInstructionId\": \"abcde12345\"}, \"responseElements\": null, \"readOnly\": true, \"eventType\": \"AwsApiCall\", \"managementEvent\": true, \"recipientAccountId\": \"123456789012\", \"eventCategory\": \"Management\"}"
+    },
+    {
+      "EventName": "AgenticRetrieveStream",
+      "EventSource": "bedrock.amazonaws.com",
+      "ReadOnly": "true",
+      "EventTime": "2026-10-01T12:10:00Z",
+      "Username": "example-session",
+      "CloudTrailEvent": "{\"eventVersion\": \"1.11\", \"userIdentity\": {\"type\": \"AssumedRole\", \"arn\": \"arn:aws:sts::123456789012:assumed-role/ExampleOperatorRole/example-session\", \"accountId\": \"123456789012\", \"sessionContext\": {\"sessionIssuer\": {\"type\": \"Role\", \"arn\": \"arn:aws:iam::123456789012:role/ExampleOperatorRole\", \"userName\": \"ExampleOperatorRole\"}}, \"invokedBy\": \"bedrock.amazonaws.com\"}, \"eventTime\": \"2026-10-01T12:10:00Z\", \"eventSource\": \"bedrock.amazonaws.com\", \"eventName\": \"AgenticRetrieveStream\", \"awsRegion\": \"us-east-1\", \"requestParameters\": null, \"responseElements\": null, \"readOnly\": true, \"eventType\": \"AwsApiCall\", \"managementEvent\": false, \"recipientAccountId\": \"123456789012\", \"eventCategory\": \"Data\"}"
+    },
+    {
+      "EventName": "GetRetrievalInstruction",
+      "EventSource": "bedrock.amazonaws.com",
+      "ReadOnly": "true",
+      "EventTime": "2026-10-01T12:05:00Z",
+      "Username": "example-session",
+      "CloudTrailEvent": "{\"eventVersion\": \"1.11\", \"userIdentity\": {\"type\": \"AssumedRole\", \"arn\": \"arn:aws:sts::123456789012:assumed-role/ExampleOperatorRole/example-session\", \"accountId\": \"123456789012\", \"sessionContext\": {\"sessionIssuer\": {\"type\": \"Role\", \"arn\": \"arn:aws:iam::123456789012:role/ExampleOperatorRole\", \"userName\": \"ExampleOperatorRole\"}}, \"invokedBy\": \"bedrock.amazonaws.com\"}, \"eventTime\": \"2026-10-01T12:05:00Z\", \"eventSource\": \"bedrock.amazonaws.com\", \"eventName\": \"GetRetrievalInstruction\", \"awsRegion\": \"us-east-1\", \"requestParameters\": {\"retrievalInstructionId\": \"abcde12345\", \"retrievalInstructionVersion\": \"1\"}, \"responseElements\": null, \"readOnly\": true, \"eventType\": \"AwsApiCall\", \"managementEvent\": true, \"recipientAccountId\": \"123456789012\", \"eventCategory\": \"Management\"}"
+    }
+  ],
+  "NextToken": "example-next-token"
+}

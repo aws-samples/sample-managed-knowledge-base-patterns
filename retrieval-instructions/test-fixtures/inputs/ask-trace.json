@@ -1,0 +1,37 @@
+{
+  "command": "ask",
+  "stream": "ask-region.json",
+  "tenant": "sales-region-central",
+  "instruction": "assistant-sales-region-central",
+  "version": "1",
+  "requestIndex": null,
+  "trace": true,
+  "tenantLine": "Customer sales region: Sales Region Central.",
+  "filter": {
+    "andAll": [
+      {
+        "equals": {
+          "key": "audience_team",
+          "value": "all"
+        }
+      },
+      {
+        "orAll": [
+          {
+            "equals": {
+              "key": "region",
+              "value": "global"
+            }
+          },
+          {
+            "equals": {
+              "key": "region",
+              "value": "sales-region-central"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "question": "How many days do I have to return an opened AnySmartProduct-5?"
+}

@@ -1,0 +1,10 @@
+Instruction: assistant-structured-json version 1
+Applied: pqrst67890 version 1
+Filter: audience_team = all
+Question: Can I return an opened AnySmartProduct-5?
+Reply:
+```json
+{"answer": "You can return an opened unit within 30 days of the delivery date under the global returns policy. A restocking fee of $10.00 applies.", "sources": ["global-returns-policy-v2-0.md"], "confidence": "high", "followUpQuestion": "In which sales region did you buy the unit?", "outOfScope": false}
+```
+Validation: FAIL (fenced)
+  - wrapped in a markdown code fence

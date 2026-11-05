@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+# Build output
+dist/
+*.tsbuildinfo
+# Test and coverage output
+coverage/
+# CDK synthesized cloud assemblies.
+#
+# `cdk.out*` rather than `cdk.out`, because `--output` can point anywhere. A cloud
+# assembly holds the resolved template, which embeds the deploying AWS account ID.
+cdk.out*/
+.cdk.staging/
+# Cached CDK context is account- and Region-specific.
+cdk.context.json
+# Deploy outputs and cdk-nag validation output. They can hold account and resource IDs.
+cdk-outputs.json
+validation-report.json
+policy-validation-report.json
+# Python environments (.venv, and .venv-py310 for the minimum-version test run)
+.venv*/
+# Python caches
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+# The state file both programs share. It holds instruction IDs, ARNs, and the account ID.
+sample-state.json
+sample-state.json.tmp
+# Local working notes and output. Untracked so live resource IDs never reach the repository.
+notes/
+output/
+# Environment files may hold real values. `.env.example` files are tracked templates.
+.env
+.env.*
+!.env.example
+# Credential and key material
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+# Editor and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+# Logs
+*.log

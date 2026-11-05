@@ -1,0 +1,722 @@
+[
+  {
+    "tenant": "sales-region-north",
+    "region": null,
+    "tenantLine": "Customer sales region: Sales Region North.",
+    "filter": {
+      "andAll": [
+        {
+          "equals": {
+            "key": "audience_team",
+            "value": "all"
+          }
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-north"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team = all; region in (global, sales-region-north)"
+  },
+  {
+    "tenant": "sales-region-central",
+    "region": null,
+    "tenantLine": "Customer sales region: Sales Region Central.",
+    "filter": {
+      "andAll": [
+        {
+          "equals": {
+            "key": "audience_team",
+            "value": "all"
+          }
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-central"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team = all; region in (global, sales-region-central)"
+  },
+  {
+    "tenant": "sales-region-south",
+    "region": null,
+    "tenantLine": "Customer sales region: Sales Region South.",
+    "filter": {
+      "andAll": [
+        {
+          "equals": {
+            "key": "audience_team",
+            "value": "all"
+          }
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-south"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team = all; region in (global, sales-region-south)"
+  },
+  {
+    "tenant": "team-support",
+    "region": null,
+    "tenantLine": null,
+    "filter": {
+      "orAll": [
+        {
+          "equals": {
+            "key": "audience_team",
+            "value": "all"
+          }
+        },
+        {
+          "equals": {
+            "key": "audience_team",
+            "value": "team-support"
+          }
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-support)"
+  },
+  {
+    "tenant": "team-field-sales",
+    "region": null,
+    "tenantLine": null,
+    "filter": {
+      "orAll": [
+        {
+          "equals": {
+            "key": "audience_team",
+            "value": "all"
+          }
+        },
+        {
+          "equals": {
+            "key": "audience_team",
+            "value": "team-field-sales"
+          }
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-field-sales)"
+  },
+  {
+    "tenant": "team-legal-compliance",
+    "region": null,
+    "tenantLine": null,
+    "filter": {
+      "orAll": [
+        {
+          "equals": {
+            "key": "audience_team",
+            "value": "all"
+          }
+        },
+        {
+          "equals": {
+            "key": "audience_team",
+            "value": "team-legal-compliance"
+          }
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-legal-compliance)"
+  },
+  {
+    "tenant": "team-support",
+    "region": "sales-region-north",
+    "tenantLine": "Customer sales region: Sales Region North.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-support"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-north"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-support); region in (global, sales-region-north)"
+  },
+  {
+    "tenant": "team-support",
+    "region": "sales-region-central",
+    "tenantLine": "Customer sales region: Sales Region Central.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-support"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-central"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-support); region in (global, sales-region-central)"
+  },
+  {
+    "tenant": "team-support",
+    "region": "sales-region-south",
+    "tenantLine": "Customer sales region: Sales Region South.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-support"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-south"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-support); region in (global, sales-region-south)"
+  },
+  {
+    "tenant": "team-field-sales",
+    "region": "sales-region-north",
+    "tenantLine": "Customer sales region: Sales Region North.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-field-sales"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-north"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-field-sales); region in (global, sales-region-north)"
+  },
+  {
+    "tenant": "team-field-sales",
+    "region": "sales-region-central",
+    "tenantLine": "Customer sales region: Sales Region Central.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-field-sales"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-central"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-field-sales); region in (global, sales-region-central)"
+  },
+  {
+    "tenant": "team-field-sales",
+    "region": "sales-region-south",
+    "tenantLine": "Customer sales region: Sales Region South.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-field-sales"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-south"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-field-sales); region in (global, sales-region-south)"
+  },
+  {
+    "tenant": "team-legal-compliance",
+    "region": "sales-region-north",
+    "tenantLine": "Customer sales region: Sales Region North.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-legal-compliance"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-north"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-legal-compliance); region in (global, sales-region-north)"
+  },
+  {
+    "tenant": "team-legal-compliance",
+    "region": "sales-region-central",
+    "tenantLine": "Customer sales region: Sales Region Central.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-legal-compliance"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-central"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-legal-compliance); region in (global, sales-region-central)"
+  },
+  {
+    "tenant": "team-legal-compliance",
+    "region": "sales-region-south",
+    "tenantLine": "Customer sales region: Sales Region South.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-legal-compliance"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-south"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-legal-compliance); region in (global, sales-region-south)"
+  },
+  {
+    "tenant": "sales-region-north.team-support",
+    "region": null,
+    "tenantLine": "Customer sales region: Sales Region North.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-support"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-north"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-support); region in (global, sales-region-north)"
+  },
+  {
+    "tenant": "sales-region-north.team-field-sales",
+    "region": null,
+    "tenantLine": "Customer sales region: Sales Region North.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-field-sales"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-north"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-field-sales); region in (global, sales-region-north)"
+  },
+  {
+    "tenant": "sales-region-south.team-support",
+    "region": null,
+    "tenantLine": "Customer sales region: Sales Region South.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-support"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-south"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-support); region in (global, sales-region-south)"
+  },
+  {
+    "tenant": "sales-region-south.team-field-sales",
+    "region": null,
+    "tenantLine": "Customer sales region: Sales Region South.",
+    "filter": {
+      "andAll": [
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "all"
+              }
+            },
+            {
+              "equals": {
+                "key": "audience_team",
+                "value": "team-field-sales"
+              }
+            }
+          ]
+        },
+        {
+          "orAll": [
+            {
+              "equals": {
+                "key": "region",
+                "value": "global"
+              }
+            },
+            {
+              "equals": {
+                "key": "region",
+                "value": "sales-region-south"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "describe": "audience_team in (all, team-field-sales); region in (global, sales-region-south)"
+  },
+  {
+    "tenant": "structured-json",
+    "region": null,
+    "tenantLine": null,
+    "filter": {
+      "equals": {
+        "key": "audience_team",
+        "value": "all"
+      }
+    },
+    "describe": "audience_team = all"
+  }
+]
