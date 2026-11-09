@@ -1,0 +1,36 @@
+{
+  "questions": [
+    {
+      "id": "overspend",
+      "title": "Ask a question across tables and documents",
+      "question": "In fiscal Q2 of FY2026, which cost center had the largest overspend in controllable spend, as the finance policy defines it? Compare the Actuals and Budget sheets of the FY2026 P&L workbook and give the cost center and the overspend in US dollars.",
+      "expected": "CC-3010 (Platform) is over by 124,559.90 USD: actual 394,859.90 against a budget of 270,300.00. Counting every operating expense account instead of only controllable spend gives 133,434.05."
+    },
+    {
+      "id": "revised-budget",
+      "title": "Apply memo revisions to quarterly totals",
+      "question": "Did total operating expense for fiscal Q3 of FY2026 stay within the Q3 budget as revised in the Q3 close memo? Give the actual Q3 operating expense, the revised Q3 budget and the difference, in US dollars.",
+      "expected": "Yes. Actual 9,520,827.60 USD against a revised budget of 9,570,400.00 (the original 9,480,400.00 plus the approved revisions), so 49,572.40 under."
+    },
+    {
+      "id": "commentary",
+      "title": "Apply a policy threshold after budget revisions",
+      "question": "Applying the budget revisions approved in the Q3 close memo, which departments must write variance commentary for fiscal Q3 of FY2026 under the finance policy?",
+      "expected": "Sales (-6.50%), Engineering (+5.79%), and Operations (+6.20%)."
+    },
+    {
+      "id": "conversation",
+      "title": "Continue the conversation",
+      "turns": [
+        {
+          "question": "Calculate the Customer Support department's actual operating expense and its budget for fiscal Q2 of FY2026 from the Actuals and Budget sheets of the final FY2026 P&L workbook, in US dollars.",
+          "expected": "Actual 1,034,192.40 USD against a budget of 920,100.00 (12.40% over)."
+        },
+        {
+          "question": "Under the finance policy, does that variance need written commentary, and does anyone besides the Controller have to review it?",
+          "expected": "Yes. At 12.40% over budget it needs written commentary, and because it exceeds 10%, the CFO, Nikki Wolf, also reviews it."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "bedrock:AgenticRetrieveStream",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["bedrock:Retrieve", "bedrock:GetDocumentContent"],
+      "Resource": "arn:aws:bedrock:<REGION>:<ACCOUNT_ID>:knowledge-base/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "bedrock:InvokeModelWithResponseStream",
+      "Resource": "*"
+    }
+  ]
+}
