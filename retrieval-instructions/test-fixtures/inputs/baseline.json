@@ -1,0 +1,8 @@
+{
+  "command": "baseline",
+  "stream": "baseline.json",
+  "tenant": null,
+  "tenantLine": null,
+  "filter": null,
+  "question": "How many days do I have to return an opened AnySmartProduct-5?"
+}

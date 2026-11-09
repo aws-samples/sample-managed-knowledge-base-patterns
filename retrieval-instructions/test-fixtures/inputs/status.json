@@ -1,0 +1,63 @@
+{
+  "command": "status",
+  "region": "us-east-1",
+  "stackStatus": "CREATE_COMPLETE",
+  "tenantRoles": null,
+  "knowledgeBases": [
+    {
+      "label": "shared",
+      "knowledgeBaseId": "ABCDE12345",
+      "dataSourceId": "KLMNO12345",
+      "job": {
+        "status": "COMPLETE",
+        "startedAt": "2026-10-01T11:50:00Z",
+        "scanned": 32,
+        "indexed": 32,
+        "failed": 0
+      }
+    },
+    {
+      "label": "south",
+      "knowledgeBaseId": "FGHIJ67890",
+      "dataSourceId": "PQRST67890",
+      "job": {
+        "status": "COMPLETE",
+        "startedAt": "2026-10-01T11:50:02Z",
+        "scanned": 16,
+        "indexed": 16,
+        "failed": 0
+      }
+    }
+  ],
+  "instructionCount": 9,
+  "quota": 50,
+  "instructions": [
+    {
+      "key": "sales-region-north",
+      "name": "assistant-sales-region-north",
+      "status": "ACTIVE",
+      "latestVersion": "1",
+      "live": "1",
+      "canary": null
+    },
+    {
+      "key": "sales-region-central",
+      "name": "assistant-sales-region-central",
+      "status": null,
+      "latestVersion": null,
+      "live": "1",
+      "canary": null
+    },
+    {
+      "key": "team-support",
+      "name": "assistant-team-support",
+      "status": "ACTIVE",
+      "latestVersion": "2",
+      "live": "1",
+      "canary": {
+        "version": "2",
+        "every": 5
+      }
+    }
+  ]
+}

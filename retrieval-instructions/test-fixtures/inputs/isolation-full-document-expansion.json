@@ -1,0 +1,7 @@
+{
+  "command": "isolation",
+  "tenant": "sales-region-north",
+  "question": "What is the return window, and is there a known issue with the AnySmartProduct-5 firmware?",
+  "unfiltered": "isolation-unfiltered.json",
+  "filtered": "full-document-expansion.json"
+}

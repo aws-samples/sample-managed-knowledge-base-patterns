@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "account": "123456789012",
+  "region": "us-east-1",
+  "instructions": {
+    "sales-region-north": {
+      "name": "assistant-sales-region-north",
+      "id": "abcde12345",
+      "arn": "arn:aws:bedrock:us-east-1:123456789012:retrieval-instruction/abcde12345",
+      "versions": [
+        "1"
+      ],
+      "createdBy": "python"
+    },
+    "team-support": {
+      "name": "assistant-team-support",
+      "id": "fghij67890",
+      "arn": "arn:aws:bedrock:us-east-1:123456789012:retrieval-instruction/fghij67890",
+      "versions": [
+        "1",
+        "2"
+      ],
+      "createdBy": "typescript"
+    }
+  },
+  "release": {
+    "sales-region-north": {
+      "live": "1"
+    },
+    "team-support": {
+      "live": "1",
+      "canary": {
+        "version": "2",
+        "every": 5
+      }
+    }
+  },
+  "updatedBy": "typescript"
+}

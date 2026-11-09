@@ -1,0 +1,41 @@
+{
+  "command": "multi-kb",
+  "stream": "multi-kb.json",
+  "instruction": "assistant-sales-region-south",
+  "version": "1",
+  "sharedKnowledgeBaseId": "ABCDE12345",
+  "southKnowledgeBaseId": "FGHIJ67890",
+  "sharedFilter": {
+    "andAll": [
+      {
+        "equals": {
+          "key": "audience_team",
+          "value": "all"
+        }
+      },
+      {
+        "equals": {
+          "key": "region",
+          "value": "global"
+        }
+      }
+    ]
+  },
+  "southFilter": {
+    "andAll": [
+      {
+        "equals": {
+          "key": "audience_team",
+          "value": "all"
+        }
+      },
+      {
+        "equals": {
+          "key": "region",
+          "value": "sales-region-south"
+        }
+      }
+    ]
+  },
+  "question": "How many days do I have to return an unopened AnySmartProduct-6?"
+}

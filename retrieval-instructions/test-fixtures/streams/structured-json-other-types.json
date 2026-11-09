@@ -1,0 +1,65 @@
+[
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Planning",
+        "status": "IN_PROGRESS",
+        "message": "Agent planning started",
+        "appliedInstruction": {
+          "id": "pqrst67890",
+          "version": "1"
+        }
+      }
+    }
+  },
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Retrieval",
+        "status": "SUCCEEDED",
+        "message": "Retrieval completed successfully",
+        "retrievalResponse": [
+          {
+            "content": {
+              "text": "A customer can return a unit within 30 days of the delivery date."
+            },
+            "metadata": {
+              "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/global/global-returns-policy-v2-0.md",
+              "_document_title": "global-returns-policy-v2-0.md",
+              "region": "global",
+              "audience_team": "all",
+              "sensitivity": "public"
+            },
+            "sourceRetriever": {
+              "identifier": "ABCDE12345"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "result": {
+      "results": [
+        {
+          "content": {
+            "text": "A customer can return a unit within 30 days of the delivery date."
+          },
+          "metadata": {
+            "_source_uri": "https://amzn-s3-demo-bucket.s3.amazonaws.com/docs/global/global-returns-policy-v2-0.md",
+            "_document_title": "global-returns-policy-v2-0.md",
+            "region": "global",
+            "audience_team": "all",
+            "sensitivity": "public"
+          },
+          "sourceRetriever": {
+            "identifier": "ABCDE12345"
+          }
+        }
+      ],
+      "generatedResponse": {
+        "answer": "{\"answer\": \"You can return an opened unit within 30 days of the delivery date under the global returns policy.\", \"sources\": [{\"file\": \"global-returns-policy-v2-0.md\", \"section\": \"Política de devoluciones\"}], \"confidence\": 0.9, \"followUpQuestion\": null, \"outOfScope\": false}"
+      }
+    }
+  }
+]

@@ -1,0 +1,5 @@
+{
+  "key": "team-support",
+  "change": "answerFormat gains a final line 'Ticket ref: pending' after the 'Next action:' line; every other field is unchanged.",
+  "answerFormat": "Write a ticket note. The first line is exactly 'Ticket note:'. Then write two to five lines that each start with '- '. Then write a line that starts with 'Next action:' and names one concrete next step. The very last line is exactly 'Ticket ref: pending'. Keep the whole note under 120 words."
+}

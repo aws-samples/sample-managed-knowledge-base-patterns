@@ -1,0 +1,28 @@
+{
+  "Events": [
+    {
+      "EventName": "GetRetrievalInstruction",
+      "EventSource": "bedrock.amazonaws.com",
+      "ReadOnly": "true",
+      "EventTime": "2026-10-01T12:03:00Z",
+      "Username": "example-session",
+      "CloudTrailEvent": "{\"eventVersion\": \"1.11\", \"userIdentity\": {\"type\": \"AssumedRole\", \"arn\": \"arn:aws:sts::123456789012:assumed-role/ExampleOperatorRole/example-session\", \"accountId\": \"123456789012\", \"sessionContext\": {\"sessionIssuer\": {\"type\": \"Role\", \"arn\": \"arn:aws:iam::123456789012:role/ExampleOperatorRole\", \"userName\": \"ExampleOperatorRole\"}}, \"invokedBy\": \"bedrock.amazonaws.com\"}, \"eventTime\": \"2026-10-01T12:03:00Z\", \"eventSource\": \"bedrock.amazonaws.com\", \"eventName\": \"GetRetrievalInstruction\", \"awsRegion\": \"us-east-1\", \"requestParameters\": {\"retrievalInstructionId\": \"zyxwv98765\", \"retrievalInstructionVersion\": \"1\"}, \"responseElements\": null, \"readOnly\": true, \"eventType\": \"AwsApiCall\", \"managementEvent\": true, \"recipientAccountId\": \"123456789012\", \"eventCategory\": \"Management\"}"
+    },
+    {
+      "EventName": "GetRetrievalInstruction",
+      "EventSource": "bedrock.amazonaws.com",
+      "ReadOnly": "true",
+      "EventTime": "2026-10-01T12:02:00Z",
+      "Username": "example-session",
+      "CloudTrailEvent": "{\"eventVersion\": \"1.11\", \"userIdentity\": {\"type\": \"AssumedRole\", \"arn\": \"arn:aws:sts::123456789012:assumed-role/ExampleApplierRole/example-session\", \"accountId\": \"123456789012\", \"sessionContext\": {\"sessionIssuer\": {\"type\": \"Role\", \"arn\": \"arn:aws:iam::123456789012:role/ExampleApplierRole\", \"userName\": \"ExampleApplierRole\"}}, \"invokedBy\": \"bedrock.amazonaws.com\"}, \"eventTime\": \"2026-10-01T12:02:00Z\", \"eventSource\": \"bedrock.amazonaws.com\", \"eventName\": \"GetRetrievalInstruction\", \"awsRegion\": \"us-east-1\", \"requestParameters\": {\"retrievalInstructionId\": \"fghij67890\", \"retrievalInstructionVersion\": \"2\"}, \"responseElements\": null, \"readOnly\": true, \"eventType\": \"AwsApiCall\", \"managementEvent\": true, \"recipientAccountId\": \"123456789012\", \"eventCategory\": \"Management\", \"errorCode\": \"AccessDenied\", \"errorMessage\": \"User is not authorized to perform bedrock:GetRetrievalInstruction\"}"
+    },
+    {
+      "EventName": "AgenticRetrieveStream",
+      "EventSource": "bedrock.amazonaws.com",
+      "ReadOnly": "true",
+      "EventTime": "2026-10-01T12:01:00Z",
+      "Username": "example-session",
+      "CloudTrailEvent": "{\"eventVersion\": \"1.11\", \"userIdentity\": {\"type\": \"AssumedRole\", \"arn\": \"arn:aws:sts::123456789012:assumed-role/ExampleApplierRole/example-session\", \"accountId\": \"123456789012\", \"sessionContext\": {\"sessionIssuer\": {\"type\": \"Role\", \"arn\": \"arn:aws:iam::123456789012:role/ExampleApplierRole\", \"userName\": \"ExampleApplierRole\"}}, \"invokedBy\": \"bedrock.amazonaws.com\"}, \"eventTime\": \"2026-10-01T12:01:00Z\", \"eventSource\": \"bedrock.amazonaws.com\", \"eventName\": \"AgenticRetrieveStream\", \"awsRegion\": \"us-east-1\", \"requestParameters\": null, \"responseElements\": null, \"readOnly\": true, \"eventType\": \"AwsApiCall\", \"managementEvent\": false, \"recipientAccountId\": \"123456789012\", \"eventCategory\": \"Data\"}"
+    }
+  ]
+}

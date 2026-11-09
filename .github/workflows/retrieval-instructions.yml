@@ -1,0 +1,120 @@
+name: retrieval-instructions
+
+# Scoped to one pattern. Patterns share no build system, so each gets its own
+# workflow filtered to its own directory: a change to another pattern must not
+# run this, and a change here must not run theirs. Repository-wide checks that
+# do not care about language live in repo.yml.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'retrieval-instructions/**'
+      - '.github/workflows/retrieval-instructions.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'retrieval-instructions/**'
+      - '.github/workflows/retrieval-instructions.yml'
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+defaults:
+  run:
+    working-directory: retrieval-instructions
+
+jobs:
+  verify:
+    name: Format, lint, type-check, test, synth
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: retrieval-instructions/package-lock.json
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+      # npm ci and uv sync --locked install exactly the committed lockfiles and
+      # fail if a manifest and its lockfile disagree.
+      - name: Install
+        run: |
+          npm ci
+          uv sync --locked
+      - name: Format check
+        run: |
+          npm run format:check
+          uv run --frozen ruff format --check python
+      # Blocking, not advisory. ESLint runs with --max-warnings 0.
+      - name: Lint
+        run: |
+          npm run lint
+          uv run --frozen ruff check python
+      - name: Type check
+        run: |
+          npm run build
+          uv run --frozen mypy --strict
+      # The infra tests synthesize the stack with cdk-nag AwsSolutionsChecks,
+      # so an unacknowledged finding fails here too.
+      - name: Test
+        run: |
+          npm test
+          uv run --frozen pytest
+      # The post says Python 3.10 or later. A separate environment keeps .venv.
+      - name: Test on Python 3.10
+        env:
+          UV_PROJECT_ENVIRONMENT: .venv-py310
+        run: uv run --locked --python 3.10 pytest
+      # cdk-nag v3 runs inside CDK's policy validation, so a rule violation
+      # fails synth. CI has no AWS credentials; the documented example account
+      # stands in, and nothing is deployed.
+      - name: Synthesize infrastructure
+        run: npm run synth:example
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: retrieval-instructions/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+  # pip-audit has no severity threshold, so any advisory blocks; accept one
+  # with --ignore-vuln and a written reason.
+  audit-python:
+    name: Python dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+      - name: Dependency audit
+        run: |
+          uv export --frozen --all-groups --no-emit-project --format requirements-txt --output-file "$RUNNER_TEMP/requirements.txt"
+          uvx pip-audit@2.10.0 --disable-pip --no-deps --vulnerability-service osv -r "$RUNNER_TEMP/requirements.txt"
+
+  # Advisory: a new advisory against a transitive dependency should be visible
+  # without blocking an unrelated change. Review when this goes red.
+  audit-moderate:
+    name: Dependency audit (moderate and above, advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: retrieval-instructions/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=moderate

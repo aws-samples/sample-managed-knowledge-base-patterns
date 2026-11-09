@@ -1,0 +1,20 @@
+Tenant: sales-region-south
+Instruction: assistant-sales-region-south version 1
+Applied: uvwxy12345 version 1
+Retrievers:
+  retriever  knowledge base  filter
+  shared     ABCDE12345      none (--no-filters)
+  south      FGHIJ67890      none (--no-filters)
+Message:
+  Customer sales region: Sales Region South.
+  How many days do I have to return an unopened AnySmartProduct-6?
+Answer:
+You can return an unopened AnySmartProduct-6 bought in Sales Region South within 14 days of the delivery date, with purchase evidence. A restocking fee of USD 25.00 applies to every return.
+Source: south-returns-addendum.md
+
+Documents:
+  retriever  document                           scope               entitled
+  shared     north-returns-addendum.md          sales-region-north  no
+  shared     field-sales-south-discount-cap.md  team-field-sales    no
+  south      south-returns-addendum.md          sales-region-south  yes
+  Outside the tenant's entitlement: 2 of 3 documents

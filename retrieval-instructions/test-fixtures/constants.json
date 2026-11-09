@@ -1,0 +1,63 @@
+{
+  "stackName": "RetrievalInstructionsSample",
+  "sampleTagKey": "app",
+  "sampleTagValue": "retrieval-instructions-sample",
+  "tenantTagKey": "tenant",
+  "sharedKnowledgeBaseName": "retrieval-instructions-sample-shared",
+  "sharedDataSourceName": "shared-corpus",
+  "southKnowledgeBaseName": "retrieval-instructions-sample-south",
+  "southDataSourceName": "south-corpus",
+  "outputKeys": {
+    "sharedKnowledgeBaseId": "SharedKnowledgeBaseId",
+    "sharedKnowledgeBaseArn": "SharedKnowledgeBaseArn",
+    "sharedDataSourceId": "SharedDataSourceId",
+    "southKnowledgeBaseId": "SouthKnowledgeBaseId",
+    "southKnowledgeBaseArn": "SouthKnowledgeBaseArn",
+    "southDataSourceId": "SouthDataSourceId",
+    "corpusBucketName": "CorpusBucketName",
+    "tenantRoleTenants": "TenantRoleTenants",
+    "platformAdminRoleArn": "PlatformAdminRoleArn"
+  },
+  "tenantOutputPrefixes": {
+    "applierRoleArn": "ApplierRoleArn",
+    "tenantAdminRoleArn": "TenantAdminRoleArn"
+  },
+  "tenantKeys": [
+    "sales-region-north",
+    "sales-region-central",
+    "sales-region-south",
+    "team-support",
+    "team-field-sales",
+    "team-legal-compliance"
+  ],
+  "regionKeys": [
+    "sales-region-north",
+    "sales-region-central",
+    "sales-region-south"
+  ],
+  "teamKeys": [
+    "team-support",
+    "team-field-sales",
+    "team-legal-compliance"
+  ],
+  "combinedKeys": [
+    "sales-region-north.team-support",
+    "sales-region-north.team-field-sales",
+    "sales-region-south.team-support",
+    "sales-region-south.team-field-sales"
+  ],
+  "structuredJsonKey": "structured-json",
+  "instructionNames": [
+    "assistant-sales-region-north",
+    "assistant-sales-region-central",
+    "assistant-sales-region-south",
+    "assistant-team-support",
+    "assistant-team-field-sales",
+    "assistant-team-legal-compliance",
+    "assistant-structured-json",
+    "assistant-sales-region-north-team-support",
+    "assistant-sales-region-north-team-field-sales",
+    "assistant-sales-region-south-team-support",
+    "assistant-sales-region-south-team-field-sales"
+  ]
+}

@@ -18,6 +18,7 @@ reasoning is usually the part worth reusing.
 | --- | --- |
 | [agentcore-access-control](agentcore-access-control/) | A managed knowledge base exposed as MCP tools through Amazon Bedrock AgentCore Gateway, where an AI agent searches on behalf of the signed-in user and layered defenses at the tool and resource layers stop the LLM from retrieving another user's documents. React, Python (Strands Agents), CDK. |
 | [amazon-quick-acl](amazon-quick-acl/) | Amazon Quick connected to a Bedrock Managed Knowledge Base and embedded in your own application, where document-level ACLs give two signed-in users different answers to the same question. React, Node, CDK. |
+| [retrieval-instructions](retrieval-instructions/) | Per-tenant retrieval instructions on a shared managed knowledge base, where each tenant gets its own voice, answer format, and pinned instruction version, a metadata filter built on the server keeps each tenant to its own documents, and IAM tag conditions limit which instruction a tenant role can apply. Python, TypeScript, CDK. |
 | [unified-search](unified-search/) | Enterprise search and chat over a managed knowledge base with document-level access control, where two authenticated users issuing the same query receive different documents and a third receives nothing. React, NestJS, CDK. |
 
 ## Getting one pattern

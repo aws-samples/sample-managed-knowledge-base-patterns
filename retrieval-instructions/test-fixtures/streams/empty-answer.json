@@ -1,0 +1,28 @@
+[
+  {
+    "traceEvent": {
+      "attributes": {
+        "step": "Planning",
+        "status": "IN_PROGRESS",
+        "message": "Agent planning started",
+        "appliedInstruction": {
+          "id": "abcde12345",
+          "version": "1"
+        }
+      }
+    }
+  },
+  {
+    "responseEvent": {
+      "text": "  "
+    }
+  },
+  {
+    "result": {
+      "results": [],
+      "generatedResponse": {
+        "answer": "   "
+      }
+    }
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "command": "baseline",
+  "stream": "baseline-tenant.json",
+  "tenant": "sales-region-central",
+  "tenantLine": "Customer sales region: Sales Region Central.",
+  "filter": {
+    "andAll": [
+      {
+        "equals": {
+          "key": "audience_team",
+          "value": "all"
+        }
+      },
+      {
+        "orAll": [
+          {
+            "equals": {
+              "key": "region",
+              "value": "global"
+            }
+          },
+          {
+            "equals": {
+              "key": "region",
+              "value": "sales-region-central"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "question": "How many days do I have to return an opened AnySmartProduct-5?"
+}
