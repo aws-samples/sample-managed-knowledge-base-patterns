@@ -1,8 +1,8 @@
-# Amazon Quick + Bedrock Managed Knowledge Base
+# AWS Quick + Bedrock Managed Knowledge Base
 
 Deploy an [Amazon Bedrock managed knowledge
 base](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-build-managed.html), connect
-it to **Amazon Quick** as a knowledge source, and surface it through Quick's chat agent,
+it to **AWS Quick** as a knowledge source, and surface it through Quick's chat agent,
 either in Quick directly or embedded in your own application.
 
 The headline behavior: **two users query the same knowledge base and get different
@@ -40,19 +40,19 @@ git clone --filter=blob:none --sparse \
 cd sample-managed-knowledge-base-patterns
 
 # Fetch only this sample
-git sparse-checkout set amazon-quick-acl
+git sparse-checkout set aws-quick-acl
 
-cd amazon-quick-acl
+cd aws-quick-acl
 ```
 
-Commands in this README run from the `amazon-quick-acl` directory unless a step says to
+Commands in this README run from the `aws-quick-acl` directory unless a step says to
 change into `infra/` or `webapp/`. To clone the whole repository instead, omit the
 `--sparse` and `--filter` flags and change into this directory afterward.
 
 ## Architecture
 
 ```
-infra/  (CDK)                          Amazon Quick                   webapp/ (optional)
+infra/  (CDK)                          AWS Quick                   webapp/ (optional)
 ┌────────────────────────────┐        ┌──────────────────┐          ┌──────────────────┐
 │ Bedrock managed KB         │◀───────│ Knowledge base   │          │ React shell      │
 │   (Bedrock owns the vector │        │ integration      │◀─────────│ embedQuickChat   │
@@ -75,11 +75,11 @@ their access logs is negligible. Connecting a managed knowledge base adds no Qui
 ([Quick billing for Bedrock knowledge
 bases](https://docs.aws.amazon.com/quick/latest/userguide/byo-bedrock-kb-billing.html)).
 
-The standing cost is Amazon Quick, and it depends on whether your account already uses it.
+The standing cost is AWS Quick, and it depends on whether your account already uses it.
 On an existing Quick account, this sample adds two **Professional** user subscriptions
 (`READER_PRO`) for the demo users. If you sign up for Quick to run it, the account also
 carries a monthly infrastructure fee and your administrator's Admin Pro seat. New Quick
-accounts may be eligible for a free trial. See [Amazon Quick
+accounts may be eligible for a free trial. See [AWS Quick
 pricing](https://aws.amazon.com/quicksuite/pricing/) for current rates and trial terms.
 
 Price the usage-based part against your own corpus size and query volume rather than this
@@ -89,13 +89,13 @@ sample, is how you stop paying for them. See [Cleanup](#cleanup).
 
 ## Prerequisites
 
-### Amazon Quick setup
+### AWS Quick setup
 
 Do these first. None of it is created by the CDK stack.
 
-1. **Create an Amazon Quick instance** in the target account, if you do not already have
+1. **Create an AWS Quick instance** in the target account, if you do not already have
    one. This is a separate signup from creating the AWS account itself: the wizard asks for
-   an account name, a Region, and an authentication method. See [Signing up for Amazon
+   an account name, a Region, and an authentication method. See [Signing up for AWS
    Quick](https://docs.aws.amazon.com/quick/latest/userguide/signing-up.html).
 
    The instance **must** be in `us-east-1`, `us-west-2`, `eu-west-1`, or `ap-southeast-2`.
@@ -105,7 +105,7 @@ Do these first. None of it is created by the CDK stack.
 
 2. **Confirm you have Quick administrator access.** Phase 3 grants Quick access to the
    knowledge base, either through Admin → Manage Account → AWS Resources or through the
-   Bedrock console's **Use with Amazon Quick** hand-off. Both are admin-only. An
+   Bedrock console's **Use with AWS Quick** hand-off. Both are admin-only. An
    author-level role is not sufficient.
 
 3. **Create two Quick users with the `READER_PRO` role and distinct email addresses.**
@@ -329,7 +329,7 @@ if yours doesn't include them, upgrade it or use the Bedrock console.
 To put syncs on a recurring schedule afterward, set a sync schedule on the data source
 through the console or `UpdateDataSource`.
 
-## Phase 3: Connect it to Amazon Quick
+## Phase 3: Connect it to AWS Quick
 
 This part is Quick-side configuration and cannot be expressed in CDK. Steps 1 and 2 are
 done in the console; see [Scripting part of this phase](#scripting-part-of-this-phase) for
@@ -343,17 +343,17 @@ backed by your managed knowledge base, so pick one. Steps 3 and 4 are needed eit
 - **Option B: from the Quick console.** You enter the ARN and create the Quick knowledge
   base yourself.
 
-### Option A: Use with Amazon Quick (from the Bedrock console)
+### Option A: Use with AWS Quick (from the Bedrock console)
 
 1. **Sign in to Quick as your administrator account first**, in the same browser.
    Granting Quick access to a knowledge base is an admin action, and this sample's Quick
    instance, with its two demo users, already exists from the
-   [prerequisites](#amazon-quick-setup). The hand-off can also carry a brand-new customer
+   [prerequisites](#aws-quick-setup). The hand-off can also carry a brand-new customer
    through Quick signup, but that would create a separate instance without your demo users.
 
 2. **Start the hand-off.** In the Amazon Bedrock console, switch to the Region you deployed
    to, open **Knowledge Bases**, select the knowledge base from Phase 1 (`KnowledgeBaseId`
-   from the stack outputs), and choose **Use with Amazon Quick**. The console opens Quick
+   from the stack outputs), and choose **Use with AWS Quick**. The console opens Quick
    in the same Region, with the knowledge base carried across.
 
 3. **Choose Enable and create.** This single step grants Quick access to the knowledge
@@ -767,7 +767,7 @@ account use it.
 
 ### Still billing after cleanup
 
-**The Amazon Quick subscription and the two demo users.** Nothing in this sample creates or
+**The AWS Quick subscription and the two demo users.** Nothing in this sample creates or
 removes the subscription, and each Professional user bills monthly until deleted. Delete the
 two demo users in Manage users. If you signed up for Quick only to run this sample,
 unsubscribe in the Quick console as well. This is the largest recurring cost the sample

@@ -1,10 +1,10 @@
 /**
- * Request handling for the local harness that mints Amazon Quick embed URLs.
+ * Request handling for the local harness that mints AWS Quick embed URLs.
  *
  * WHY THIS IS A LOCAL SCRIPT AND NOT A DEPLOYED ENDPOINT
  * ------------------------------------------------------
  * Generating an embed URL requires AWS credentials and, critically, the caller chooses
- * which Amazon Quick user the URL is minted for (`UserArn`). An endpoint that accepts a
+ * which AWS Quick user the URL is minted for (`UserArn`). An endpoint that accepts a
  * user identity from its caller and is not itself authenticated would let anyone request
  * a session as any Quick user - and because Quick forwards that identity to Bedrock for
  * ACL filtering, that is also a document-level access control bypass.
@@ -158,7 +158,7 @@ export function createHarnessHandler(
         log(`GenerateEmbedUrlForRegisteredUser failed: ${name}: ${message}`);
         return json(res, 502, {
           error:
-            'Amazon Quick did not return an embed URL. See the harness terminal for details.',
+            'AWS Quick did not return an embed URL. See the harness terminal for details.',
         });
       }
     }

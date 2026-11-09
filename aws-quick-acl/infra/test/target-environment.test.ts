@@ -30,7 +30,7 @@ describe('resolveTargetEnvironment', () => {
         KB_TARGET_ACCOUNT: '123456789012',
         KB_TARGET_REGION: 'us-east-2',
       }),
-    ).toThrow(/cannot be used with the Amazon Quick/);
+    ).toThrow(/cannot be used with the AWS Quick/);
   });
 
   it('fails when neither an account nor a Region can be resolved', () => {

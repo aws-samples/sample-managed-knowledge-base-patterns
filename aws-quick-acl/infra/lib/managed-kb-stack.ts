@@ -28,7 +28,7 @@ export interface ManagedKbStackProps extends StackProps {
  * embedding model and reranker) with an Amazon S3 data source that has document-level ACL
  * awareness enabled.
  *
- * The ACLs are what let Amazon Quick return different results to different users without
+ * The ACLs are what let AWS Quick return different results to different users without
  * any auth code in the application: Quick forwards the signed-in user's identity to
  * Bedrock, and Bedrock filters retrieval results against the ACL file below.
  *
@@ -124,7 +124,7 @@ export class ManagedKbStack extends Stack {
       properties: {
         Name: kbName,
         Description:
-          'Managed knowledge base consumed by Amazon Quick as a knowledge source',
+          'Managed knowledge base consumed by AWS Quick as a knowledge source',
         RoleArn: kbRole.roleArn,
         KnowledgeBaseConfiguration: {
           // MANAGED (not VECTOR) is what makes this a managed knowledge base.
@@ -194,7 +194,7 @@ export class ManagedKbStack extends Stack {
     new CfnOutput(this, 'KnowledgeBaseArn', {
       value: knowledgeBaseArn,
       description:
-        'Paste this into Amazon Quick under Admin > Manage Account > AWS Resources, then create a knowledge base under More > Knowledge',
+        'Paste this into AWS Quick under Admin > Manage Account > AWS Resources, then create a knowledge base under More > Knowledge',
     });
 
     new CfnOutput(this, 'KnowledgeBaseId', {

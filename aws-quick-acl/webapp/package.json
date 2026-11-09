@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT-0",
   "type": "module",
-  "description": "Minimal React shell hosting an embedded Amazon Quick chat agent backed by a Bedrock managed knowledge base",
+  "description": "Minimal React shell hosting an embedded AWS Quick chat agent backed by a Bedrock managed knowledge base",
   "scripts": {
     "dev:api": "tsx server/index.ts",
     "dev:web": "vite",

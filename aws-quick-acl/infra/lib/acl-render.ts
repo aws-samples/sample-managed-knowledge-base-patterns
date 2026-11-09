@@ -7,7 +7,7 @@
  * case-insensitively and ignores surrounding whitespace, but does no alias resolution.
  * `martha_rivera@example.com` and `martha_rivera+a@example.com` are two distinct
  * identities, so the entries here must name the addresses the users are registered with
- * in Amazon Quick.
+ * in AWS Quick.
  */
 
 export interface AclRenderInput {

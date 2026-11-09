@@ -20,7 +20,7 @@ authenticating end users is the caller's responsibility: the caller passes an
 identity, and Bedrock filters retrieval results against the ACLs for that
 identity.
 
-In this sample, Amazon Quick is the caller. Quick authenticates the user and
+In this sample, AWS Quick is the caller. Quick authenticates the user and
 forwards their identity to Bedrock, which is why the application contains no
 authentication code. That holds only while the Quick session belongs to the
 person using it. The consequences:
