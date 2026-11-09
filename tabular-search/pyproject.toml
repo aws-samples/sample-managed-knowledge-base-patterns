@@ -1,0 +1,32 @@
+[project]
+name = "tabular-search-sample"
+version = "0.1.0"
+description = "Ask questions over tables and documents with tabular search in Amazon Bedrock Managed Knowledge Base"
+# The README asks for Python 3.10 or later.
+requires-python = ">=3.10"
+dependencies = [
+    # 1.43.123 is the first Boto3 release with the tabular search trace fields
+    # (the CodeExecution step and the Planning codeExecution action).
+    "boto3>=1.43.123",
+]
+
+[dependency-groups]
+dev = [
+    "boto3-stubs[bedrock-agent,bedrock-agent-runtime,cloudformation,s3]>=1.43.123",
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.17.2",
+]
+
+# The scripts are run directly, not installed.
+[tool.uv]
+package = false
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["common.py", "01_check_file_types.py", "02_ask.py", "03_conversation.py", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

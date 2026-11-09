@@ -36,6 +36,9 @@ authorization behavior.
   metadata filter must come from the authenticated tenant on the server, why a
   retrieval instruction is not an isolation boundary, and what the tenant role
   tag conditions do and do not cover.
+- [tabular-search](tabular-search/SECURITY.md): who can read the sample
+  files, what `bedrock:GetDocumentContent` in the caller policy allows, and
+  how the knowledge base role stays in step with the policies in `iam/`.
 - [unified-search](unified-search/SECURITY.md): why
   `userContext.userId` must come from a verified token, and how to confirm
   what a given user is permitted to read.

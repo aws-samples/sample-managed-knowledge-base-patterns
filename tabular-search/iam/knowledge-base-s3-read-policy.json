@@ -1,0 +1,19 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListBucket",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::<BUCKET_NAME>",
+      "Condition": {"StringEquals": {"aws:ResourceAccount": "<ACCOUNT_ID>"}}
+    },
+    {
+      "Sid": "ReadObjects",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::<BUCKET_NAME>/*",
+      "Condition": {"StringEquals": {"aws:ResourceAccount": "<ACCOUNT_ID>"}}
+    }
+  ]
+}

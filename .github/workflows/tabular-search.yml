@@ -1,0 +1,121 @@
+name: tabular-search
+
+# Scoped to one pattern. Patterns share no build system, so each gets its own
+# workflow filtered to its own directory: a change to another pattern must not
+# run this, and a change here must not run theirs. Repository-wide checks that
+# do not care about language live in repo.yml.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tabular-search/**'
+      - '.github/workflows/tabular-search.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tabular-search/**'
+      - '.github/workflows/tabular-search.yml'
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+defaults:
+  run:
+    working-directory: tabular-search
+
+jobs:
+  verify:
+    name: Lint, type-check, test, synth
+    runs-on: ubuntu-latest
+    env:
+      # The README asks for Python 3.10 or later, so CI runs the oldest
+      # supported version.
+      UV_PYTHON: '3.10'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # `cache-dependency-path` is required because the lockfile is not at the
+      # repository root. Without it the cache key cannot be computed and the
+      # dependency cache silently does nothing.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: tabular-search/infra/package-lock.json
+
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+
+      # `uv sync --frozen` and `npm ci` install exactly the committed lockfiles
+      # and fail if a manifest and its lockfile disagree.
+      - name: Install
+        run: make install
+
+      # ruff, mypy --strict, and tsc. Blocking, not advisory.
+      - name: Lint
+        run: make lint
+
+      # pytest runs offline against stubbed clients. The infra tests synthesize
+      # the stack with cdk-nag AwsSolutionsChecks, so an unacknowledged finding
+      # fails this step. This is the infrastructure security gate.
+      - name: Test
+        run: make test
+
+      # Synthesizes through bin/app.ts and cdk.json, the path `cdk deploy`
+      # takes, which the tests don't cover. CI has no AWS credentials, so the
+      # stack synthesizes without an account or Region. Nothing is deployed.
+      - name: Synthesize infrastructure
+        run: make synth
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tabular-search/infra
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: tabular-search/infra/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+  # The scripts that call AWS are locked by uv, not npm. pip-audit has no
+  # severity threshold, so any advisory blocks; accept one with --ignore-vuln.
+  audit-python:
+    name: Python dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+      - name: Dependency audit
+        run: |
+          uv export --frozen --all-groups --no-emit-project --format requirements-txt --output-file "$RUNNER_TEMP/requirements.txt"
+          uvx pip-audit@2.10.0 --disable-pip --no-deps --vulnerability-service osv -r "$RUNNER_TEMP/requirements.txt"
+
+  # Advisory: a newly published advisory against a transitive dependency should
+  # be visible without blocking an unrelated change. Review when this goes red.
+  audit-moderate:
+    name: Dependency audit (moderate and above, advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: tabular-search/infra
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: tabular-search/infra/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=moderate
