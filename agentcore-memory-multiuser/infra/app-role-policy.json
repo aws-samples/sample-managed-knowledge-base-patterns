@@ -1,0 +1,55 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AgenticRetrieve",
+      "Effect": "Allow",
+      "Action": "bedrock:AgenticRetrieveStream",
+      "Resource": "*"
+    },
+    {
+      "Sid": "KnowledgeBaseRetrieval",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:Retrieve",
+        "bedrock:GetDocumentContent"
+      ],
+      "Resource": "arn:aws:bedrock:us-west-2:123456789012:knowledge-base/KB_ID"
+    },
+    {
+      "Sid": "MemoryDescribe",
+      "Effect": "Allow",
+      "Action": "bedrock-agentcore:GetMemory",
+      "Resource": "arn:aws:bedrock-agentcore:us-west-2:123456789012:memory/MEMORY_ID"
+    },
+    {
+      "Sid": "MemorySessionsScopedToCaller",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock-agentcore:ListEvents",
+        "bedrock-agentcore:CreateEvent",
+        "bedrock-agentcore:ListSessions"
+      ],
+      "Resource": "arn:aws:bedrock-agentcore:us-west-2:123456789012:memory/MEMORY_ID",
+      "Condition": {
+        "StringEquals": {
+          "bedrock-agentcore:actorId": "${aws:PrincipalTag/userId}"
+        }
+      }
+    },
+    {
+      "Sid": "MemoryRecordsScopedToCaller",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock-agentcore:RetrieveMemoryRecords",
+        "bedrock-agentcore:ListMemoryRecords"
+      ],
+      "Resource": "arn:aws:bedrock-agentcore:us-west-2:123456789012:memory/MEMORY_ID",
+      "Condition": {
+        "StringLike": {
+          "bedrock-agentcore:namespacePath": "/anycompany/${aws:PrincipalTag/userId}/*"
+        }
+      }
+    }
+  ]
+}

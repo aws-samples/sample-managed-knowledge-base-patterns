@@ -29,6 +29,10 @@ authorization behavior.
 - [agentcore-access-control](agentcore-access-control/SECURITY.md): why
   `userContext` must come from the verified access token and never from tool
   arguments, and which layer checks each step on the way to the knowledge base.
+- [agentcore-memory-multiuser](agentcore-memory-multiuser/SECURITY.md): why
+  `userContext.userId`, `actorId`, and the memory namespace must come from the
+  verified ID token, and what the per-user session tag on the application role
+  does and does not protect against.
 - [amazon-quick-acl](amazon-quick-acl/SECURITY.md): why the embed harness must
   never accept a user identity from the request, and how Quick's identity
   reaches Bedrock's ACL filtering.

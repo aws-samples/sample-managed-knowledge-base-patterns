@@ -1,0 +1,63 @@
+name: agentcore-memory-multiuser
+
+# Scoped to one pattern. Patterns share no build system, so each gets its own
+# workflow filtered to its own directory: a change to another pattern must not
+# run this, and a change here must not run theirs. Repository-wide checks that
+# do not care about language live in repo.yml.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agentcore-memory-multiuser/**'
+      - '.github/workflows/agentcore-memory-multiuser.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'agentcore-memory-multiuser/**'
+      - '.github/workflows/agentcore-memory-multiuser.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: '3.12'
+
+defaults:
+  run:
+    working-directory: agentcore-memory-multiuser
+
+jobs:
+  verify:
+    name: Lint, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # uv installs the Python version below; no setup-python step is needed.
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+      - name: Install
+        run: |
+          uv venv --python "$PYTHON_VERSION" .venv
+          uv pip install --python .venv -r requirements.txt -r requirements-dev.txt
+      # Blocking, not advisory. Formatting is not enforced.
+      - name: Lint
+        run: .venv/bin/ruff check .
+      # Unit tests for the token verification and the IAM policy documents. The
+      # end-to-end checks (scripts/e2e.py, scripts/abac_probe.py) need a live
+      # deployment and do not run here.
+      - name: Test
+        run: .venv/bin/python -m pytest
+
+  # requirements.txt pins only direct dependencies, so resolve the full set first
+  # and audit that. pip-audit has no severity threshold, so any advisory blocks;
+  # accept one with --ignore-vuln.
+  audit-python:
+    name: Python dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+      - name: Dependency audit
+        run: |
+          uv pip compile --python-version "$PYTHON_VERSION" requirements.txt requirements-dev.txt --output-file "$RUNNER_TEMP/requirements.txt"
+          uvx pip-audit@2.10.0 --disable-pip --no-deps --vulnerability-service osv -r "$RUNNER_TEMP/requirements.txt"

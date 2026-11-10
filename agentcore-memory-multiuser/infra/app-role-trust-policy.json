@@ -1,0 +1,64 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "BackendAssumesRolePerUser",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::123456789012:root"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "ArnEquals": {
+          "aws:PrincipalArn": "arn:aws:iam::123456789012:role/BACKEND_ROLE"
+        },
+        "StringLike": {
+          "aws:RequestTag/userId": "????????-????-????-????-????????????",
+          "sts:SourceIdentity": "????????-????-????-????-????????????"
+        },
+        "ForAllValues:StringEquals": {
+          "aws:TagKeys": [
+            "userId"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "BackendTagsSessionWithUserId",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::123456789012:root"
+      },
+      "Action": "sts:TagSession",
+      "Condition": {
+        "ArnEquals": {
+          "aws:PrincipalArn": "arn:aws:iam::123456789012:role/BACKEND_ROLE"
+        },
+        "StringLike": {
+          "aws:RequestTag/userId": "????????-????-????-????-????????????"
+        },
+        "ForAllValues:StringEquals": {
+          "aws:TagKeys": [
+            "userId"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "BackendSetsSourceIdentity",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::123456789012:root"
+      },
+      "Action": "sts:SetSourceIdentity",
+      "Condition": {
+        "ArnEquals": {
+          "aws:PrincipalArn": "arn:aws:iam::123456789012:role/BACKEND_ROLE"
+        },
+        "StringLike": {
+          "sts:SourceIdentity": "????????-????-????-????-????????????"
+        }
+      }
+    }
+  ]
+}
