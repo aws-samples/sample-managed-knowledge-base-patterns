@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    participant App as Your application
+    participant AR as AgenticRetrieveStream
+    participant MEM as AgentCore Memory
+    participant KB as Managed knowledge base
+
+    App->>AR: question (messages: current turn only)<br/>+ userContext (email) + memoryConfiguration
+    AR->>MEM: ListEvents (actorId, sessionId)
+    Note over AR: trace: SessionHistoryLoad
+    par speculative retrieval
+        AR->>KB: raw question, ACL-filtered by userContext
+    and new session only
+        AR->>MEM: RetrieveMemoryRecords (namespacePath)
+    end
+    Note over AR: trace: SpeculativeRetrieval<br/>retrievalType BedrockKnowledgeBase + BedrockAgentCoreMemory
+    loop up to maxAgentIteration
+        Note over AR: trace: Planning<br/>actions: retrieve, memoryRetrieve
+        AR->>KB: sub-queries, ACL-filtered by userContext
+        opt planner decides memory would help
+            AR->>MEM: RetrieveMemoryRecords (planner-composed query)
+        end
+        Note over AR: trace: Retrieval (per source)
+    end
+    AR-->>App: responseEvent chunks, then result (answer + citations)
+    AR->>MEM: CreateEvent (USER question + ASSISTANT answer)
+    MEM-->>MEM: asynchronous extraction → long-term records

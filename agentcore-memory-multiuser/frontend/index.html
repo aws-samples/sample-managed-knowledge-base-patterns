@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AnyCompany internal assistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header>
+  <h1>AnyCompany internal assistant</h1>
+  <span class="hint">Amazon Bedrock Managed Knowledge Base · agentic retrieval · AgentCore Memory</span>
+  <span class="who" id="who"></span>
+  <button class="secondary" id="signout" hidden>Sign out</button>
+</header>
+
+<div id="login" class="panel login">
+  <h2>Sign in (Amazon Cognito)</h2>
+  <p><input id="u" placeholder="username" value="maya"></p>
+  <p><input id="p" type="password" placeholder="password"></p>
+  <button id="signin">Sign in</button>
+  <p class="hint" id="loginmsg"></p>
+</div>
+
+<main id="app" hidden>
+  <aside class="panel">
+    <h2>Knowledge base</h2>
+    <div class="kbs" id="kbs"></div>
+    <h2 class="spaced">Conversations <span class="hint">(read from AgentCore Memory)</span></h2>
+    <button class="secondary wide gap-below" id="newconv">New conversation</button>
+    <div id="convs"></div>
+    <h2 class="spaced">What long-term memory knows about you</h2>
+    <div id="ltm" class="hint">—</div>
+    <button class="secondary wide gap-above" id="refreshltm">Refresh</button>
+  </aside>
+
+  <section class="panel chat">
+    <div class="hint" id="sessionline">New conversation</div>
+    <div class="messages" id="messages"></div>
+    <div class="composer">
+      <textarea id="q" placeholder="Ask about HR policy, IT setup, on-call, commissions…"></textarea>
+      <button id="send">Send</button>
+    </div>
+  </section>
+
+  <aside class="panel trace">
+    <h2>How the answer was produced</h2>
+    <div id="trace"></div>
+    <h2 class="spaced">Sources</h2>
+    <ul class="sources" id="sources"></ul>
+  </aside>
+</main>
+
+<script src="/config.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

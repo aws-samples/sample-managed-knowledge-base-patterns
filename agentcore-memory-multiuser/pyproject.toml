@@ -1,0 +1,17 @@
+# Tool configuration only; this sample is not an installable package.
+# Runtime dependencies: requirements.txt. Lint and test tools: requirements-dev.txt.
+
+[tool.ruff]
+target-version = "py310"   # README: Python 3.10 or later
+src = ["backend"]          # backend modules import each other as top-level modules
+
+[tool.ruff.lint]
+# The code already carries noqa comments for these rules; select them so the comments stay meaningful.
+extend-select = ["E402", "E731", "BLE001"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["backend"]

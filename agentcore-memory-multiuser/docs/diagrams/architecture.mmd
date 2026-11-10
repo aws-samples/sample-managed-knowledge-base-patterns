@@ -1,0 +1,25 @@
+flowchart LR
+    U["Employee<br/>(browser or mobile)"]
+    C["Amazon Cognito<br/>user pool"]
+    subgraph APP["Your application"]
+        API["API + handler<br/>verify ID token<br/>sub → actorId, namespace<br/>email → userContext"]
+        STS["AssumeRole per user<br/>tag userId=sub"]
+    end
+    subgraph BEDROCK["Amazon Bedrock Managed Knowledge Base"]
+        AR["AgenticRetrieveStream<br/>plan · retrieve · generate · remember"]
+        KB[("Knowledge base<br/>ACL-enabled S3 data source")]
+    end
+    S3[("Amazon S3<br/>docs/ + global ACL file")]
+    MEM[("Amazon Bedrock AgentCore Memory<br/>/anycompany/{actorId}/profile/<br/>/anycompany/{actorId}/summaries/{sessionId}/")]
+
+    U -- "1. sign in" --> C
+    C -- "ID token (sub, email)" --> U
+    U -- "2. question + ID token" --> API
+    API -- "3. user credentials" --> STS
+    API -- "4. AgenticRetrieveStream<br/>+ userContext + memoryConfiguration" --> AR
+    AR -- "5. retrieve, filtered by ACL" --> KB
+    S3 -. "sync: documents + ACLs" .-> KB
+    AR <-- "5. restore session · search long-term memory · persist turn" --> MEM
+    AR -- "6. answer + trace events" --> API
+    API -- "streamed answer + trace" --> U
+    API -. "list conversations, render history" .-> MEM
