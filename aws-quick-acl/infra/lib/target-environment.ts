@@ -1,5 +1,5 @@
 /**
- * Amazon Quick can only consume a Bedrock managed knowledge base when both live in the
+ * AWS Quick can only consume a Bedrock managed knowledge base when both live in the
  * same Region, and the integration is limited to these four Regions.
  * See https://docs.aws.amazon.com/quick/latest/userguide/byo-bedrock-kb-limitations.html
  */
@@ -25,7 +25,7 @@ export interface TargetEnvironment {
  * .env file: the CDK CLI *replaces* it in the app subprocess with the Region resolved
  * from your AWS configuration (falling back to us-east-1 when none is configured).
  * Setting CDK_DEFAULT_REGION in .env therefore has no effect, which would silently
- * deploy the knowledge base to the wrong Region and leave Amazon Quick unable to see it.
+ * deploy the knowledge base to the wrong Region and leave AWS Quick unable to see it.
  */
 export function resolveTargetEnvironment(env: NodeJS.ProcessEnv): TargetEnvironment {
   const account = env.KB_TARGET_ACCOUNT || env.CDK_DEFAULT_ACCOUNT;
@@ -41,9 +41,9 @@ export function resolveTargetEnvironment(env: NodeJS.ProcessEnv): TargetEnvironm
 
   if (!(QUICK_SUPPORTED_REGIONS as readonly string[]).includes(region)) {
     throw new Error(
-      `Region "${region}" cannot be used with the Amazon Quick knowledge base integration.\n` +
+      `Region "${region}" cannot be used with the AWS Quick knowledge base integration.\n` +
         `Supported Regions: ${QUICK_SUPPORTED_REGIONS.join(', ')}.\n` +
-        'The managed knowledge base and your Amazon Quick instance must be in the same Region.\n' +
+        'The managed knowledge base and your AWS Quick instance must be in the same Region.\n' +
         'Set KB_TARGET_REGION in infra/.env to one of the Regions above and re-run.',
     );
   }

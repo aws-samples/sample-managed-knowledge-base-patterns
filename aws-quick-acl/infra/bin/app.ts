@@ -14,7 +14,7 @@ const app = new cdk.App();
 const stack = new ManagedKbStack(app, 'ManagedKbStack', {
   env,
   description:
-    'Amazon Bedrock Managed Knowledge Base wired for use as an Amazon Quick knowledge source',
+    'Amazon Bedrock Managed Knowledge Base wired for use as an AWS Quick knowledge source',
   kbName: process.env.KB_NAME || 'quick-managed-kb',
   aclEnabled: process.env.KB_S3_ACL_ENABLED !== 'false',
 });

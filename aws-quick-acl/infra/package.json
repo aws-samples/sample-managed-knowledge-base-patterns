@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT-0",
-  "description": "CDK app provisioning an Amazon Bedrock Managed Knowledge Base for use as an Amazon Quick knowledge source",
+  "description": "CDK app provisioning an Amazon Bedrock Managed Knowledge Base for use as an AWS Quick knowledge source",
   "scripts": {
     "build": "tsc --noEmit",
     "lint": "eslint \"{bin,lib,test,scripts}/**/*.ts\" --max-warnings 0",

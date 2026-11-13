@@ -1,8 +1,8 @@
 {
-  "name": "amazon-quick-acl",
+  "name": "aws-quick-acl",
   "version": "1.0.0",
   "private": true,
-  "description": "Amazon Quick connected to an Amazon Bedrock Managed Knowledge Base, with document-level ACLs and an optional embedded chat front end",
+  "description": "AWS Quick connected to an Amazon Bedrock Managed Knowledge Base, with document-level ACLs and an optional embedded chat front end",
   "license": "MIT-0",
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

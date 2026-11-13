@@ -14,7 +14,7 @@ interface EmbedUrlResponse {
 
 /**
  * A deliberately thin application shell. All of the retrieval, generation, citation and
- * conversation-history behavior lives in the embedded Amazon Quick chat agent, which is
+ * conversation-history behavior lives in the embedded AWS Quick chat agent, which is
  * in turn backed by the Bedrock managed knowledge base provisioned in ../infra.
  *
  * The user switcher exists to demonstrate document-level access control: both users query

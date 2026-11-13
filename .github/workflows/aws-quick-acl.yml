@@ -1,4 +1,4 @@
-name: amazon-quick-acl
+name: aws-quick-acl
 
 # Scoped to one pattern. Patterns share no build system, so each gets its own
 # workflow filtered to its own directory: a change to another pattern must not
@@ -9,13 +9,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'amazon-quick-acl/**'
-      - '.github/workflows/amazon-quick-acl.yml'
+      - 'aws-quick-acl/**'
+      - '.github/workflows/aws-quick-acl.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'amazon-quick-acl/**'
-      - '.github/workflows/amazon-quick-acl.yml'
+      - 'aws-quick-acl/**'
+      - '.github/workflows/aws-quick-acl.yml'
 
 permissions:
   contents: read
@@ -25,7 +25,7 @@ env:
 
 defaults:
   run:
-    working-directory: amazon-quick-acl
+    working-directory: aws-quick-acl
 
 jobs:
   verify:
@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: amazon-quick-acl/package-lock.json
+          cache-dependency-path: aws-quick-acl/package-lock.json
 
       # `npm ci` rather than `npm install`: it installs exactly the committed
       # lockfile and fails if package.json and the lockfile disagree, so builds are
@@ -86,7 +86,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: amazon-quick-acl/package-lock.json
+          cache-dependency-path: aws-quick-acl/package-lock.json
 
       - name: Install
         run: npm ci
@@ -106,6 +106,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: amazon-quick-acl/package-lock.json
+          cache-dependency-path: aws-quick-acl/package-lock.json
       - run: npm ci
       - run: npm audit --audit-level=moderate

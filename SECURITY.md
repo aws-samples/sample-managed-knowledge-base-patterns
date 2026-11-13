@@ -33,7 +33,7 @@ authorization behavior.
   `userContext.userId`, `actorId`, and the memory namespace must come from the
   verified ID token, and what the per-user session tag on the application role
   does and does not protect against.
-- [amazon-quick-acl](amazon-quick-acl/SECURITY.md): why the embed harness must
+- [aws-quick-acl](aws-quick-acl/SECURITY.md): why the embed harness must
   never accept a user identity from the request, and how Quick's identity
   reaches Bedrock's ACL filtering.
 - [retrieval-instructions](retrieval-instructions/SECURITY.md): why the
