@@ -1,5 +1,5 @@
 [project]
-name = "ingestion-observability-sample"
+name = "ingestion-events-sample"
 version = "0.1.0"
 description = "EventBridge events for Amazon Bedrock Managed Knowledge Base sync start and finish"
 # The Lambda functions run on Python 3.14. The tests run on 3.10 or later.

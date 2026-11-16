@@ -1,4 +1,4 @@
-name: ingestion-observability
+name: ingestion-events
 
 # Scoped to one pattern. Patterns share no build system, so each gets its own
 # workflow filtered to its own directory: a change to another pattern must not
@@ -9,13 +9,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'ingestion-observability/**'
-      - '.github/workflows/ingestion-observability.yml'
+      - 'ingestion-events/**'
+      - '.github/workflows/ingestion-events.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'ingestion-observability/**'
-      - '.github/workflows/ingestion-observability.yml'
+      - 'ingestion-events/**'
+      - '.github/workflows/ingestion-events.yml'
 
 permissions:
   contents: read
@@ -26,7 +26,7 @@ env:
 
 defaults:
   run:
-    working-directory: ingestion-observability
+    working-directory: ingestion-events
 
 jobs:
   verify:
@@ -47,7 +47,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: ingestion-observability/infra/package-lock.json
+          cache-dependency-path: ingestion-events/infra/package-lock.json
 
       - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
 
@@ -77,14 +77,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ingestion-observability/infra
+        working-directory: ingestion-events/infra
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: ingestion-observability/infra/package-lock.json
+          cache-dependency-path: ingestion-events/infra/package-lock.json
       - name: Install
         run: npm ci
       - name: Dependency audit
@@ -111,13 +111,13 @@ jobs:
     continue-on-error: true
     defaults:
       run:
-        working-directory: ingestion-observability/infra
+        working-directory: ingestion-events/infra
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: ingestion-observability/infra/package-lock.json
+          cache-dependency-path: ingestion-events/infra/package-lock.json
       - run: npm ci
       - run: npm audit --audit-level=moderate

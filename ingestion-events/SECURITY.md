@@ -10,7 +10,7 @@ Remove identifiers from anything you share. This sample's events and logs includ
 
 ## The security property this sample depends on
 
-Read this before changing the IAM statements in `infra/lib/ingestion-observability.ts`, the log groups, the subscription filter, or the event capture rule and its resource policy in `infra/lib/ingestion-observability-stack.ts`.
+Read this before changing the IAM statements in `infra/lib/ingestion-events.ts`, the log groups, the subscription filter, or the event capture rule and its resource policy in `infra/lib/ingestion-events-stack.ts`.
 
 The pattern reads ingestion job metadata and republishes it as events. None of its roles can retrieve from a knowledge base or read a document. The only Amazon Bedrock actions they have are `bedrock:ListDataSources`, `bedrock:ListIngestionJobs`, and `bedrock:GetIngestionJob`, on the tracked knowledge bases. The data that the pattern exposes is in its log groups and on the event bus, so the main question is who can read them:
 
@@ -18,7 +18,7 @@ The pattern reads ingestion job metadata and republishes it as events. None of i
 - **In existing-log-group mode, the group isn't the stack's.** It can hold records from knowledge bases you don't list in `knowledgeBaseIds`, and its other readers, subscription filters, and retention are whatever they already were. The stack adds only its subscription filter.
 - **The subscription filter passes only start records.** Its pattern is `{ $.event.ingestion_job_status = "INGESTION_JOB_STARTED" }`, so document records aren't sent to the Start function. A start record contains the knowledge base ARN, the data source ID, and the job ID. The Start function ignores records of knowledge bases it doesn't track and logs their knowledge base ID and job ID as `untracked knowledge base`. The function's invoke permission for `logs.amazonaws.com` is limited to the ingestion log group's ARN, without an `aws:SourceAccount` condition.
 - **Events go to the `default` bus unless you set `eventBusName`.** The Started event includes IDs, the knowledge base ARN, and timestamps. The Finished event adds the job statistics and `failureReasons`, which can name IAM roles and buckets. An `UNKNOWN_ERROR` event adds the Step Functions error name and up to 2,000 characters of its cause. Every identity that can create rules on the bus can read these events.
-- **The capture log group stores every event.** With `captureEvents` on (the default), a rule matching the pattern's `source` writes every event to `/ingestion-observability/<name>/events`, which keeps events for 30 days. Anyone who can read that group can read the `failureReasons`. A CloudWatch Logs resource policy lets `events.amazonaws.com` and `delivery.logs.amazonaws.com` call `logs:CreateLogStream` and `logs:PutLogEvents` on that group only, without an `aws:SourceAccount` condition. Set `captureEvents=false` to deploy neither.
+- **The capture log group stores every event.** With `captureEvents` on (the default), a rule matching the pattern's `source` writes every event to `/ingestion-events/<name>/events`, which keeps events for 30 days. Anyone who can read that group can read the `failureReasons`. A CloudWatch Logs resource policy lets `events.amazonaws.com` and `delivery.logs.amazonaws.com` call `logs:CreateLogStream` and `logs:PutLogEvents` on that group only, without an `aws:SourceAccount` condition. Set `captureEvents=false` to deploy neither.
 - **Each role allows only what its code calls:**
   - Start function: `events:PutEvents` on the bus; `dynamodb:GetItem`, `PutItem`, `UpdateItem`, and `DeleteItem` on the claim table; `states:StartExecution` on the poller.
   - Sweep function: the same, plus `bedrock:ListDataSources` and `bedrock:ListIngestionJobs` on the tracked knowledge bases.
@@ -43,7 +43,7 @@ The poller logs to `/aws/vendedlogs/states/<name>-poller` without execution data
 
 ## Architectural boundary
 
-The permissions of the Start function, the Sweep function, and the poller are written in one place, the `IngestionObservability` construct in `infra/lib/ingestion-observability.ts`. The knowledge base ARNs in their policies and the `TRACKED_KNOWLEDGE_BASE_IDS` the functions check come from the same `knowledgeBaseIds` list. Keep it that way. A grant or a tracked ID added elsewhere would let the functions announce jobs that the poller can't read. It could also let the roles read knowledge bases that the deployment doesn't track.
+The permissions of the Start function, the Sweep function, and the poller are written in one place, the `IngestionEvents` construct in `infra/lib/ingestion-events.ts`. The knowledge base ARNs in their policies and the `TRACKED_KNOWLEDGE_BASE_IDS` the functions check come from the same `knowledgeBaseIds` list. Keep it that way. A grant or a tracked ID added elsewhere would let the functions announce jobs that the poller can't read. It could also let the roles read knowledge bases that the deployment doesn't track.
 
 ## Reporting scope
 

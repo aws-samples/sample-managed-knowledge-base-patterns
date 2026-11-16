@@ -1,6 +1,6 @@
-# Ingestion observability for Amazon Bedrock Managed Knowledge Base
+# Ingestion job events for Amazon Bedrock Managed Knowledge Base
 
-For ingestion observability on Amazon Bedrock Managed Knowledge Base, this sample publishes Amazon EventBridge events when a sync (an ingestion job) starts and when it finishes. With these events, you can start a workflow, send an alert, or update a dashboard from an EventBridge rule. You deploy an AWS Cloud Development Kit (AWS CDK) app that builds the events from the knowledge base's [vended ingestion logs](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-managed-observability.html) and from the [`GetIngestionJob`](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent_GetIngestionJob.html) API. Then you start a sync and read the events.
+This sample publishes Amazon EventBridge events when a sync (an ingestion job) on Amazon Bedrock Managed Knowledge Base starts and when it finishes. With these events, you can start a workflow, send an alert, or update a dashboard from an EventBridge rule. You deploy an AWS Cloud Development Kit (AWS CDK) app that builds the events from the knowledge base's [vended ingestion logs](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-managed-observability.html) and from the [`GetIngestionJob`](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent_GetIngestionJob.html) API. Then you start a sync and read the events.
 
 ## How it works
 
@@ -37,7 +37,7 @@ The following diagram shows the resources the stack deploys, numbered by the ste
 
 ## What gets deployed
 
-`cdk deploy` creates one AWS CloudFormation stack, `ingestion-observability-<name>` (`ingestion-observability-demo` by default), with these resources:
+`cdk deploy` creates one AWS CloudFormation stack, `ingestion-events-<name>` (`ingestion-events-demo` by default), with these resources:
 
 | Resource | Details |
 | --- | --- |
@@ -48,7 +48,7 @@ The following diagram shows the resources the stack deploys, numbered by the ste
 | Claim table | Amazon DynamoDB, on demand, point-in-time recovery on, TTL 7 days on claims. Holds one claim item per job (`job#<kbId>#<dsId>#<jobId>`) and one watermark item per data source (`ds#<kbId>#<dsId>`). |
 | Poller | AWS Step Functions Standard state machine (JSONata), logging to `/aws/vendedlogs/states/<name>-poller` without execution data |
 | Alarm | Amazon CloudWatch alarm on the poller's `ExecutionsFailed` metric. It has no actions; add one to be notified. |
-| Event capture (`captureEvents`, default on) | An EventBridge rule on the bus that matches the pattern's `source` and writes every event to `/ingestion-observability/<name>/events`, plus the CloudWatch Logs resource policy that lets EventBridge write there |
+| Event capture (`captureEvents`, default on) | An EventBridge rule on the bus that matches the pattern's `source` and writes every event to `/ingestion-events/<name>/events`, plus the CloudWatch Logs resource policy that lets EventBridge write there |
 | Demo knowledge base (`deployDemo`, default on) | An S3 bucket (Block Public Access on, ACLs off, SSE-S3, TLS required) with the files in `data/docs/` under `docs/`; an IAM role that can only list the bucket and read its objects; a managed knowledge base `<name>-demo-kb`; and an S3 data source `<name>-demo-s3` with no sync schedule. The deploy doesn't start a sync. |
 | IAM roles | One per function, one for the state machine, and one for the scheduler, each limited to the actions in [Security](#security) |
 | CDK helper functions and log groups | AWS CDK adds Lambda functions to upload the demo files and to empty the bucket when you delete the stack. They run only during `cdk deploy` and `cdk destroy`. |
@@ -61,15 +61,15 @@ Every log group keeps events for 30 days and is deleted with the stack.
 .
 ├── infra/                                  AWS CDK app (TypeScript)
 │   ├── bin/app.ts                          Context values and cdk-nag checks
-│   ├── lib/ingestion-observability.ts      The IngestionObservability construct
-│   ├── lib/ingestion-observability-stack.ts  The stack: construct, demo knowledge base, event capture
+│   ├── lib/ingestion-events.ts             The IngestionEvents construct
+│   ├── lib/ingestion-events-stack.ts       The stack: construct, demo knowledge base, event capture
 │   ├── lib/nag-suppressions.ts             Each accepted cdk-nag finding, with its reason
 │   ├── lib/log-groups.ts                   Explicit log groups for the CDK helper functions
 │   └── test/                               Jest tests, including cdk-nag
 ├── functions/                              Lambda code: claim.py (shared), start.py, sweep.py
 ├── tests/                                  Offline pytest tests for the functions
 ├── data/docs/                              Demo files
-└── docs/                                   The architecture diagram, its draw.io source, and its notes
+└── docs/                                   The architecture diagram and its draw.io source
 ```
 
 ## Sample files
@@ -87,11 +87,11 @@ git clone --filter=blob:none --sparse \
 cd sample-managed-knowledge-base-patterns
 
 # Fetch only this sample
-git sparse-checkout set ingestion-observability
-cd ingestion-observability
+git sparse-checkout set ingestion-events
+cd ingestion-events
 ```
 
-Commands in this README run from the `ingestion-observability` directory unless a step says to change into `infra/`.
+Commands in this README run from the `ingestion-events` directory unless a step says to change into `infra/`.
 
 ## Prerequisites
 
@@ -170,7 +170,7 @@ The stack prints these outputs:
 With the demo stack deployed:
 
 ```bash
-STACK=ingestion-observability-demo    # ingestion-observability-<name> if you passed -c name=<name>
+STACK=ingestion-events-demo    # ingestion-events-<name> if you passed -c name=<name>
 output() {
   aws cloudformation describe-stacks --stack-name $STACK \
     --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" --output text
@@ -234,8 +234,8 @@ Both events go to the bus named by `eventBusName` (the `default` bus by default)
   "source": "custom.bedrock.kb-ingestion",
   "resources": [
     "arn:aws:bedrock:us-east-1:111122223333:knowledge-base/EXAMPLEKB1",
-    "arn:aws:states:us-east-1:111122223333:stateMachine:IngestionObservabilityPoller49A15ACF-1234567890ab",
-    "arn:aws:states:us-east-1:111122223333:execution:IngestionObservabilityPoller49A15ACF-1234567890ab:EXAMPLEKB1-EXAMPLEDS1-EXAMPLEJB1"
+    "arn:aws:states:us-east-1:111122223333:stateMachine:IngestionEventsPoller6889D928-1234567890ab",
+    "arn:aws:states:us-east-1:111122223333:execution:IngestionEventsPoller6889D928-1234567890ab:EXAMPLEKB1-EXAMPLEDS1-EXAMPLEJB1"
   ],
   "detail": {
     "version": "1",
@@ -313,7 +313,7 @@ Pass these context values to `cdk deploy` with `-c key=value`, or edit `infra/cd
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `name` | `demo` | Names the stack `ingestion-observability-<name>` and prefixes the resource names. 2 to 32 lowercase letters, numbers, and single hyphens. |
+| `name` | `demo` | Names the stack `ingestion-events-<name>` and prefixes the resource names. 2 to 32 lowercase letters, numbers, and single hyphens. |
 | `deployDemo` | `true` | Deploy the demo knowledge base and track it first |
 | `knowledgeBaseIds` | (empty) | Comma-separated IDs of existing managed knowledge bases to track |
 | `existingLogGroupName` | (empty) | Existing-log-group mode: put the filter on this group and create no delivery resources |
@@ -329,7 +329,7 @@ Pass these context values to `cdk deploy` with `-c key=value`, or edit `infra/cd
 | `captureEvents` | `true` | Deploy the capture rule and log group |
 | `demoSyncDay` | (empty) | A day such as `MONDAY` gives the demo data source a weekly scheduled sync. Empty means no schedule. |
 
-The `IngestionObservability` construct in `infra/lib/ingestion-observability.ts` takes the same settings as props, plus `startFunctionTimeout` (60 s), `sweepFunctionTimeout` (240 s), and `claimLeaseSeconds` (the longer timeout plus 60 s). The construct validates them at synth time.
+The `IngestionEvents` construct in `infra/lib/ingestion-events.ts` takes the same settings as props, plus `startFunctionTimeout` (60 s), `sweepFunctionTimeout` (240 s), and `claimLeaseSeconds` (the longer timeout plus 60 s). The construct validates them at synth time.
 
 Poll load: as of this writing, an account can run up to 200 managed knowledge base ingestion jobs at once in most Regions ([Amazon Bedrock quotas](https://docs.aws.amazon.com/general/latest/gr/bedrock.html)). `GetIngestionJob` allows 10 requests per second per account. With one poll per job every 60 s or more, the poller makes at most about 3.3 `GetIngestionJob` requests per second, even when every allowed job runs at once.
 
@@ -392,7 +392,7 @@ cd infra
 npx cdk destroy
 ```
 
-`cdk destroy` asks `Are you sure you want to delete: ingestion-observability-<name> (y/n)`; enter `y`. With the demo, deleting the data source also removes its indexed content, which can take several minutes, so the whole deletion can take 10 minutes or more.
+`cdk destroy` asks `Are you sure you want to delete: ingestion-events-<name> (y/n)`; enter `y`. With the demo, deleting the data source also removes its indexed content, which can take several minutes, so the whole deletion can take 10 minutes or more.
 
 The stack's removal policies delete every resource that the stack created. These include the demo knowledge base, its data source and indexed content, the bucket and its objects, and the delivery resources. They also include the subscription filter, the table, the state machine, the functions, the schedule, the rule, the alarm, the roles, and every log group. In existing-log-group mode, the log group and its delivery stay, because the stack didn't create them; only the stack's filter is removed. The CDK bootstrap resources stay.
 

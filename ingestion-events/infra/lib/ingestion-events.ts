@@ -46,7 +46,7 @@ export const KNOWLEDGE_BASE_ID_PATTERN = /^[0-9A-Z]{10}$/;
 /** The Start and Sweep functions (claim.py, start.py, sweep.py). */
 export const FUNCTIONS_DIR = path.join(__dirname, "..", "..", "functions");
 
-export interface IngestionObservabilityProps {
+export interface IngestionEventsProps {
 	/** Prefix of the resource names, such as the log group and delivery names. */
 	readonly name: string;
 	/**
@@ -115,7 +115,7 @@ export interface IngestionObservabilityProps {
  *
  * See "Design choices" in the README for why it's built this way.
  */
-export class IngestionObservability extends Construct {
+export class IngestionEvents extends Construct {
 	readonly stateMachine: sfn.StateMachine;
 	readonly table: dynamodb.Table;
 	readonly startFunction: lambda.Function;
@@ -132,7 +132,7 @@ export class IngestionObservability extends Construct {
 	/** maxJobDuration in seconds; the poller's elapsed-time deadline. */
 	readonly maxJobDurationSeconds: number;
 
-	constructor(scope: Construct, id: string, props: IngestionObservabilityProps) {
+	constructor(scope: Construct, id: string, props: IngestionEventsProps) {
 		super(scope, id);
 		const stack = cdk.Stack.of(this);
 
@@ -511,7 +511,7 @@ export class IngestionObservability extends Construct {
 }
 
 function validate(
-	props: IngestionObservabilityProps,
+	props: IngestionEventsProps,
 	values: {
 		pollIntervalSeconds: number;
 		jitterSeconds: number;

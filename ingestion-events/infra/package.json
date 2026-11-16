@@ -1,5 +1,5 @@
 {
-  "name": "ingestion-observability-infra",
+  "name": "ingestion-events-infra",
   "version": "0.1.0",
   "private": true,
   "license": "MIT-0",

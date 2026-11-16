@@ -3,7 +3,7 @@ import * as path from "node:path";
 import * as cdk from "aws-cdk-lib";
 import * as scheduler from "aws-cdk-lib/aws-scheduler";
 import { AwsSolutionsChecks } from "cdk-nag";
-import { IngestionObservabilityStack } from "../lib/ingestion-observability-stack";
+import { IngestionEventsStack } from "../lib/ingestion-events-stack";
 
 const app = new cdk.App();
 
@@ -31,7 +31,7 @@ function number(key: string): number {
 
 const name = text("name");
 
-new IngestionObservabilityStack(app, `ingestion-observability-${name}`, {
+new IngestionEventsStack(app, `ingestion-events-${name}`, {
 	description: "EventBridge events for Amazon Bedrock Managed Knowledge Base sync start and finish (sample)",
 	env: {
 		account: process.env.CDK_DEFAULT_ACCOUNT,

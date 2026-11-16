@@ -36,7 +36,7 @@ authorization behavior.
 - [aws-quick-acl](aws-quick-acl/SECURITY.md): why the embed harness must
   never accept a user identity from the request, and how Quick's identity
   reaches Bedrock's ACL filtering.
-- [ingestion-observability](ingestion-observability/SECURITY.md): what the
+- [ingestion-events](ingestion-events/SECURITY.md): what the
   ingestion log group, the events, and the event capture log group expose,
   and what each role is allowed to call.
 - [retrieval-instructions](retrieval-instructions/SECURITY.md): why the

@@ -8,11 +8,11 @@ import {
 	EVENTS_PER_POLL,
 	FINISHED_DETAIL_TYPE,
 	RETRYABLE_ERRORS,
-} from "../lib/ingestion-observability";
+} from "../lib/ingestion-events";
 import {
-	IngestionObservabilityStack,
-	IngestionObservabilityStackProps,
-} from "../lib/ingestion-observability-stack";
+	IngestionEventsStack,
+	IngestionEventsStackProps,
+} from "../lib/ingestion-events-stack";
 
 const CDK_JSON_CONTEXT: Record<string, unknown> = JSON.parse(
 	fs.readFileSync(path.join(__dirname, "..", "cdk.json"), "utf8"),
@@ -28,21 +28,21 @@ const BUS_ARN = `arn:aws:events:${REGION}:${ACCOUNT}:event-bus/default`;
 const kbArn = (kbId: string): string => `arn:aws:bedrock:${REGION}:${ACCOUNT}:knowledge-base/${kbId}`;
 
 /** Existing-log-group mode on two literal knowledge bases. */
-const EXISTING: Partial<IngestionObservabilityStackProps> = {
+const EXISTING: Partial<IngestionEventsStackProps> = {
 	deployDemo: false,
 	knowledgeBaseIds: [KB1, KB2],
 	existingLogGroupName: EXISTING_LOG_GROUP,
 };
 
 function createStack(
-	overrides: Partial<IngestionObservabilityStackProps> = {},
+	overrides: Partial<IngestionEventsStackProps> = {},
 	environmentAgnostic = false,
-): { app: cdk.App; stack: IngestionObservabilityStack } {
+): { app: cdk.App; stack: IngestionEventsStack } {
 	// Synthesize with the feature flags of cdk.json, which change rendered
 	// values such as ARN partitions.
 	const app = new cdk.App({ context: CDK_JSON_CONTEXT });
 	cdk.Validations.of(app).addPlugins(new AwsSolutionsChecks(app));
-	const stack = new IngestionObservabilityStack(app, "TestStack", {
+	const stack = new IngestionEventsStack(app, "TestStack", {
 		env: { account: ACCOUNT, region: REGION },
 		...(environmentAgnostic ? { env: undefined } : {}),
 		name: "demo",
@@ -55,7 +55,7 @@ function createStack(
 	return { app, stack };
 }
 
-function synthesize(overrides: Partial<IngestionObservabilityStackProps> = {}): Template {
+function synthesize(overrides: Partial<IngestionEventsStackProps> = {}): Template {
 	return Template.fromStack(createStack(overrides).stack);
 }
 
@@ -67,7 +67,7 @@ function only(template: Template, type: string, props?: unknown): { id: string; 
 	return { id, resource };
 }
 
-/** The logical ID that starts with the construct path, such as IngestionObservabilityStartFunction. */
+/** The logical ID that starts with the construct path, such as IngestionEventsStartFunction. */
 function idOf(template: Template, type: string, prefix: string): string {
 	const ids = Object.keys(template.findResources(type)).filter((id) =>
 		new RegExp(`^${prefix}[0-9A-F]{8}$`).test(id),
@@ -114,7 +114,7 @@ describe("cdk-nag", () => {
 		["existing-log-group mode without an account or Region", EXISTING, true],
 		["the demo stack without the sweep or the capture", { sweepEnabled: false, captureEvents: false }, false],
 	])("%s passes the AwsSolutions checks", (_name, overrides, agnostic) => {
-		const { app } = createStack(overrides as Partial<IngestionObservabilityStackProps>, agnostic as boolean);
+		const { app } = createStack(overrides as Partial<IngestionEventsStackProps>, agnostic as boolean);
 		expect(() => app.synth()).not.toThrow();
 	});
 });
@@ -122,7 +122,7 @@ describe("cdk-nag", () => {
 describe("log delivery", () => {
 	test("the demo stack creates a log group, one destination, and a source and delivery per knowledge base", () => {
 		const template = synthesize({ knowledgeBaseIds: [KB1, KB2] });
-		const logGroup = idOf(template, "AWS::Logs::LogGroup", "IngestionObservabilityIngestionLogs");
+		const logGroup = idOf(template, "AWS::Logs::LogGroup", "IngestionEventsIngestionLogs");
 		expect(template.toJSON().Resources[logGroup].Properties.LogGroupName).toBe(
 			"/aws/vendedlogs/bedrock/demo",
 		);
@@ -138,7 +138,7 @@ describe("log delivery", () => {
 			Properties: { DeliverySourceName: `demo-${KB2}` },
 		}).resource;
 		expect(delivery.DependsOn).toContain(
-			idOf(template, "AWS::Logs::DeliverySource", `IngestionObservability${KB2}DeliverySource`),
+			idOf(template, "AWS::Logs::DeliverySource", `IngestionEvents${KB2}DeliverySource`),
 		);
 		template.hasResourceProperties("AWS::Logs::SubscriptionFilter", {
 			LogGroupName: { Ref: logGroup },
@@ -158,7 +158,7 @@ describe("log delivery", () => {
 
 	test("the subscription filter matches only start records and invokes the Start function", () => {
 		const template = synthesize();
-		const start = idOf(template, "AWS::Lambda::Function", "IngestionObservabilityStartFunction");
+		const start = idOf(template, "AWS::Lambda::Function", "IngestionEventsStartFunction");
 		template.hasResourceProperties("AWS::Logs::SubscriptionFilter", {
 			FilterName: "demo-ingestion-started",
 			FilterPattern: '{ $.event.ingestion_job_status = "INGESTION_JOB_STARTED" }',
@@ -185,8 +185,8 @@ describe("claim table", () => {
 
 describe("functions", () => {
 	const template = synthesize(EXISTING);
-	const table = idOf(template, "AWS::DynamoDB::Table", "IngestionObservabilityClaims");
-	const stateMachine = idOf(template, "AWS::StepFunctions::StateMachine", "IngestionObservabilityPoller");
+	const table = idOf(template, "AWS::DynamoDB::Table", "IngestionEventsClaims");
+	const stateMachine = idOf(template, "AWS::StepFunctions::StateMachine", "IngestionEventsPoller");
 	const claimStatements = [
 		{ Action: "events:PutEvents", Effect: "Allow", Resource: BUS_ARN },
 		{
@@ -199,13 +199,13 @@ describe("functions", () => {
 
 	test("the Start function can only announce and claim", () => {
 		expect(
-			statements(template, "IngestionObservabilityStartFunctionServiceRoleDefaultPolicy"),
+			statements(template, "IngestionEventsStartFunctionServiceRoleDefaultPolicy"),
 		).toEqual(claimStatements);
 	});
 
 	test("the Sweep function can also list data sources and jobs of the tracked knowledge bases", () => {
 		expect(
-			statements(template, "IngestionObservabilitySweepFunctionServiceRoleDefaultPolicy"),
+			statements(template, "IngestionEventsSweepFunctionServiceRoleDefaultPolicy"),
 		).toEqual([
 			{
 				Action: ["bedrock:ListDataSources", "bedrock:ListIngestionJobs"],
@@ -218,7 +218,7 @@ describe("functions", () => {
 	});
 
 	test("the poller can only read jobs of the tracked knowledge bases, log, and announce", () => {
-		expect(statements(template, "IngestionObservabilityPollerRoleDefaultPolicy")).toEqual([
+		expect(statements(template, "IngestionEventsPollerRoleDefaultPolicy")).toEqual([
 			{
 				Action: "bedrock:GetIngestionJob",
 				Effect: "Allow",
@@ -253,8 +253,8 @@ describe("functions", () => {
 			CLAIM_LEASE_SECONDS: "300",
 			TRACKED_KNOWLEDGE_BASE_IDS: `${KB1},${KB2}`,
 		};
-		expect(environment(template, "IngestionObservabilityStartFunction")).toEqual(shared);
-		expect(environment(template, "IngestionObservabilitySweepFunction")).toEqual({
+		expect(environment(template, "IngestionEventsStartFunction")).toEqual(shared);
+		expect(environment(template, "IngestionEventsSweepFunction")).toEqual({
 			...shared,
 			SWEEP_EPOCH: "2026-11-15T12:00:00.000Z",
 			SWEEP_RPS: "2",
@@ -264,8 +264,8 @@ describe("functions", () => {
 
 	test("the functions run Python 3.14 from functions/", () => {
 		for (const [prefix, handler] of [
-			["IngestionObservabilityStartFunction", "start.handler"],
-			["IngestionObservabilitySweepFunction", "sweep.handler"],
+			["IngestionEventsStartFunction", "start.handler"],
+			["IngestionEventsSweepFunction", "sweep.handler"],
 		]) {
 			const id = idOf(template, "AWS::Lambda::Function", prefix);
 			expect(template.toJSON().Resources[id].Properties).toMatchObject({
@@ -276,7 +276,7 @@ describe("functions", () => {
 	});
 
 	test("the sweep runs one at a time every 15 minutes", () => {
-		const sweep = idOf(template, "AWS::Lambda::Function", "IngestionObservabilitySweepFunction");
+		const sweep = idOf(template, "AWS::Lambda::Function", "IngestionEventsSweepFunction");
 		expect(template.toJSON().Resources[sweep].Properties).toMatchObject({
 			ReservedConcurrentExecutions: 1,
 			Timeout: 240,
@@ -291,7 +291,7 @@ describe("functions", () => {
 	test("the demo knowledge base is tracked first", () => {
 		const env = environment(
 			synthesize({ knowledgeBaseIds: [KB1] }),
-			"IngestionObservabilitySweepFunction",
+			"IngestionEventsSweepFunction",
 		);
 		expect(env.TRACKED_KNOWLEDGE_BASE_IDS).toEqual({
 			"Fn::Join": ["", [{ "Fn::GetAtt": ["DemoKnowledgeBase", "KnowledgeBaseId"] }, `,${KB1}`]],
@@ -320,7 +320,7 @@ describe("poller", () => {
 		const sm = only(template, "AWS::StepFunctions::StateMachine").resource;
 		expect(sm.Properties.StateMachineType).toBe("STANDARD");
 		expect(sm.Properties.LoggingConfiguration).toMatchObject({ Level: "ALL", IncludeExecutionData: false });
-		const logGroup = idOf(template, "AWS::Logs::LogGroup", "IngestionObservabilityPollerLogs");
+		const logGroup = idOf(template, "AWS::Logs::LogGroup", "IngestionEventsPollerLogs");
 		expect(template.toJSON().Resources[logGroup].Properties.LogGroupName).toBe(
 			"/aws/vendedlogs/states/demo-poller",
 		);
@@ -464,7 +464,7 @@ describe("poller", () => {
 	});
 
 	test("an alarm fires on any failed execution", () => {
-		const stateMachine = idOf(template, "AWS::StepFunctions::StateMachine", "IngestionObservabilityPoller");
+		const stateMachine = idOf(template, "AWS::StepFunctions::StateMachine", "IngestionEventsPoller");
 		template.hasResourceProperties("AWS::CloudWatch::Alarm", {
 			Namespace: "AWS/States",
 			MetricName: "ExecutionsFailed",
@@ -482,12 +482,12 @@ describe("poller", () => {
 		const entries = definition(custom).States.EmitFinished.Arguments.Entries;
 		expect(entries[0].EventBusName).toBe("kb-events");
 		const busArn = `arn:aws:events:${REGION}:${ACCOUNT}:event-bus/kb-events`;
-		expect(statements(custom, "IngestionObservabilityPollerRoleDefaultPolicy")).toContainEqual({
+		expect(statements(custom, "IngestionEventsPollerRoleDefaultPolicy")).toContainEqual({
 			Action: "events:PutEvents",
 			Effect: "Allow",
 			Resource: busArn,
 		});
-		expect(statements(custom, "IngestionObservabilityStartFunctionServiceRoleDefaultPolicy")).toContainEqual({
+		expect(statements(custom, "IngestionEventsStartFunctionServiceRoleDefaultPolicy")).toContainEqual({
 			Action: "events:PutEvents",
 			Effect: "Allow",
 			Resource: busArn,
@@ -530,7 +530,7 @@ describe("validation", () => {
 	test("the default lease follows a longer sweep timeout", () => {
 		const env = environment(
 			synthesize({ sweepFunctionTimeout: cdk.Duration.seconds(900) }),
-			"IngestionObservabilityStartFunction",
+			"IngestionEventsStartFunction",
 		);
 		expect(env.CLAIM_LEASE_SECONDS).toBe("960");
 	});
@@ -554,7 +554,7 @@ describe("validation", () => {
 		[{ sweepRps: 11 }, /sweepRps/],
 		[{ sweepEpoch: "yesterday" }, /sweepEpoch/],
 	])("rejects %p", (overrides, message) => {
-		expect(() => createStack(overrides as Partial<IngestionObservabilityStackProps>)).toThrow(message);
+		expect(() => createStack(overrides as Partial<IngestionEventsStackProps>)).toThrow(message);
 	});
 
 	test("jitterSeconds=0 turns jitter off", () => {
@@ -669,19 +669,19 @@ describe("demo and capture", () => {
 	test("the capture rule writes every event of the source to a log group the stack's policy opens", () => {
 		const template = synthesize();
 		const logGroup = only(template, "AWS::Logs::LogGroup", {
-			Properties: { LogGroupName: "/ingestion-observability/demo/events" },
+			Properties: { LogGroupName: "/ingestion-events/demo/events" },
 		}).id;
 		const rule = only(template, "AWS::Events::Rule").resource;
 		expect(rule.Properties.EventPattern).toEqual({ source: ["custom.bedrock.kb-ingestion"] });
 		expect(rule.Properties.Targets).toEqual([
 			{
-				Arn: `arn:aws:logs:${REGION}:${ACCOUNT}:log-group:/ingestion-observability/demo/events`,
+				Arn: `arn:aws:logs:${REGION}:${ACCOUNT}:log-group:/ingestion-events/demo/events`,
 				Id: "Target0",
 			},
 		]);
 		const policy = only(template, "AWS::Logs::ResourcePolicy");
 		expect(rule.DependsOn).toContain(policy.id);
-		expect(policy.resource.Properties.PolicyName).toBe("ingestion-observability-demo-events");
+		expect(policy.resource.Properties.PolicyName).toBe("ingestion-events-demo-events");
 		const document = JSON.parse(
 			policy.resource.Properties.PolicyDocument["Fn::Join"][1]
 				.map((part: unknown) => (typeof part === "string" ? part : "LOG_GROUP_ARN"))
@@ -709,7 +709,7 @@ describe("demo and capture", () => {
 			Object.values(template.findResources("AWS::Logs::LogGroup")).map(
 				(logGroup) => logGroup.Properties.LogGroupName,
 			),
-		).not.toContain("/ingestion-observability/demo/events");
+		).not.toContain("/ingestion-events/demo/events");
 	});
 
 	test("outputs the names and ARNs the README commands use", () => {
@@ -732,7 +732,7 @@ describe.each([
 	["the demo stack", {}],
 	["existing-log-group mode", EXISTING],
 ])("clean up and log groups: %s", (_name, overrides) => {
-	const template = synthesize(overrides as Partial<IngestionObservabilityStackProps>);
+	const template = synthesize(overrides as Partial<IngestionEventsStackProps>);
 	const logGroups = template.findResources("AWS::Logs::LogGroup");
 
 	test("no resource is retained when the stack is deleted", () => {

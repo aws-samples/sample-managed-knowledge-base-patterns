@@ -6,7 +6,7 @@ import * as logs from "aws-cdk-lib/aws-logs";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
-import { IngestionObservability, IngestionObservabilityProps } from "./ingestion-observability";
+import { IngestionEvents, IngestionEventsProps } from "./ingestion-events";
 import {
 	addAutoDeleteObjectsLogGroup,
 	bucketDeploymentLogGroup,
@@ -14,9 +14,9 @@ import {
 } from "./log-groups";
 import { addNagSuppressions } from "./nag-suppressions";
 
-export interface IngestionObservabilityStackProps
+export interface IngestionEventsStackProps
 	extends cdk.StackProps,
-		Omit<IngestionObservabilityProps, "name" | "knowledgeBaseIds"> {
+		Omit<IngestionEventsProps, "name" | "knowledgeBaseIds"> {
 	/**
 	 * Prefix of the resource names. Lowercase letters, numbers, and single
 	 * hyphens, 2 to 32 characters.
@@ -66,13 +66,13 @@ class LogGroupTarget implements events.IRuleTarget {
 }
 
 /**
- * The ingestion-observability pattern: the IngestionObservability construct,
+ * The ingestion-events pattern: the IngestionEvents construct,
  * an optional demo knowledge base, and an optional capture of the events.
  */
-export class IngestionObservabilityStack extends cdk.Stack {
-	readonly observability: IngestionObservability;
+export class IngestionEventsStack extends cdk.Stack {
+	readonly ingestionEvents: IngestionEvents;
 
-	constructor(scope: Construct, id: string, props: IngestionObservabilityStackProps) {
+	constructor(scope: Construct, id: string, props: IngestionEventsStackProps) {
 		super(scope, id, props);
 
 		if (
@@ -95,7 +95,7 @@ export class IngestionObservabilityStack extends cdk.Stack {
 			);
 		}
 
-		cdk.Tags.of(this).add("project", "ingestion-observability-sample");
+		cdk.Tags.of(this).add("project", "ingestion-events-sample");
 
 		const outputs: Record<string, string> = {};
 		const knowledgeBaseIds = [...props.knowledgeBaseIds];
@@ -110,7 +110,7 @@ export class IngestionObservabilityStack extends cdk.Stack {
 			});
 		}
 
-		this.observability = new IngestionObservability(this, "IngestionObservability", {
+		this.ingestionEvents = new IngestionEvents(this, "IngestionEvents", {
 			...props,
 			knowledgeBaseIds,
 		});
@@ -118,7 +118,7 @@ export class IngestionObservabilityStack extends cdk.Stack {
 		const eventSource = props.eventSource ?? "custom.bedrock.kb-ingestion";
 		const eventBusName = props.eventBusName ?? "default";
 		if (props.captureEvents ?? true) {
-			const eventLogGroupName = `/ingestion-observability/${props.name}/events`;
+			const eventLogGroupName = `/ingestion-events/${props.name}/events`;
 			const eventLogs = new logs.LogGroup(this, "EventLogs", {
 				logGroupName: eventLogGroupName,
 				retention: logs.RetentionDays.ONE_MONTH,
@@ -128,7 +128,7 @@ export class IngestionObservabilityStack extends cdk.Stack {
 			// policy with a custom resource whose log group is retained for
 			// two years, so the stack owns the policy instead.
 			const policy = new logs.ResourcePolicy(this, "EventLogsPolicy", {
-				resourcePolicyName: `ingestion-observability-${props.name}-events`,
+				resourcePolicyName: `ingestion-events-${props.name}-events`,
 				policyStatements: [
 					new iam.PolicyStatement({
 						principals: [
@@ -161,12 +161,12 @@ export class IngestionObservabilityStack extends cdk.Stack {
 		}
 
 		Object.assign(outputs, {
-			IngestionLogGroup: this.observability.logGroupName,
-			StateMachineArn: this.observability.stateMachine.stateMachineArn,
-			ClaimTableName: this.observability.table.tableName,
-			StartFunctionName: this.observability.startFunction.functionName,
-			SweepFunctionName: this.observability.sweepFunction.functionName,
-			FailedExecutionsAlarmName: this.observability.alarm.alarmName,
+			IngestionLogGroup: this.ingestionEvents.logGroupName,
+			StateMachineArn: this.ingestionEvents.stateMachine.stateMachineArn,
+			ClaimTableName: this.ingestionEvents.table.tableName,
+			StartFunctionName: this.ingestionEvents.startFunction.functionName,
+			SweepFunctionName: this.ingestionEvents.sweepFunction.functionName,
+			FailedExecutionsAlarmName: this.ingestionEvents.alarm.alarmName,
 		});
 		for (const [outputName, value] of Object.entries(outputs)) {
 			new cdk.CfnOutput(this, outputName, { value });
@@ -180,7 +180,7 @@ export class IngestionObservabilityStack extends cdk.Stack {
 	}
 
 	/** A managed knowledge base over an S3 bucket of the sample runbooks. */
-	private createDemo(props: IngestionObservabilityStackProps): {
+	private createDemo(props: IngestionEventsStackProps): {
 		bucket: s3.Bucket;
 		role: iam.Role;
 		knowledgeBase: bedrock.CfnKnowledgeBase;
@@ -206,7 +206,7 @@ export class IngestionObservabilityStack extends cdk.Stack {
 
 		const sameAccount = { StringEquals: { "aws:ResourceAccount": this.account } };
 		const role = new iam.Role(this, "DemoKnowledgeBaseRole", {
-			description: "Lets Amazon Bedrock read the ingestion-observability demo files",
+			description: "Lets Amazon Bedrock read the ingestion-events demo files",
 			assumedBy: new iam.ServicePrincipal("bedrock.amazonaws.com", {
 				conditions: {
 					StringEquals: { "aws:SourceAccount": this.account },
@@ -241,7 +241,7 @@ export class IngestionObservabilityStack extends cdk.Stack {
 
 		const knowledgeBase = new bedrock.CfnKnowledgeBase(this, "DemoKnowledgeBase", {
 			name: `${props.name}-demo-kb`,
-			description: "ingestion-observability demo: sample runbooks",
+			description: "ingestion-events demo: sample runbooks",
 			roleArn: role.roleArn,
 			knowledgeBaseConfiguration: {
 				type: "MANAGED",
@@ -252,7 +252,7 @@ export class IngestionObservabilityStack extends cdk.Stack {
 		const dataSource = new bedrock.CfnDataSource(this, "DemoDataSource", {
 			knowledgeBaseId: knowledgeBase.attrKnowledgeBaseId,
 			name: `${props.name}-demo-s3`,
-			description: `ingestion-observability demo: S3 files under ${DOCUMENT_PREFIX}`,
+			description: `ingestion-events demo: S3 files under ${DOCUMENT_PREFIX}`,
 			// Remove the indexed content with the data source, so cdk destroy
 			// leaves nothing behind.
 			dataDeletionPolicy: "DELETE",

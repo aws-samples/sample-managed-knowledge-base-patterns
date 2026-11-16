@@ -71,8 +71,8 @@ export function addNagSuppressions(stack: cdk.Stack): void {
 		"The Start and Sweep functions and the AWS CDK handler functions use the AWS managed policy that only grants writing CloudWatch logs. For production, replace it with a policy scoped to each function's own log group.",
 	);
 
-	const observability = stack.node.findChild("IngestionObservability");
-	const poller = observability.node.findChild("Poller");
+	const ingestionEvents = stack.node.findChild("IngestionEvents");
+	const poller = ingestionEvents.node.findChild("Poller");
 	acknowledgeWildcards(poller, [
 		{
 			finding: /^Resource::\*$/,
@@ -92,7 +92,7 @@ export function addNagSuppressions(stack: cdk.Stack): void {
 		if (child.node.id.startsWith("SchedulerRoleForTarget-")) {
 			acknowledgeWildcards(child, [
 				{
-					finding: /^Resource::<IngestionObservabilitySweepFunction[0-9A-F]{8}\.Arn>:\*$/,
+					finding: /^Resource::<IngestionEventsSweepFunction[0-9A-F]{8}\.Arn>:\*$/,
 					reason:
 						"AWS CDK lets the scheduler invoke any version or alias of the Sweep function, which has none. For production, keep it or scope the role to the function ARN only.",
 				},
