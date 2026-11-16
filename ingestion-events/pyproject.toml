@@ -1,0 +1,37 @@
+[project]
+name = "ingestion-events-sample"
+version = "0.1.0"
+description = "EventBridge events for Amazon Bedrock Managed Knowledge Base sync start and finish"
+# The Lambda functions run on Python 3.14. The tests run on 3.10 or later.
+requires-python = ">=3.10"
+dependencies = [
+    "boto3>=1.43.123",
+]
+
+[dependency-groups]
+dev = [
+    "boto3-stubs[bedrock-agent,dynamodb,events,stepfunctions]>=1.43.123",
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.17.2",
+]
+
+# The functions are deployed as a Lambda asset, not installed.
+[tool.uv]
+package = false
+
+[tool.ruff]
+# infra/ is the TypeScript CDK app.
+extend-exclude = ["infra"]
+# The functions are top-level modules (claim, start, sweep) in functions/.
+src = ["functions", "tests"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["functions", "tests"]
+mypy_path = "functions"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["functions"]
