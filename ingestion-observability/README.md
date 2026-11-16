@@ -74,7 +74,7 @@ Every log group keeps events for 30 days and is deleted with the stack.
 
 ## Sample files
 
-`data/docs/` holds three short Markdown runbooks and `broken.pdf`, a 16-byte file that isn't a valid PDF. The runbooks are fictitious.
+`data/docs/` holds three short Markdown runbooks. The runbooks are fictitious.
 
 ## Getting this sample
 
